@@ -17,3 +17,4 @@ export class BattleScene extends Scene {
     // Can be used to clean
   }
 }
+
