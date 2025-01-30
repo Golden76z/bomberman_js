@@ -3,16 +3,8 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<meta />
 		<title>Bomberman js</title>
-		<!-- <link rel="icon" type="image/png" href="/images/favicon.png" /> -->
-		<link rel="preconnect" href="https://fonts.googleapis.com" />
-		<link rel="stylesheet" href="./src/style/style.css" />
-		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-		<link
-			href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300&display=swap"
-			rel="stylesheet"
-		/>
+		<link rel="stylesheet" href="/src/style/style.css" />
 		<script type="importmap">
 			{
 				"imports": {
@@ -21,15 +13,22 @@
 				}
 			}
 		</script>
-		<script type="module" src="./src/index.js"></script>
+		<script type="module" src="/src/index.js"></script>
+		<script type="module" src="/src/game/pause.js"></script>
 	</head>
-
 	<body>
 		<div id="game-container">
-			<!--Grille-->
+			<!-- Game content -->
 		</div>
-		<!-- <img id="logo" src="./images/logo.webp" /> -->
-		<!-- <audio id="bgm" src="./sound/area12.ogg" preload loop></audio> -->
+
+		<!-- Pause Menu -->
+		<div id="pause-container" class="hidden">
+			<div class="menu-content">
+				<h2>PAUSE!</h2>
+				<button id="continue-button">Continue</button>
+				<button id="restart-button">Restart</button>
+				<button id="exit-button">Exit</button>
+			</div>
+		</div>
 	</body>
 </html>
-
