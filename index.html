@@ -12,42 +12,29 @@
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 	<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300&display=swap" rel="stylesheet" />
 	<style>
-		html,
-		body {
-			padding: 0;
-			margin: 0;
-			height: 100%;
-		}
-
-		body {
-			display: flex;
-		}
-
-		body,
-		canvas {
-			background-color: black;
-		}
-
-		canvas {
-			width: 100%;
-			object-fit: contain;
-			image-rendering: crisp-edges;
-			image-rendering: pixelated;
-		}
-
-		img,
-		audio {
-			display: none;
-		}
+	   body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #222;
+        }
+        .game-container {
+            display: grid;
+            grid-template-columns: repeat(11, 40px); /* Adjust grid size based on map */
+            gap: 2px;
+        }
+        .tile {
+            width: 40px;
+            height: 40px;
+            background-size: cover;
+        }
 	</style>
-	<script type="importmap">
-			{
-				"imports": {
-					"engine/": "./src/engine/",
-					"game/": "./src/game/"
-				}
-			}
-		</script>
+	</head>
+	effz
+	<body>
+    <div class="game-container" id="game"></div>
+</body>
 	<script type="module" src="./src/index.js"></script>
 </head>
 
