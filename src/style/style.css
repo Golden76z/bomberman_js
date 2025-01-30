@@ -1,1 +1,8 @@
+#game-container {
+	display: grid;
+	grid-template-columns: repeat(13, 50px);
+	grid-template-rows: repeat(10, 50px);
+	gap: 1px;
+	margin: 20px auto;
+}
 
