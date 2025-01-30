@@ -4,10 +4,17 @@ let isPaused = false;
 function togglePause() {
 	const pauseMenu = document.getElementById("pause-container");
 
+	if (!pauseMenu) {
+		console.error("Le menu de pause n'a pas été trouvé dans le DOM.");
+		return;
+	}
+
+	console.log("isPaused:", isPaused);
+
 	if (isPaused) {
-		pauseMenu.classList.remove("hidden");
+		pauseMenu.classList.add("visible");
 	} else {
-		pauseMenu.classList.add("hidden");
+		pauseMenu.classList.remove("visible");
 	}
 }
 
@@ -19,19 +26,18 @@ document.addEventListener("keydown", (event) => {
 });
 
 document.getElementById("continue-button")?.addEventListener("click", () => {
-	console.log("Resume the game...");
+	console.log("Continuer le jeu...");
 	isPaused = false;
 	togglePause();
 });
 
 document.getElementById("restart-button")?.addEventListener("click", () => {
-	console.log("Restarting the game...");
-
+	console.log("Redémarrage du jeu...");
 	isPaused = false;
 	togglePause();
 });
 
 document.getElementById("exit-button")?.addEventListener("click", () => {
-	console.log("Exiting the game...");
+	console.log("Quitter le jeu...");
 	window.location.reload();
 });
