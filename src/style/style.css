@@ -1,1 +1,40 @@
+.game-container {
+  position: relative;
+  width: 600px;
+  height: 600px;
+  background: #f0f0f0;
+  border: 5px solid #656565;
+  margin: 20px auto;
+  overflow: hidden;
+}
 
+.player {
+  position: absolute;
+  border-radius: 4px;
+  transition: transform 0.1s linear;
+}
+
+.info {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  font-family: Arial, sans-serif;
+  color: #666;
+}
+
+.coordinates {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-family: Arial, sans-serif;
+  color: #666;
+}
+
+.title {
+  font-family: 'Press Start 2P', cursive;
+  font-size: 30px;
+  color: #000000;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-align: center;
+}
