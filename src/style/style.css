@@ -1,1 +1,18 @@
 
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #222;
+}
+.game-container {
+  display: grid;
+  grid-template-columns: repeat(11, 40px); /* Adjust grid size based on map */
+  gap: 2px;
+}
+.tile {
+  width: 40px;
+  height: 40px;
+  background-size: cover;
+}
