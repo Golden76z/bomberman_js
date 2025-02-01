@@ -1,18 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-	<meta charset="UTF-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<meta />
-	<title>Bomberman js</title>
-	<!-- <link rel="icon" type="image/png" href="/images/favicon.png" /> -->
-	<link rel="preconnect" href="https://fonts.googleapis.com" />
-	<link rel="stylesheet" href="./src/style/style.css">
-	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-	<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300&display=swap" rel="stylesheet" />
-	<style>
-	   body {
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bomberman JS</title>
+
+    <link rel="stylesheet" href="./src/style/style.css">
+
+    <style>
+        body {
             display: flex;
             justify-content: center;
             align-items: center;
@@ -21,7 +17,7 @@
         }
         .game-container {
             display: grid;
-            grid-template-columns: repeat(11, 40px); /* Adjust grid size based on map */
+            grid-template-columns: repeat(11, 40px); /* Adjust grid size */
             gap: 2px;
         }
         .tile {
@@ -29,18 +25,68 @@
             height: 40px;
             background-size: cover;
         }
-	</style>
-	</head>
-	effz
-	<body>
-    <div class="game-container" id="game"></div>
-</body>
-	<script type="module" src="./src/index.js"></script>
+    </style>
+
+    <script type="importmap">
+        {
+            "imports": {
+                "engine/": "./src/engine/",
+                "game/": "./src/game/"
+            }
+        }
+    </script>
+
+    <script type="module" src="./src/index.js"></script>
 </head>
 
 <body>
-	<!-- <img id="logo" src="./images/logo.webp" /> -->
-	<!-- <audio id="bgm" src="./sound/area12.ogg" preload loop></audio> -->
+    <!-- ADD THIS DIV FOR THE GAME MAP -->
+    <div class="game-container" id="game"></div>
 </body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bomberman JS</title>
 
+    <link rel="stylesheet" href="./src/style/style.css">
+
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #222;
+        }
+        .game-container {
+            display: grid;
+            grid-template-columns: repeat(11, 40px); /* Adjust grid size */
+            gap: 2px;
+        }
+        .tile {
+            width: 40px;
+            height: 40px;
+            background-size: cover;
+        }
+    </style>
+
+    <script type="importmap">
+        {
+            "imports": {
+                "engine/": "./src/engine/",
+                "game/": "./src/game/"
+            }
+        }
+    </script>
+
+    <script type="module" src="./src/index.js"></script>
+</head>
+
+<body>
+    <!-- ADD THIS DIV FOR THE GAME MAP -->
+    <div class="game-container" id="game"></div>
+</body>
 </html>
