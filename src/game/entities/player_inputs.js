@@ -1,5 +1,6 @@
 // Import of player object storing all infos
 import { playerInfos } from './player_infos.js'
+import { canMoveVerticaly, canMoveHorizontaly } from './colisionDetection.js'
 
 // Getting html div for the player and container
 const player = document.querySelector('.player');
@@ -31,10 +32,10 @@ function updatePosition(timestamp) {
   previousTime = timestamp;
 
   // Calculate movement based on elapsed time (checking if key value is true)
-  if (keys.ArrowRight) position.x += moveSpeed * elapsed;
-  if (keys.ArrowLeft) position.x -= moveSpeed * elapsed;
-  if (keys.ArrowUp) position.y -= moveSpeed * elapsed;
-  if (keys.ArrowDown) position.y += moveSpeed * elapsed;
+  if (keys.ArrowRight && canMoveHorizontaly(position.x)) position.x += moveSpeed * elapsed;
+  if (keys.ArrowLeft && canMoveHorizontaly(position.x)) position.x -= moveSpeed * elapsed;
+  if (keys.ArrowUp && canMoveVerticaly(position.y)) position.y -= moveSpeed * elapsed;
+  if (keys.ArrowDown && canMoveVerticaly(position.y)) position.y += moveSpeed * elapsed;
 
   // Apply boundaries
   position.x = Math.max(0, Math.min(position.x, boundaryX));

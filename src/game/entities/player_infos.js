@@ -1,10 +1,10 @@
 // Player properties
 export const playerInfos = {
   color: '#f34343',
-  width: 50,
-  height: 50,
-  positionX: 0,
-  positionY: 0,
+  width: 40,
+  height: 40,
+  positionX: 60,
+  positionY: 60,
   moveSpeed: 0.3
 }
 

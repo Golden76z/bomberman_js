@@ -1,3 +1,7 @@
+body {
+  background-color: #000000;
+}
+
 .game-container {
   position: relative;
   width: 600px;
@@ -6,12 +10,32 @@
   border: 5px solid #656565;
   margin: 20px auto;
   overflow: hidden;
+  display: grid;
+  grid-template-columns: repeat(11, 1fr);
+  grid-template-rows: repeat(11, 1fr);
 }
 
-.player {
-  position: absolute;
-  border-radius: 4px;
-  transition: transform 0.1s linear;
+.tile {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.wall {
+  background-image: url('../../images/wall.png');
+}
+
+.destructible {
+  background-image: url('../../images/breakable.png');
+}
+
+.empty {
+  background-image: url('../../images/ground.png');
 }
 
 .info {
@@ -20,6 +44,7 @@
   left: 10px;
   font-family: Arial, sans-serif;
   color: #666;
+  z-index: 1000;
 }
 
 .coordinates {
@@ -28,6 +53,7 @@
   right: 10px;
   font-family: Arial, sans-serif;
   color: #666;
+  z-index: 1000;
 }
 
 .title {
@@ -37,4 +63,13 @@
   text-transform: uppercase;
   letter-spacing: 2px;
   text-align: center;
+}
+
+.player {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  border-radius: 4px;
+  transition: transform 0.1s linear;
+  z-index: 1000;
 }
