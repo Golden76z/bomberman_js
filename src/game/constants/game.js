@@ -1,9 +1,10 @@
-/**
- * Set up you main game constant values here
- */
-
-export const FPS = 60;
-export const FRAME_TIME = 1000 / FPS;
-
-export const SCREEN_WIDTH = 640;
-export const SCREEN_HEIGHT = 360;
+// Set the object of the game
+export const gameInfos = {
+  pause: false,
+  level: 6,
+  fps: 60,
+  width: 600,
+  height: 600,
+  width_tiles: 11,
+  height_tiles: 11,
+}

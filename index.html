@@ -2,37 +2,18 @@
 <html lang="en">
 
 <head>
-	<meta charset="UTF-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<meta />
-	<title>Bomberman js</title>
-	<!-- <link rel="icon" type="image/png" href="/images/favicon.png" /> -->
-	<link rel="preconnect" href="https://fonts.googleapis.com" />
 	<link rel="stylesheet" href="./src/style/style.css">
-	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-	<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300&display=swap" rel="stylesheet" />
-	<!-- <script type="importmap">
-			{
-				"imports": {
-					"engine/": "./src/engine/",
-					"game/": "./src/game/"
-				}
-			}
-		</script>
-	<script type="module" src="./src/index.js"></script> -->
 </head>
 
 <body>
 	<!-- <h1 class="title">Bomberman</h1> -->
-
-	<div class="game-container">
+	<div class="game-container" id="gameMap">
 		<div class="player"></div>
 		<!-- <div class="info">Use arrow keys to move</div> -->
 		<!-- <div class="coordinates"></div> -->
 	</div>
-	<!-- <img id="logo" src="./images/logo.webp" /> -->
-	<!-- <audio id="bgm" src="./sound/area12.ogg" preload loop></audio> -->
-	<script type="module" src="./src/game/entities/player_inputs.js"></script>
+	<script type="module" src="./src/game/engine/mapGeneration.js"></script>
+	<script type="module" src="./src/game/engine/player_inputs.js"></script>
 </body>
 
 </html>
