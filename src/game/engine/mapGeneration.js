@@ -11,12 +11,12 @@ function createMap(mapArray) {
   const info = gameMap.querySelector('.info');
   const coordinates = gameMap.querySelector('.coordinates');
 
-  // Clear existing tiles but keep player, info, and coordinates
+  // Clear existing tiles but keep player
   const tiles = gameMap.querySelectorAll('.tile');
   tiles.forEach(tile => tile.remove());
 
-  mapArray.forEach((row, rowIndex) => {
-    row.forEach((cell, colIndex) => {
+  mapArray.forEach((row) => {
+    row.forEach((cell) => {
       const tile = document.createElement('div');
       tile.classList.add('tile');
 

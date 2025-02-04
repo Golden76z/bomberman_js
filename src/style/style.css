@@ -26,6 +26,26 @@ body {
   background-position: center;
 }
 
+.title {
+  font-family: 'Press Start 2P', cursive;
+  font-size: 30px;
+  color: #000000;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-align: center;
+}
+
+/* Player design */
+.player {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  border-radius: 4px;
+  transition: transform 0.1s linear;
+  z-index: 1000;
+}
+
+/* Setting sprites images to walls, ground and destroyable walls */
 .wall {
   background-image: url('../../images/wall.png');
 }
@@ -36,40 +56,4 @@ body {
 
 .empty {
   background-image: url('../../images/ground.png');
-}
-
-.info {
-  position: absolute;
-  bottom: 10px;
-  left: 10px;
-  font-family: Arial, sans-serif;
-  color: #666;
-  z-index: 1000;
-}
-
-.coordinates {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  font-family: Arial, sans-serif;
-  color: #666;
-  z-index: 1000;
-}
-
-.title {
-  font-family: 'Press Start 2P', cursive;
-  font-size: 30px;
-  color: #000000;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  text-align: center;
-}
-
-.player {
-  position: absolute;
-  width: 40px;
-  height: 40px;
-  border-radius: 4px;
-  transition: transform 0.1s linear;
-  z-index: 1000;
 }

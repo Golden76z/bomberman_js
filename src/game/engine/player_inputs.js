@@ -1,5 +1,5 @@
-import { playerInfos } from './player_infos.js';
-import { walls } from '../colisionMap.js'
+import { playerInfos } from '../constants/player_infos.js';
+import { walls } from '../entities/colisionMap.js'
 
 // Getting HTML elements
 const player = document.querySelector('.player');
