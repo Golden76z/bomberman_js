@@ -22,6 +22,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	http.Handle("/src/", http.StripPrefix("/src/", http.FileServer(http.Dir("./src/"))))
 	http.HandleFunc("/", indexHandler)
 
 	fmt.Println("Server is running on http://localhost:8080")

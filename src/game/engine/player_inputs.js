@@ -1,21 +1,21 @@
-import { playerInfos } from '../constants/player_infos.js';
-import { walls } from '../entities/colisionMap.js'
+import { playerInfos } from "../constants/player_infos.js";
+import { walls } from "../entities/colisionMap.js";
 
 // Getting HTML elements
-const player = document.querySelector('.player');
-const container = document.querySelector('.game-container');
+const player = document.querySelector(".player");
+const container = document.querySelector(".game-container");
 
 // Player initial position
 let position = {
   x: playerInfos.positionX,
-  y: playerInfos.positionY
+  y: playerInfos.positionY,
 };
 
-let keys = {
+export let keys = {
   ArrowRight: false,
   ArrowLeft: false,
   ArrowUp: false,
-  ArrowDown: false
+  ArrowDown: false,
 };
 
 let startTime;
@@ -28,7 +28,7 @@ const boundaryY = container.clientHeight - playerInfos.height;
 
 // Check if movement is possible
 function canMove(newX, newY) {
-  return !walls.some(wall =>
+  return !walls.some((wall) =>
     wall.checkCollision(newX, newY, playerInfos.width, playerInfos.height)
   );
 }
@@ -41,11 +41,13 @@ function updatePosition(timestamp) {
   const elapsed = timestamp - (previousTime || timestamp);
   previousTime = timestamp;
 
-  // Calculate potential new positions
+  if (window.isPaused) {
+    return;
+  }
+
   let newX = position.x;
   let newY = position.y;
 
-  // Check movement with collision detection
   if (keys.ArrowRight) {
     newX = position.x + moveSpeed * elapsed;
     if (canMove(newX, position.y)) {
@@ -71,35 +73,31 @@ function updatePosition(timestamp) {
     }
   }
 
-  // Apply boundaries
+  // Appliquer les limites
   position.x = Math.max(0, Math.min(position.x, boundaryX));
   position.y = Math.max(0, Math.min(position.y, boundaryY));
 
-  // Update player position in CSS
   player.style.transform = `translate(${position.x}px, ${position.y}px)`;
 
-  // Continue animation loop
   requestAnimationFrame(updatePosition);
 }
 
-// Key event handlers
-function handleKeyDown(event) {
-  if (keys.hasOwnProperty(event.key)) {
+// Gérer les événements de touche
+export function handleKeyDown(event) {
+  if (keys.hasOwnProperty(event.key) && !window.isPaused) {
     keys[event.key] = true;
     event.preventDefault();
   }
 }
 
-function handleKeyUp(event) {
+export function handleKeyUp(event) {
   if (keys.hasOwnProperty(event.key)) {
     keys[event.key] = false;
     event.preventDefault();
   }
 }
 
-// Event listeners
-document.addEventListener('keydown', handleKeyDown);
-document.addEventListener('keyup', handleKeyUp);
+document.addEventListener("keydown", handleKeyDown);
+document.addEventListener("keyup", handleKeyUp);
 
-// Start animation loop
 requestAnimationFrame(updatePosition);
