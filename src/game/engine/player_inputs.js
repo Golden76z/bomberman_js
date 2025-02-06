@@ -11,7 +11,7 @@ let position = {
   y: playerInfos.positionY,
 };
 
-let keys = {
+export let keys = {
   ArrowRight: false,
   ArrowLeft: false,
   ArrowUp: false,
@@ -41,16 +41,13 @@ function updatePosition(timestamp) {
   const elapsed = timestamp - (previousTime || timestamp);
   previousTime = timestamp;
 
-  // Si le jeu est en pause, ne pas mettre à jour la position
   if (window.isPaused) {
     return;
   }
 
-  // Calculer les nouvelles positions potentielles
   let newX = position.x;
   let newY = position.y;
 
-  // Vérifier les déplacements
   if (keys.ArrowRight) {
     newX = position.x + moveSpeed * elapsed;
     if (canMove(newX, position.y)) {
@@ -80,18 +77,16 @@ function updatePosition(timestamp) {
   position.x = Math.max(0, Math.min(position.x, boundaryX));
   position.y = Math.max(0, Math.min(position.y, boundaryY));
 
-  // Mettre à jour la position du joueur dans le CSS
   player.style.transform = `translate(${position.x}px, ${position.y}px)`;
 
-  // Continuer la boucle d'animation
   requestAnimationFrame(updatePosition);
 }
 
 // Gérer les événements de touche
 export function handleKeyDown(event) {
-  if (keys.hasOwnProperty(event.key)) {
+  if (keys.hasOwnProperty(event.key) && !window.isPaused) {
     keys[event.key] = true;
-    event.preventDefault(); // Empêcher le comportement par défaut de la touche (comme faire défiler la page)
+    event.preventDefault();
   }
 }
 
@@ -102,9 +97,7 @@ export function handleKeyUp(event) {
   }
 }
 
-// Ajouter les écouteurs d'événements de touche
 document.addEventListener("keydown", handleKeyDown);
 document.addEventListener("keyup", handleKeyUp);
 
-// Commencer la boucle d'animation
 requestAnimationFrame(updatePosition);

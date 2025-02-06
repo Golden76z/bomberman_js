@@ -1,4 +1,4 @@
-import { handleKeyDown, handleKeyUp } from "./player_inputs.js";
+import { handleKeyDown, handleKeyUp, keys } from "./player_inputs.js";
 
 let isPaused = false;
 
@@ -11,17 +11,21 @@ function togglePause() {
     return;
   }
 
-  console.log("isPaused:", isPaused);
-
   // Afficher ou masquer le menu de pause
-  if (isPaused) {
+  if (!isPaused) {
     pauseMenu.classList.add("visible");
+    document.removeEventListener("keydown", handleKeyDown);
+    document.removeEventListener("keyup", handleKeyUp);
+
+    Object.keys(keys).forEach((key) => {
+      keys[key] = false;
+    });
   } else {
     pauseMenu.classList.remove("visible");
+    document.addEventListener("keydown", handleKeyDown);
+    document.addEventListener("keyup", handleKeyUp);
   }
-
-  // Mettre à jour l'état global de pause
-  window.isPaused = isPaused;
+  isPaused = !isPaused;
 
   const eventListeners = document.querySelectorAll(".game-container *");
   eventListeners.forEach((element) => {
@@ -31,49 +35,38 @@ function togglePause() {
       element.classList.remove("paused");
     }
   });
-
-  // Ajouter ou supprimer les événements de touche selon l'état de pause
-  if (!isPaused) {
-    document.addEventListener("keydown", handleKeyDown);
-    document.addEventListener("keyup", handleKeyUp);
-  } else {
-    document.removeEventListener("keydown", handleKeyDown);
-    document.removeEventListener("keyup", handleKeyUp);
-  }
-
-  // Inverser l'état de la pause
-  isPaused = !isPaused;
 }
 
 // Gestionnaire de la touche "Escape" pour mettre en pause ou reprendre le jeu
 function handlePause(event) {
   if (event.key === "Escape") {
-    console.log("Pause le jeu...");
     togglePause();
   }
 }
 
-// Lier l'événement pour la touche "Escape" (désactive si déjà en pause)
-document.addEventListener("keydown", handlePause);
+// Ajouter un écouteur d'événements dès le chargement de la page
+document.addEventListener("DOMContentLoaded", function () {
+  // Dès que la page est complètement chargée, on commence à écouter "Escape"
+  document.addEventListener("keydown", handlePause);
+});
 
 // Lier les actions du menu de pause
 function bindPauseMenuActions() {
   document.getElementById("continue-button")?.addEventListener("click", () => {
-    console.log("Continuer le jeu...");
+    console.log("Resume the Game...");
     togglePause();
   });
 
   document.getElementById("restart-button")?.addEventListener("click", () => {
-    console.log("Redémarrer le jeu...");
+    console.log("Restart the game...");
     togglePause();
     // Ajoute ici la logique pour redémarrer le jeu
   });
 
   document.getElementById("exit-button")?.addEventListener("click", () => {
-    console.log("Quitter le jeu...");
+    console.log("Exit the game(reload page)");
     window.location.reload();
   });
 }
 
-// Lier les actions du menu de pause
 bindPauseMenuActions();
