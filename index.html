@@ -1,92 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Bomberman JS</title>
-
-    <link rel="stylesheet" href="./src/style/style.css">
-
-    <style>
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #222;
-        }
-        .game-container {
-            display: grid;
-            grid-template-columns: repeat(11, 40px); /* Adjust grid size */
-            gap: 2px;
-        }
-        .tile {
-            width: 40px;
-            height: 40px;
-            background-size: cover;
-        }
-    </style>
-
-    <script type="importmap">
-        {
-            "imports": {
-                "engine/": "./src/engine/",
-                "game/": "./src/game/"
-            }
-        }
-    </script>
-
-    <script type="module" src="./src/index.js"></script>
+	<link rel="stylesheet" href="./src/style/style.css">
 </head>
 
 <body>
-    <!-- ADD THIS DIV FOR THE GAME MAP -->
-    <div class="game-container" id="game"></div>
-</body>
-</html>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Bomberman JS</title>
-
-    <link rel="stylesheet" href="./src/style/style.css">
-
-    <style>
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #222;
-        }
-        .game-container {
-            display: grid;
-            grid-template-columns: repeat(11, 40px); /* Adjust grid size */
-            gap: 2px;
-        }
-        .tile {
-            width: 40px;
-            height: 40px;
-            background-size: cover;
-        }
-    </style>
-
-    <script type="importmap">
-        {
-            "imports": {
-                "engine/": "./src/engine/",
-                "game/": "./src/game/"
-            }
-        }
-    </script>
-
-    <script type="module" src="./src/index.js"></script>
-</head>
-
-<body>
-    <!-- ADD THIS DIV FOR THE GAME MAP -->
-    <div class="game-container" id="game"></div>
+	<!-- <h1 class="title">Bomberman</h1> -->
+	<div class="game-container" id="gameMap">
+		<div class="player"></div>
+		<!-- <div class="info">Use arrow keys to move</div> -->
+		<!-- <div class="coordinates"></div> -->
+	</div>
+	<script type="module" src="./src/game/engine/mapGeneration.js"></script>
+	<script type="module" src="./src/game/engine/player_inputs.js"></script>
 </body>
 </html>
