@@ -5,8 +5,84 @@ html {
   height: 100%;
   overflow: hidden;
   background-color: black;
+  display: flex;
+  justify-content: center; /* Centre horizontalement */
+  align-items: center; /* Centre verticalement */
+  flex-direction: column; /* Aligne les éléments en colonne */
 }
 
+.game-container {
+  position: relative;
+  width: 600px;
+  height: 600px;
+  background: #f0f0f0;
+  border: 5px solid #656565;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: repeat(11, 1fr);
+  grid-template-rows: repeat(11, 1fr);
+}
+
+.game-info {
+  display: flex; /* Aligne les éléments horizontalement */
+  justify-content: space-between; /* Répartit l'espace entre les éléments */
+  width: 600px; /* La même largeur que la .game-container */
+  position: absolute;
+  top: 10px; /* Espace de 10px au-dessus du jeu */
+  left: 50%;
+  transform: translateX(-50%); /* Centrage horizontal */
+  color: white;
+  font-family: Arial, sans-serif;
+  font-size: 32px; /* Augmenté pour être plus visible */
+  font-weight: bold; /* Mettre en gras */
+  z-index: 10;
+  text-align: center;
+}
+
+.tile {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.title {
+  font-family: "Press Start 2P", cursive;
+  font-size: 30px;
+  color: #000000;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-align: center;
+}
+
+/* Player design */
+.player {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  border-radius: 4px;
+  transition: transform 0.1s linear;
+  z-index: 1000;
+}
+
+/* Setting sprites images to walls, ground and destroyable walls */
+.wall {
+  background-image: url("../../images/wall.png");
+}
+
+.destructible {
+  background-image: url("../../images/breakable.png");
+}
+
+.empty {
+  background-image: url("../../images/ground.png");
+}
+
+/* Pause Menu Styles */
 #pause-container {
   position: fixed;
   top: 0;
@@ -72,60 +148,4 @@ button:focus {
 
 .hidden {
   display: none;
-}
-
-.game-container {
-  position: relative;
-  width: 600px;
-  height: 600px;
-  background: #f0f0f0;
-  border: 5px solid #656565;
-  margin: 20px auto;
-  overflow: hidden;
-  display: grid;
-  grid-template-columns: repeat(11, 1fr);
-  grid-template-rows: repeat(11, 1fr);
-}
-
-.tile {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-size: 100% 100%;
-  background-repeat: no-repeat;
-  background-position: center;
-}
-
-.title {
-  font-family: "Press Start 2P", cursive;
-  font-size: 30px;
-  color: #000000;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  text-align: center;
-}
-
-/* Player design */
-.player {
-  position: absolute;
-  width: 40px;
-  height: 40px;
-  border-radius: 4px;
-  transition: transform 0.1s linear;
-  z-index: 1000;
-}
-
-/* Setting sprites images to walls, ground and destroyable walls */
-.wall {
-  background-image: url("../../images/wall.png");
-}
-
-.destructible {
-  background-image: url("../../images/breakable.png");
-}
-
-.empty {
-  background-image: url("../../images/ground.png");
 }
