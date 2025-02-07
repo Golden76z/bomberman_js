@@ -5,7 +5,7 @@ export const playerInfos = {
   height: 40,
   positionX: 60,
   positionY: 60,
-  moveSpeed: 0.3
+  moveSpeed: 0.4
 }
 
 // Getting the player div to apply style to it

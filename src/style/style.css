@@ -2,6 +2,44 @@ body {
   background-color: #000000;
 }
 
+.bomb {
+  background: url('../../images/baseBomb3.png');
+  background-position: 0 0;
+  background-size: 64px 64px;
+}
+
+/* @keyframes bomb-pulse {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.1);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+} */
+
+.explosion {
+  background: url('../../images/baseBomb3.png');
+  background-size: 896px 64px;
+  /* Full sprite sheet size */
+  animation: explode 3s steps(14) forwards;
+}
+
+@keyframes explode {
+  from {
+    background-position: 0 0;
+  }
+
+  to {
+    background-position: -896px 0;
+    /* Move through all 14 frames */
+  }
+}
+
 .game-container {
   position: relative;
   width: 600px;
