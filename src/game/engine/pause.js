@@ -1,4 +1,5 @@
 import { handleKeyDown, handleKeyUp, keys } from "./player_inputs.js";
+import { startTimer, stopTimer } from "./ui_scoring.js";
 
 let isPaused = false;
 
@@ -17,6 +18,8 @@ function togglePause() {
     document.removeEventListener("keydown", handleKeyDown);
     document.removeEventListener("keyup", handleKeyUp);
 
+    stopTimer();
+
     Object.keys(keys).forEach((key) => {
       keys[key] = false;
     });
@@ -24,6 +27,7 @@ function togglePause() {
     pauseMenu.classList.remove("visible");
     document.addEventListener("keydown", handleKeyDown);
     document.addEventListener("keyup", handleKeyUp);
+    startTimer();
   }
   isPaused = !isPaused;
 
