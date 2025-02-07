@@ -17,7 +17,6 @@ function togglePause() {
     pauseMenu.classList.add("visible");
     document.removeEventListener("keydown", handleKeyDown);
     document.removeEventListener("keyup", handleKeyUp);
-
     stopTimer();
 
     Object.keys(keys).forEach((key) => {
@@ -64,11 +63,17 @@ function bindPauseMenuActions() {
   document.getElementById("restart-button")?.addEventListener("click", () => {
     console.log("Restart the game...");
     togglePause();
-    // Ajoute ici la logique pour redémarrer le jeu
+    //redémarrer le jeu
+    window.location.reload();
   });
 
   document.getElementById("exit-button")?.addEventListener("click", () => {
     console.log("Exit the game(reload page)");
+    window.location.reload();
+  });
+
+  document.getElementById("retry-button")?.addEventListener("click", () => {
+    console.log("restart the game...");
     window.location.reload();
   });
 }

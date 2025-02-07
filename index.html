@@ -13,8 +13,8 @@
 	</script>
 	<script type="module" src="./src/game/engine/mapGeneration.js"></script>
 	<script type="module" src="./src/game/engine/player_inputs.js"></script>
-	<script type="module" src="./src/game/engine/ui_scoring.js"></script>
 	<script type="module" src="./src/game/engine/pause.js"></script>
+	<script type="module" src="./src/game/engine/ui_scoring.js"></script>
 </head>
 <body>
 	<div class="game-info">
@@ -39,5 +39,12 @@
 			<button id="exit-button">Exit</button>
 		</div>
 	</div>
+<!--GAME OVER-->
+	<div id="game-over-container" class="hidden">
+		<h2>GAME OVER!</h2>
+		<button id="retry-button">Retry</button>
+	</div>
+
+  <script type="module" src="./src/game/game.js"></script>
 </body>
 </html>

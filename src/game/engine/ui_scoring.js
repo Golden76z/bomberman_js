@@ -1,9 +1,9 @@
 let score = 0;
-let lives = 1;
+let lives = 3;
 let time = 0;
 let timerInterval;
 
-function updateScore(pts) {
+export function updateScore(pts) {
   score += pts;
   document.getElementById("score").innerText = "Score: " + score;
 }
@@ -32,16 +32,27 @@ function updateLives() {
   document.getElementById("lives").innerText = "Vies: " + lives;
 }
 
-function decreaseLives() {
+export function decreaseLives() {
   lives--;
   updateLives();
   if (lives <= 0) {
-    alert("Game Over");
+    showGameOver();
     stopTimer();
     //ajouter redemarrage ou quitter le jeu
   }
 }
 
-startTimer();
-updateScore(50);
-decreaseLives();
+function showGameOver() {
+  const gameOver = document.getElementById("game-over-container");
+  if (gameOver) {
+    gameOver.classList.add("visible");
+  } else {
+    console.error("Error DOM => game-over-container");
+  }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  startTimer();
+  updateScore(0);
+  decreaseLives();
+});
