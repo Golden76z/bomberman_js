@@ -1,38 +1,37 @@
 import { playerInfos } from '../constants/player_infos.js';
-import { walls } from '../entities/colisionMap.js'
+import { walls } from '../entities/colisionMap.js';
+import { Explosion } from '../entities/bomb.js';
+import { updateTileMap } from '../constants/levels.js'
 
-// Getting HTML elements
 const player = document.querySelector('.player');
 const container = document.querySelector('.game-container');
 
-// Player initial position
 let position = {
   x: playerInfos.positionX,
-  y: playerInfos.positionY
+  y: playerInfos.positionY,
 };
 
-let keys = {
+export let keys = {
   ArrowRight: false,
   ArrowLeft: false,
   ArrowUp: false,
-  ArrowDown: false
+  ArrowDown: false,
 };
 
 let startTime;
 let previousTime;
 const moveSpeed = playerInfos.moveSpeed;
 
-// Setting boundaries
 const boundaryX = container.clientWidth - playerInfos.width;
 const boundaryY = container.clientHeight - playerInfos.height;
 
-// Check if movement is possible
 function canMove(newX, newY) {
-  return !walls.some(wall =>
+  return !walls.some((wall) =>
     wall.checkCollision(newX, newY, playerInfos.width, playerInfos.height)
   );
 }
 
+// Function to update the player position
 function updatePosition(timestamp) {
   if (startTime === undefined) {
     startTime = timestamp;
@@ -41,11 +40,14 @@ function updatePosition(timestamp) {
   const elapsed = timestamp - (previousTime || timestamp);
   previousTime = timestamp;
 
-  // Calculate potential new positions
+  if (window.isPaused) {
+    return;
+  }
+
   let newX = position.x;
   let newY = position.y;
 
-  // Check movement with collision detection
+  // Detect which key is being pressed
   if (keys.ArrowRight) {
     newX = position.x + moveSpeed * elapsed;
     if (canMove(newX, position.y)) {
@@ -71,26 +73,31 @@ function updatePosition(timestamp) {
     }
   }
 
-  // Apply boundaries
+  // Appliquer les limites
   position.x = Math.max(0, Math.min(position.x, boundaryX));
   position.y = Math.max(0, Math.min(position.y, boundaryY));
 
-  // Update player position in CSS
   player.style.transform = `translate(${position.x}px, ${position.y}px)`;
 
-  // Continue animation loop
   requestAnimationFrame(updatePosition);
 }
 
-// Key event handlers
-function handleKeyDown(event) {
-  if (keys.hasOwnProperty(event.key)) {
+// Event listener when a key is pressed
+export function handleKeyDown(event) {
+  if (keys.hasOwnProperty(event.key) && !window.isPaused) {
     keys[event.key] = true;
     event.preventDefault();
+
+    // Instantiate a new bomb class whenever the player press the spacebar
+  } else if (event.key === ' ' && playerInfos.bomb != playerInfos.maxBomb) {
+    new Explosion(position.x - playerInfos.width / 3, position.y - playerInfos.height / 3);
+    updateTileMap(position.x, position.y)
+    playerInfos.bomb++
   }
 }
 
-function handleKeyUp(event) {
+// Event listener when a key is released
+export function handleKeyUp(event) {
   if (keys.hasOwnProperty(event.key)) {
     keys[event.key] = false;
     event.preventDefault();
@@ -101,5 +108,4 @@ function handleKeyUp(event) {
 document.addEventListener('keydown', handleKeyDown);
 document.addEventListener('keyup', handleKeyUp);
 
-// Start animation loop
 requestAnimationFrame(updatePosition);

@@ -1,10 +1,29 @@
-<!DOCTYPE html>
-<html lang="en">
 <head>
-	<link rel="stylesheet" href="./src/style/style.css">
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Bomberman js</title>
+	<link rel="stylesheet" href="/src/style/style.css" />
+	<script type="importmap">
+		{
+			"imports": {
+				"engine/": "./src/engine/",
+				"game/": "./src/game/"
+			}
+		}
+	</script>
+	<script type="module" src="./src/game/engine/mapGeneration.js"></script>
+	<script type="module" src="./src/game/engine/player_inputs.js"></script>
+	<script type="module" src="./src/game/engine/pause.js"></script>
+	<script type="module" src="./src/game/engine/ui_scoring.js"></script>
 </head>
 
 <body>
+	<div class="game-info">
+		<div id="score">Score: 0</div>
+		<div id="timer">Temps: 00:00</div>
+		<div id="lives">Vies: 3</div>
+	</div>
+
 	<!-- <h1 class="title">Bomberman</h1> -->
 	<div class="game-container" id="gameMap">
 		<div class="player"></div>
@@ -14,4 +33,21 @@
 	<script type="module" src="./src/game/engine/mapGeneration.js"></script>
 	<script type="module" src="./src/game/engine/player_inputs.js"></script>
 </body>
+
+<!-- Pause Menu -->
+<div id="pause-container" class="hidden">
+	<div class="menu-content">
+		<h2>PAUSE!</h2>
+		<button id="continue-button">Continue</button>
+		<button id="restart-button">Restart</button>
+		<button id="exit-button">Exit</button>
+	</div>
+</div>
+<!--GAME OVER-->
+<div id="game-over-container" class="hidden">
+	<h2>GAME OVER!</h2>
+	<button id="retry-button">Retry</button>
+</div>
+</body>
+
 </html>
