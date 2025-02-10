@@ -7,14 +7,14 @@ const container = document.querySelector('.game-container');
 
 let position = {
   x: playerInfos.positionX,
-  y: playerInfos.positionY
+  y: playerInfos.positionY,
 };
 
-let keys = {
+export let keys = {
   ArrowRight: false,
   ArrowLeft: false,
   ArrowUp: false,
-  ArrowDown: false
+  ArrowDown: false,
 };
 
 let startTime;
@@ -25,7 +25,7 @@ const boundaryX = container.clientWidth - playerInfos.width;
 const boundaryY = container.clientHeight - playerInfos.height;
 
 function canMove(newX, newY) {
-  return !walls.some(wall =>
+  return !walls.some((wall) =>
     wall.checkCollision(newX, newY, playerInfos.width, playerInfos.height)
   );
 }
@@ -37,6 +37,10 @@ function updatePosition(timestamp) {
 
   const elapsed = timestamp - (previousTime || timestamp);
   previousTime = timestamp;
+
+  if (window.isPaused) {
+    return;
+  }
 
   let newX = position.x;
   let newY = position.y;
@@ -66,6 +70,7 @@ function updatePosition(timestamp) {
     }
   }
 
+  // Appliquer les limites
   position.x = Math.max(0, Math.min(position.x, boundaryX));
   position.y = Math.max(0, Math.min(position.y, boundaryY));
 
@@ -74,16 +79,17 @@ function updatePosition(timestamp) {
   requestAnimationFrame(updatePosition);
 }
 
-function handleKeyDown(event) {
-  if (keys.hasOwnProperty(event.key)) {
+// Gérer les événements de touche
+export function handleKeyDown(event) {
+  if (keys.hasOwnProperty(event.key) && !window.isPaused) {
     keys[event.key] = true;
     event.preventDefault();
   } else if (event.key === ' ') {
-    new Explosion(position.x - 20, position.y - 20);
+    new Explosion(position.x - playerInfos.width / 3, position.y - playerInfos.height / 3);
   }
 }
 
-function handleKeyUp(event) {
+export function handleKeyUp(event) {
   if (keys.hasOwnProperty(event.key)) {
     keys[event.key] = false;
     event.preventDefault();
