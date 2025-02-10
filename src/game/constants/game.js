@@ -1,7 +1,7 @@
 // Set the object of the game
 export const gameInfos = {
   pause: false,
-  level: 6,
+  level: 5,
   fps: 60,
   width: 600,
   height: 600,
