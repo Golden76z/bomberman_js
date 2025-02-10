@@ -1,5 +1,6 @@
 import { playerInfos } from "../constants/player_infos.js";
 
+// Class to create bomb div elements that disapear after 2seconds
 export class Explosion {
   constructor(x, y) {
     this.x = x;
@@ -9,6 +10,7 @@ export class Explosion {
     this.createExplosionEffect();
   }
 
+  // Create the bomb div element
   createExplosionEffect() {
     this.element = document.createElement('div');
     this.element.className = 'explosion';
@@ -20,11 +22,13 @@ export class Explosion {
 
     this.gameBoard.appendChild(this.element);
 
+    // Delete the bomb 2 seconds after placing it
     setTimeout(() => {
       if (this.element && this.element.parentNode) {
         this.element.parentNode.removeChild(this.element);
-        playerInfos.bomb = true
+        // Set back the variable to true so the player can place a bomb again
+        playerInfos.bomb--
       }
-    }, 5000);
+    }, 2000);
   }
 }

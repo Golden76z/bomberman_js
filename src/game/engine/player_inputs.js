@@ -30,6 +30,7 @@ function canMove(newX, newY) {
   );
 }
 
+// Function to update the player position
 function updatePosition(timestamp) {
   if (startTime === undefined) {
     startTime = timestamp;
@@ -45,6 +46,7 @@ function updatePosition(timestamp) {
   let newX = position.x;
   let newY = position.y;
 
+  // Detect which key is being pressed
   if (keys.ArrowRight) {
     newX = position.x + moveSpeed * elapsed;
     if (canMove(newX, position.y)) {
@@ -79,17 +81,20 @@ function updatePosition(timestamp) {
   requestAnimationFrame(updatePosition);
 }
 
-// Gérer les événements de touche
+// Event listener when a key is pressed
 export function handleKeyDown(event) {
   if (keys.hasOwnProperty(event.key) && !window.isPaused) {
     keys[event.key] = true;
     event.preventDefault();
-  } else if (event.key === ' ' && playerInfos.bomb) {
+
+    // Instantiate a new bomb class whenever the player press the spacebar
+  } else if (event.key === ' ' && playerInfos.bomb != playerInfos.maxBomb) {
     new Explosion(position.x - playerInfos.width / 3, position.y - playerInfos.height / 3);
-    playerInfos.bomb = false
+    playerInfos.bomb++
   }
 }
 
+// Event listener when a key is released
 export function handleKeyUp(event) {
   if (keys.hasOwnProperty(event.key)) {
     keys[event.key] = false;
@@ -97,6 +102,7 @@ export function handleKeyUp(event) {
   }
 }
 
+// Event listeners
 document.addEventListener('keydown', handleKeyDown);
 document.addEventListener('keyup', handleKeyUp);
 
