@@ -1,6 +1,7 @@
 import { playerInfos } from '../constants/player_infos.js';
 import { walls } from '../entities/colisionMap.js';
 import { Explosion } from '../entities/bomb.js';
+import { updateTileMap } from '../constants/levels.js'
 
 const player = document.querySelector('.player');
 const container = document.querySelector('.game-container');
@@ -90,6 +91,7 @@ export function handleKeyDown(event) {
     // Instantiate a new bomb class whenever the player press the spacebar
   } else if (event.key === ' ' && playerInfos.bomb != playerInfos.maxBomb) {
     new Explosion(position.x - playerInfos.width / 3, position.y - playerInfos.height / 3);
+    updateTileMap(position.x, position.y)
     playerInfos.bomb++
   }
 }

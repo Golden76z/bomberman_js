@@ -2,10 +2,12 @@ import { playerInfos } from "../constants/player_infos.js";
 
 // Class to create bomb div elements that disapear after 2seconds
 export class Explosion {
-  constructor(x, y) {
+  constructor(x, y, map) {
     this.x = x;
     this.y = y;
     this.gameBoard = document.getElementById('gameMap');
+    // console.log(this.map);
+    // console.log(map);
     this.element = null;
     this.createExplosionEffect();
   }
