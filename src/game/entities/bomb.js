@@ -1,3 +1,5 @@
+import { playerInfos } from "../constants/player_infos.js";
+
 export class Explosion {
   constructor(x, y) {
     this.x = x;
@@ -21,6 +23,7 @@ export class Explosion {
     setTimeout(() => {
       if (this.element && this.element.parentNode) {
         this.element.parentNode.removeChild(this.element);
+        playerInfos.bomb = true
       }
     }, 5000);
   }

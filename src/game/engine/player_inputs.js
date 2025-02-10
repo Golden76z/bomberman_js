@@ -84,8 +84,9 @@ export function handleKeyDown(event) {
   if (keys.hasOwnProperty(event.key) && !window.isPaused) {
     keys[event.key] = true;
     event.preventDefault();
-  } else if (event.key === ' ') {
+  } else if (event.key === ' ' && playerInfos.bomb) {
     new Explosion(position.x - playerInfos.width / 3, position.y - playerInfos.height / 3);
+    playerInfos.bomb = false
   }
 }
 
