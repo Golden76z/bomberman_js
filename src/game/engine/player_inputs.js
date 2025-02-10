@@ -1,11 +1,10 @@
-import { playerInfos } from "../constants/player_infos.js";
-import { walls } from "../entities/colisionMap.js";
+import { playerInfos } from '../constants/player_infos.js';
+import { walls } from '../entities/colisionMap.js';
+import { Explosion } from '../entities/bomb.js';
 
-// Getting HTML elements
-const player = document.querySelector(".player");
-const container = document.querySelector(".game-container");
+const player = document.querySelector('.player');
+const container = document.querySelector('.game-container');
 
-// Player initial position
 let position = {
   x: playerInfos.positionX,
   y: playerInfos.positionY,
@@ -22,17 +21,16 @@ let startTime;
 let previousTime;
 const moveSpeed = playerInfos.moveSpeed;
 
-// Setting boundaries
 const boundaryX = container.clientWidth - playerInfos.width;
 const boundaryY = container.clientHeight - playerInfos.height;
 
-// Check if movement is possible
 function canMove(newX, newY) {
   return !walls.some((wall) =>
     wall.checkCollision(newX, newY, playerInfos.width, playerInfos.height)
   );
 }
 
+// Function to update the player position
 function updatePosition(timestamp) {
   if (startTime === undefined) {
     startTime = timestamp;
@@ -48,6 +46,7 @@ function updatePosition(timestamp) {
   let newX = position.x;
   let newY = position.y;
 
+  // Detect which key is being pressed
   if (keys.ArrowRight) {
     newX = position.x + moveSpeed * elapsed;
     if (canMove(newX, position.y)) {
@@ -82,14 +81,20 @@ function updatePosition(timestamp) {
   requestAnimationFrame(updatePosition);
 }
 
-// Gérer les événements de touche
+// Event listener when a key is pressed
 export function handleKeyDown(event) {
   if (keys.hasOwnProperty(event.key) && !window.isPaused) {
     keys[event.key] = true;
     event.preventDefault();
+
+    // Instantiate a new bomb class whenever the player press the spacebar
+  } else if (event.key === ' ' && playerInfos.bomb != playerInfos.maxBomb) {
+    new Explosion(position.x - playerInfos.width / 3, position.y - playerInfos.height / 3);
+    playerInfos.bomb++
   }
 }
 
+// Event listener when a key is released
 export function handleKeyUp(event) {
   if (keys.hasOwnProperty(event.key)) {
     keys[event.key] = false;
@@ -97,7 +102,8 @@ export function handleKeyUp(event) {
   }
 }
 
-document.addEventListener("keydown", handleKeyDown);
-document.addEventListener("keyup", handleKeyUp);
+// Event listeners
+document.addEventListener('keydown', handleKeyDown);
+document.addEventListener('keyup', handleKeyUp);
 
 requestAnimationFrame(updatePosition);

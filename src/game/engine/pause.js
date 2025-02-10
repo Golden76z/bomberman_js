@@ -1,4 +1,5 @@
 import { handleKeyDown, handleKeyUp, keys } from "./player_inputs.js";
+import { startTimer, stopTimer } from "./ui_scoring.js";
 
 let isPaused = false;
 
@@ -16,6 +17,7 @@ function togglePause() {
     pauseMenu.classList.add("visible");
     document.removeEventListener("keydown", handleKeyDown);
     document.removeEventListener("keyup", handleKeyUp);
+    stopTimer();
 
     Object.keys(keys).forEach((key) => {
       keys[key] = false;
@@ -24,6 +26,7 @@ function togglePause() {
     pauseMenu.classList.remove("visible");
     document.addEventListener("keydown", handleKeyDown);
     document.addEventListener("keyup", handleKeyUp);
+    startTimer();
   }
   isPaused = !isPaused;
 
@@ -60,11 +63,17 @@ function bindPauseMenuActions() {
   document.getElementById("restart-button")?.addEventListener("click", () => {
     console.log("Restart the game...");
     togglePause();
-    // Ajoute ici la logique pour redémarrer le jeu
+    //redémarrer le jeu
+    window.location.reload();
   });
 
   document.getElementById("exit-button")?.addEventListener("click", () => {
     console.log("Exit the game(reload page)");
+    window.location.reload();
+  });
+
+  document.getElementById("retry-button")?.addEventListener("click", () => {
+    console.log("restart the game...");
     window.location.reload();
   });
 }
