@@ -6,13 +6,16 @@ html {
   overflow: hidden;
   background-color: black;
   display: flex;
-  justify-content: center; /* Centre horizontalement */
-  align-items: center; /* Centre verticalement */
-  flex-direction: column; /* Aligne les éléments en colonne */
+  justify-content: center;
+  /* Centre horizontalement */
+  align-items: center;
+  /* Centre verticalement */
+  flex-direction: column;
+  /* Aligne les éléments en colonne */
 }
 
 .bomb {
-  background: url('../../images/baseBomb3.png');
+  background: url("../../images/baseBomb3.png");
   background-position: 0 0;
   background-size: 64px 64px;
 }
@@ -32,10 +35,10 @@ html {
 } */
 
 .explosion {
-  background: url('../../images/baseBomb3.png');
+  background: url("../../images/baseBomb3.png");
   background-size: 896px 64px;
   /* Full sprite sheet size */
-  animation: explode 3s steps(14) forwards;
+  animation: explode 2s steps(14) forwards;
 }
 
 @keyframes explode {
@@ -62,17 +65,24 @@ html {
 }
 
 .game-info {
-  display: flex; /* Aligne les éléments horizontalement */
-  justify-content: space-between; /* Répartit l'espace entre les éléments */
-  width: 600px; /* La même largeur que la .game-container */
+  display: flex;
+  /* Aligne les éléments horizontalement */
+  justify-content: space-between;
+  /* Répartit l'espace entre les éléments */
+  width: 600px;
+  /* La même largeur que la .game-container */
   position: absolute;
-  top: 10px; /* Espace de 10px au-dessus du jeu */
+  top: 10px;
+  /* Espace de 10px au-dessus du jeu */
   left: 50%;
-  transform: translateX(-50%); /* Centrage horizontal */
+  transform: translateX(-50%);
+  /* Centrage horizontal */
   color: white;
   font-family: Arial, sans-serif;
-  font-size: 32px; /* Augmenté pour être plus visible */
-  font-weight: bold; /* Mettre en gras */
+  font-size: 32px;
+  /* Augmenté pour être plus visible */
+  font-weight: bold;
+  /* Mettre en gras */
   z-index: 10;
   text-align: center;
 }
@@ -178,14 +188,16 @@ html {
   display: none;
   opacity: 0;
   visibility: hidden;
-  transition: opacity 0.3s ease, visibility 0s 0.3s; /* Add transition */
+  transition: opacity 0.3s ease, visibility 0s 0.3s;
+  /* Add transition */
 }
 
 #game-over-container.visible {
   display: block;
   opacity: 1;
   visibility: visible;
-  transition: opacity 0.3s ease, visibility 0s 0s; /* Smooth transition */
+  transition: opacity 0.3s ease, visibility 0s 0s;
+  /* Smooth transition */
 }
 
 button {
