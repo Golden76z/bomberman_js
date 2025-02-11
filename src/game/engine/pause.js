@@ -1,4 +1,3 @@
-import { gameInfos } from "../constants/game.js";
 import { handleKeyDown, handleKeyUp, keys } from "./player_inputs.js";
 import { startTimer, stopTimer } from "./ui_scoring.js";
 import { pauseAllExplosions, resumeAllExplosions } from '../entities/bomb.js'

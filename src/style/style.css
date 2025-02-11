@@ -14,25 +14,12 @@ html {
   /* Aligne les éléments en colonne */
 }
 
+/* ----------------------- Bomb animations ------------------------ */
 .bomb {
   background: url('../../images/baseBomb3.png');
   background-position: 0 0;
   background-size: 64px 64px;
 }
-
-/* @keyframes bomb-pulse {
-  0% {
-    transform: scale(1);
-  }
-
-  50% {
-    transform: scale(1.1);
-  }
-
-  100% {
-    transform: scale(1);
-  }
-} */
 
 .explosion {
   background: url('../../images/baseBomb3.png');
@@ -52,15 +39,26 @@ html {
   }
 }
 
-.game-container {
-  position: relative;
-  background: #f0f0f0;
-  border: 5px solid #656565;
-  overflow: hidden;
-  display: grid;
-  grid-template-columns: repeat(11, 1fr);
-  grid-template-rows: repeat(11, 1fr);
+/* ------------------------- Player css logic -------------------- */
+.player {
+  transition: transform 0.1s linear;
+  z-index: 1000;
 }
+
+/* ---------------------------- Sprites ------------------------- */
+.wall {
+  background-image: url("../../images/wall.png");
+}
+
+.destructible {
+  background-image: url("../../images/breakable.png");
+}
+
+.empty {
+  background-image: url("../../images/ground.png");
+}
+
+/* -----------------Game UI (Score, HP and time)----------------- */
 
 .game-info {
   display: flex;
@@ -85,6 +83,7 @@ html {
   text-align: center;
 }
 
+/* -------------------------------------------------------------- */
 .tile {
   width: 100%;
   height: 100%;
@@ -96,39 +95,16 @@ html {
   background-position: center;
 }
 
-.title {
+/* .title {
   font-family: "Press Start 2P", cursive;
   font-size: 30px;
   color: #000000;
   text-transform: uppercase;
   letter-spacing: 2px;
   text-align: center;
-}
+} */
 
-/* Player design */
-.player {
-  position: absolute;
-  width: 40px;
-  height: 40px;
-  border-radius: 4px;
-  transition: transform 0.1s linear;
-  z-index: 1000;
-}
-
-/* Setting sprites images to walls, ground and destroyable walls */
-.wall {
-  background-image: url("../../images/wall.png");
-}
-
-.destructible {
-  background-image: url("../../images/breakable.png");
-}
-
-.empty {
-  background-image: url("../../images/ground.png");
-}
-
-/* Pause Menu Styles */
+/* ---------------------Pause menu style------------------------ */
 #pause-container {
   position: fixed;
   top: 0;
@@ -170,6 +146,7 @@ html {
   font-size: 24px;
 }
 
+/* -------------------- Game over screen ------------------------ */
 #game-over-container {
   position: fixed;
   top: 50%;
@@ -198,6 +175,8 @@ html {
   /* Smooth transition */
 }
 
+/* ---------------------- Button style ------------------------- */
+
 button {
   background-color: #005b99;
   border: 3px solid gray;
@@ -223,3 +202,5 @@ button:focus {
 .hidden {
   display: none;
 }
+
+/* -------------------------------------------------------------- */
