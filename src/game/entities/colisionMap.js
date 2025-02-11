@@ -1,8 +1,7 @@
-import { MAP_1, MAP_2, MAP_3, MAP_4, MAP_5, MAP_6 } from '../constants/levels.js'
 import { gameInfos } from '../constants/game.js';
+import { maps } from '../constants/levels.js'
 
-const allMaps = [MAP_1, MAP_2, MAP_3, MAP_4, MAP_5, MAP_6]
-let currentMap = allMaps[gameInfos.level - 1]
+let currentMap = maps[gameInfos.level - 1]
 
 // Wall class to define their coordinates
 class Wall {
