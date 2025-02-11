@@ -1,5 +1,6 @@
 import { handleKeyDown, handleKeyUp, keys } from "./player_inputs.js";
 import { startTimer, stopTimer } from "./ui_scoring.js";
+import { pauseAllExplosions, resumeAllExplosions } from '../entities/bomb.js'
 
 let isPaused = false;
 
@@ -43,7 +44,16 @@ function togglePause() {
 // Gestionnaire de la touche "Escape" pour mettre en pause ou reprendre le jeu
 function handlePause(event) {
   if (event.key === "Escape") {
-    togglePause();
+    if (!isPaused) {
+      // Freeze all explosions animations when pressing pause button
+      pauseAllExplosions();
+      togglePause();
+    } else {
+      // Resume the bomb animation while getting back to the game
+      resumeAllExplosions();
+      togglePause();
+
+    }
   }
 }
 

@@ -1,6 +1,7 @@
 import { playerInfos } from "../constants/player_infos.js";
 import { walls } from "../entities/colisionMap.js";
 import { Explosion } from "../entities/bomb.js";
+import { updateTileMap } from "../constants/levels.js";
 
 const player = document.querySelector(".player");
 const container = document.querySelector(".game-container");
@@ -15,6 +16,10 @@ export let keys = {
   ArrowLeft: false,
   ArrowUp: false,
   ArrowDown: false,
+  z: false,
+  q: false,
+  s: false,
+  d: false,
 };
 
 let startTime;
@@ -47,25 +52,25 @@ function updatePosition(timestamp) {
   let newY = position.y;
 
   // Detect which key is being pressed
-  if (keys.ArrowRight) {
+  if (keys.ArrowRight || keys.d) {
     newX = position.x + moveSpeed * elapsed;
     if (canMove(newX, position.y)) {
       position.x = newX;
     }
   }
-  if (keys.ArrowLeft) {
+  if (keys.ArrowLeft || keys.q) {
     newX = position.x - moveSpeed * elapsed;
     if (canMove(newX, position.y)) {
       position.x = newX;
     }
   }
-  if (keys.ArrowUp) {
+  if (keys.ArrowUp || keys.z) {
     newY = position.y - moveSpeed * elapsed;
     if (canMove(position.x, newY)) {
       position.y = newY;
     }
   }
-  if (keys.ArrowDown) {
+  if (keys.ArrowDown || keys.s) {
     newY = position.y + moveSpeed * elapsed;
     if (canMove(position.x, newY)) {
       position.y = newY;
@@ -93,6 +98,7 @@ export function handleKeyDown(event) {
       position.x - playerInfos.width / 3,
       position.y - playerInfos.height / 3
     );
+    updateTileMap(position.x, position.y);
     playerInfos.bomb++;
   }
 }
