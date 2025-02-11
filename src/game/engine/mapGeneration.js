@@ -1,8 +1,5 @@
-import { MAP_1, MAP_2, MAP_3, MAP_4, MAP_5, MAP_6 } from '../constants/levels.js'
 import { gameInfos } from '../constants/game.js'
-
-// Creating an array storing all the maps
-const allMaps = [MAP_1, MAP_2, MAP_3, MAP_4, MAP_5, MAP_6]
+import { maps } from '../constants/levels.js'
 
 // Function to create a map depending on the game state
 function createMap(mapArray) {
@@ -44,4 +41,4 @@ function createMap(mapArray) {
 }
 
 // Initialize the map depending on the game level
-createMap(allMaps[gameInfos.level - 1]);
+createMap(maps[gameInfos.level - 1]);

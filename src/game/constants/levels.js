@@ -86,6 +86,21 @@ export let MAP_6 = [
   [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
 ];
 
+export let MAP_7 = [
+  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+  [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+];
+
+
 // Function to update the map values
 function updateMaps(maps) {
   MAP_1.length = 0;
@@ -107,7 +122,7 @@ function updateMaps(maps) {
   MAP_6.push(...maps[5]);
 }
 
-export let maps = [MAP_1, MAP_2, MAP_3, MAP_4, MAP_5, MAP_6]
+export let maps = [MAP_1, MAP_2, MAP_3, MAP_4, MAP_5, MAP_6, MAP_7]
 
 // Function to add the bomb to the tilemap
 export function updateTileMap(x, y) {
