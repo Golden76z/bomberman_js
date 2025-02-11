@@ -54,8 +54,6 @@ html {
 
 .game-container {
   position: relative;
-  width: 600px;
-  height: 600px;
   background: #f0f0f0;
   border: 5px solid #656565;
   overflow: hidden;

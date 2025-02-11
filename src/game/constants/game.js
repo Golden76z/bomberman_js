@@ -8,3 +8,9 @@ export const gameInfos = {
   width_tiles: 11,
   height_tiles: 11,
 }
+
+// Getting the game container
+const gameContainer = document.querySelector('.game-container');
+
+gameContainer.style.width = `${gameInfos.width}px`;
+gameContainer.style.height = `${gameInfos.height}px`;
