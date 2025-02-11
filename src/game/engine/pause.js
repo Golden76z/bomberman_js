@@ -1,10 +1,10 @@
 import { handleKeyDown, handleKeyUp, keys } from "./player_inputs.js";
 import { startTimer, stopTimer } from "./ui_scoring.js";
-import { pauseAllExplosions, resumeAllExplosions } from '../entities/bomb.js'
+import { pauseAllExplosions, resumeAllExplosions } from "../entities/bomb.js";
 
-let isPaused = false;
+// Exporter isPaused pour l'utiliser dans d'autres modules
+export let isPaused = false;
 
-// Fonction pour basculer entre l'affichage et le masquage du menu de pause
 function togglePause() {
   const pauseMenu = document.getElementById("pause-container");
 
@@ -13,13 +13,18 @@ function togglePause() {
     return;
   }
 
-  // Afficher ou masquer le menu de pause
-  if (!isPaused) {
+  // Définir d'abord l'état de pause
+  isPaused = !isPaused;
+  window.isPaused = isPaused;
+
+  if (isPaused) {
     pauseMenu.classList.add("visible");
     document.removeEventListener("keydown", handleKeyDown);
     document.removeEventListener("keyup", handleKeyUp);
     stopTimer();
+    pauseAllExplosions();
 
+    // Réinitialiser les touches à l'état "non pressées"
     Object.keys(keys).forEach((key) => {
       keys[key] = false;
     });
@@ -28,9 +33,10 @@ function togglePause() {
     document.addEventListener("keydown", handleKeyDown);
     document.addEventListener("keyup", handleKeyUp);
     startTimer();
+    resumeAllExplosions();
   }
-  isPaused = !isPaused;
 
+  // Appliquer la classe "paused" à tous les éléments de la classe .game-container
   const eventListeners = document.querySelectorAll(".game-container *");
   eventListeners.forEach((element) => {
     if (isPaused) {
@@ -41,39 +47,28 @@ function togglePause() {
   });
 }
 
-// Gestionnaire de la touche "Escape" pour mettre en pause ou reprendre le jeu
 function handlePause(event) {
+  console.log(event.key);
   if (event.key === "Escape") {
-    if (!isPaused) {
-      // Freeze all explosions animations when pressing pause button
-      pauseAllExplosions();
-      togglePause();
-    } else {
-      // Resume the bomb animation while getting back to the game
-      resumeAllExplosions();
-      togglePause();
-
-    }
+    togglePause();
   }
 }
 
-// Ajouter un écouteur d'événements dès le chargement de la page
 document.addEventListener("DOMContentLoaded", function () {
-  // Dès que la page est complètement chargée, on commence à écouter "Escape"
   document.addEventListener("keydown", handlePause);
+  bindPauseMenuActions();
 });
 
-// Lier les actions du menu de pause
 function bindPauseMenuActions() {
   document.getElementById("continue-button")?.addEventListener("click", () => {
     console.log("Resume the Game...");
+    resumeAllExplosions();
     togglePause();
   });
 
   document.getElementById("restart-button")?.addEventListener("click", () => {
     console.log("Restart the game...");
     togglePause();
-    //redémarrer le jeu
     window.location.reload();
   });
 
@@ -88,4 +83,4 @@ function bindPauseMenuActions() {
   });
 }
 
-bindPauseMenuActions();
+export { togglePause };
