@@ -1,9 +1,9 @@
-import { playerInfos } from '../constants/player_infos.js';
-import { walls } from '../entities/colisionMap.js';
-import { Explosion } from '../entities/bomb.js';
+import { playerInfos } from "../constants/player_infos.js";
+import { walls } from "../entities/colisionMap.js";
+import { Explosion } from "../entities/bomb.js";
 
-const player = document.querySelector('.player');
-const container = document.querySelector('.game-container');
+const player = document.querySelector(".player");
+const container = document.querySelector(".game-container");
 
 let position = {
   x: playerInfos.positionX,
@@ -88,9 +88,12 @@ export function handleKeyDown(event) {
     event.preventDefault();
 
     // Instantiate a new bomb class whenever the player press the spacebar
-  } else if (event.key === ' ' && playerInfos.bomb != playerInfos.maxBomb) {
-    new Explosion(position.x - playerInfos.width / 3, position.y - playerInfos.height / 3);
-    playerInfos.bomb++
+  } else if (event.key === " " && playerInfos.bomb != playerInfos.maxBomb) {
+    new Explosion(
+      position.x - playerInfos.width / 3,
+      position.y - playerInfos.height / 3
+    );
+    playerInfos.bomb++;
   }
 }
 
@@ -103,7 +106,7 @@ export function handleKeyUp(event) {
 }
 
 // Event listeners
-document.addEventListener('keydown', handleKeyDown);
-document.addEventListener('keyup', handleKeyUp);
+document.addEventListener("keydown", handleKeyDown);
+document.addEventListener("keyup", handleKeyUp);
 
 requestAnimationFrame(updatePosition);
