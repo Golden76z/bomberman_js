@@ -79,7 +79,7 @@ export class Explosion {
     }
   }
 
-  // Function
+  // Function to remove the bomb div and remove it from the set aswell
   remove() {
     if (this.element && this.element.parentNode) {
       this.element.parentNode.removeChild(this.element);
