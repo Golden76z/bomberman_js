@@ -17,5 +17,5 @@ const playerElement = document.querySelector('.player');
 playerElement.style.width = `${playerInfos.width}px`;
 playerElement.style.height = `${playerInfos.height}px`;
 playerElement.style.backgroundColor = playerInfos.color;
-// playerElement.style.left = `${playerInfos.positionX}px`;
-// playerElement.style.top = `${playerInfos.positionY}px`;
+playerElement.style.borderRadius = '4px'
+playerElement.style.position = 'absolute'
