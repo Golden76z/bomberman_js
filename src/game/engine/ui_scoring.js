@@ -1,76 +1,59 @@
+import { showGameOver } from "./game-over.js";
+
+let timerInterval;
 let score = 0;
 let lives = 3;
-let time = 0;
-let timerInterval = null;
-let isTimerRunning = false;
+let timeLeft = 0;
+let isPaused = false;
 
-export function updateScore(pts) {
-  score += pts;
-  document.getElementById("score").innerText = "Score: " + score;
+export function initializeGameUI() {
+  updateUI();
+  startTimer();
+}
+
+function updateUI() {
+  document.getElementById("score").textContent = `Score: ${score}`;
+  document.getElementById("lives").textContent = `Vies: ${lives}`;
+  document.getElementById("timer").textContent = `Temps: ${formatTime(
+    timeLeft
+  )}`;
 }
 
 export function startTimer() {
-  console.log("Timer function called"); // Debug log
+  if (timerInterval) clearInterval(timerInterval);
 
-  if (isTimerRunning) {
-    console.log("Timer already running"); // Debug log
-    return;
-  }
+  timerInterval = setInterval(() => {
+    if (!isPaused) {
+      // 🚀 Bloque l'incrémentation pendant la pause
+      timeLeft++;
+      document.getElementById("timer").textContent = `Temps: ${formatTime(
+        timeLeft
+      )}`;
 
-  isTimerRunning = true;
-  console.log("Starting timer"); // Debug log
-
-  if (timerInterval) {
-    clearInterval(timerInterval);
-  }
-
-  timerInterval = setInterval(function () {
-    if (!window.isPaused) {
-      time++;
-      let minutes = Math.floor(time / 60);
-      let seconds = time % 60;
-      document.getElementById("timer").innerText =
-        "Temps: " +
-        (minutes < 10 ? "0" + minutes : minutes) +
-        ":" +
-        (seconds < 10 ? "0" + seconds : seconds);
+      if (lives <= 0) {
+        console.log("Vies à 0 ! Game Over déclenché.");
+        clearInterval(timerInterval);
+        showGameOver();
+      }
     }
   }, 1000);
 }
 
-export function stopTimer() {
-  if (timerInterval) {
-    clearInterval(timerInterval);
-    isTimerRunning = false;
-  }
+export function pauseTimer() {
+  console.log("Timer en pause");
+  isPaused = true; // Ajout pour bien bloquer l'incrémentation
 }
 
-function updateLives() {
-  document.getElementById("lives").innerText = "Vies: " + lives;
+export function resumeTimer() {
+  console.log("Reprise du timer");
+  isPaused = false;
 }
 
-export function decreaseLives() {
-  lives--;
-  updateLives();
-  if (lives <= 0) {
-    showGameOver();
-    stopTimer();
-  }
-}
-
-function showGameOver() {
-  const gameOver = document.getElementById("game-over-container");
-  if (gameOver) {
-    gameOver.classList.add("visible");
-    window.isPaused = true;
-  } else {
-    console.error("Error DOM => game-over-container");
-  }
-}
-
-// Fonction d'initialisation du jeu
-export function initializeGameUI() {
-  console.log("Initializing game UI"); // Debug log
-  updateScore(0);
-  updateLives();
+function formatTime(time) {
+  const minutes = Math.floor(time / 60);
+  const seconds = time % 60;
+  return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(
+    2,
+    "0"
+  )}`;
 }

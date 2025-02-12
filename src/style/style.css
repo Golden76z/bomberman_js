@@ -179,7 +179,7 @@ html {
   height: 100%;
   background-color: rgba(255, 255, 255, 0.5);
   backdrop-filter: blur(10px);
-  display: flex;
+  display: none;
   justify-content: center;
   align-items: center;
   z-index: 1000;
@@ -190,6 +190,7 @@ html {
 
 #pause-container.visible {
   opacity: 1;
+  display: block;
   visibility: visible;
   transition: opacity 0.3s ease, visibility 0s 0s;
 }
@@ -264,9 +265,9 @@ button:focus {
   max-width: 90%; /* Gérer la largeur maximale pour petits écrans */
   box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.5);
   z-index: 2000;
-  display: none; /* Par défaut caché */
   opacity: 0;
   visibility: hidden;
+  display: none; /* Par défaut caché */
   transition: opacity 0.3s ease, visibility 0s 0.3s;
 }
 

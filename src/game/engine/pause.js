@@ -1,90 +1,62 @@
-import { handleKeyDown, handleKeyUp, keys } from "./player_inputs.js";
-import { startTimer, stopTimer } from "./ui_scoring.js";
-import { pauseAllExplosions, resumeAllExplosions } from "../entities/bomb.js";
+import { pauseTimer, resumeTimer } from "./ui_scoring.js";
 
-export let isPaused = false;
+let isPaused = false;
 
-function togglePause() {
-  console.log("togglePause called");
-  const pauseMenu = document.getElementById("pause-container");
+document.addEventListener("keydown", (event) => {
+  console.log(`Touche pressée : ${event.key}`);
+  if (event.key === "p" || event.key === "Escape") {
+    if (isPaused) {
+      resumeGame();
+    } else {
+      showPauseMenu();
+    }
+  }
+});
 
-  if (!pauseMenu) {
-    console.error("Le menu de pause n'a pas été trouvé dans le DOM.");
+export function showPauseMenu() {
+  console.log("showPauseMenu() appelé");
+  const pauseContainer = document.getElementById("pause-container");
+
+  if (!pauseContainer) {
+    console.log("❌ ERREUR : #pause-container introuvable !");
     return;
   }
 
-  isPaused = !isPaused;
-  window.isPaused = isPaused;
-  console.log("isPaused:", isPaused);
+  pauseContainer.classList.add("visible");
+  pauseContainer.classList.remove("hidden");
 
-  if (isPaused) {
-    console.log("Activating pause menu");
-    pauseMenu.classList.add("visible");
-    document.removeEventListener("keydown", handleKeyDown);
-    document.removeEventListener("keyup", handleKeyUp);
-    stopTimer();
-    pauseAllExplosions();
+  isPaused = true;
+  window.isPaused = true; // ✅ Bloque le jeu
+  pauseTimer();
 
-    Object.keys(keys).forEach((key) => {
-      keys[key] = false;
-    });
-  } else {
-    console.log("Deactivating pause menu");
-    pauseMenu.classList.remove("visible");
-    document.addEventListener("keydown", handleKeyDown);
-    document.addEventListener("keyup", handleKeyUp);
-    startTimer();
-    resumeAllExplosions();
-  }
+  document.getElementById("continue-button").onclick = resumeGame;
+  document.getElementById("restart-button").onclick = restartGame;
+  document.getElementById("exit-button").onclick = exitToMenu;
 }
 
-function handlePause(event) {
-  console.log("Key pressed:", event.key);
-  if (event.key === "Escape") {
-    console.log("Escape key detected");
-    togglePause();
-  }
+function resumeGame() {
+  console.log("Reprise du jeu");
+  const pauseContainer = document.getElementById("pause-container");
+  pauseContainer.classList.remove("visible");
+  pauseContainer.classList.add("hidden");
+
+  isPaused = false;
+  window.isPaused = false; // ✅ Relance le jeu
+  resumeTimer();
+
+  // 🚀 Envoie un événement global pour prévenir les autres scripts
+  window.dispatchEvent(new Event("resumeGame"));
 }
 
-export function initializePauseSystem() {
-  console.log("Initializing pause system");
-  // Ajouter l'écouteur d'événements pour la touche Escape
-  document.addEventListener("keydown", handlePause);
-  console.log("Pause keydown listener added");
+function restartGame() {
+  console.log("Redémarrage du jeu");
+  window.isPaused = false;
+  window.location.reload();
+}
 
-  // Initialiser les boutons du menu pause
-  const continueButton = document.getElementById("continue-button");
-  const restartButton = document.getElementById("restart-button");
-  const exitButton = document.getElementById("exit-button");
-  const retryButton = document.getElementById("retry-button");
-
-  if (continueButton) {
-    continueButton.addEventListener("click", () => {
-      console.log("Continue button clicked");
-      resumeAllExplosions();
-      togglePause();
-    });
-  }
-
-  if (restartButton) {
-    restartButton.addEventListener("click", () => {
-      console.log("Restart button clicked");
-      togglePause();
-      window.location.reload();
-    });
-  }
-
-  if (exitButton) {
-    exitButton.addEventListener("click", () => {
-      console.log("Exit button clicked");
-      window.location.reload();
-    });
-  }
-
-  if (retryButton) {
-    retryButton.addEventListener("click", () => {
-      console.log("Retry button clicked");
-      window.location.reload();
-    });
-  }
+function exitToMenu() {
+  console.log("Retour au menu principal");
+  document.getElementById("game-wrapper").classList.add("hidden");
+  document.getElementById("menu-screen").classList.remove("hidden");
+  window.location.reload();
 }

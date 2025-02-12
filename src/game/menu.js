@@ -10,48 +10,76 @@ document.addEventListener("DOMContentLoaded", function () {
   const musicValue = document.getElementById("music-value");
   const sfxValue = document.getElementById("sfx-value");
 
-  // Importer les fonctions nécessaires
-  import("./engine/ui_scoring.js")
-    .then((module) => {
-      const { startTimer, initializeGameUI } = module;
+  // Gestionnaire pour démarrer le jeu
+  startButton.addEventListener("click", function () {
+    console.log("Start button clicked");
 
-      // Gestionnaire pour le bouton Start
-      startButton.addEventListener("click", function () {
-        console.log("Start button clicked");
+    // Masquer le menu principal et afficher le jeu
+    menuScreen.classList.add("hidden");
+    gameWrapper.classList.remove("hidden");
 
-        // Masquer le menu settings s'il est affiché
-        if (!settingsPanel.classList.contains("hidden")) {
-          settingsPanel.classList.add("hidden");
-          settingsPanel.classList.remove("visible");
+    // Charger les scripts nécessaires pour le jeu
+    loadGameScripts();
+  });
+
+  // Fonction pour charger les scripts du jeu de manière synchrone
+  function loadGameScripts() {
+    const scripts = [
+      "./src/game/engine/player_inputs.js",
+      "./src/game/engine/mapGeneration.js",
+      "./src/game/engine/pause.js",
+      "./src/game/engine/ui_scoring.js", // Charger le script UI également
+    ];
+
+    let loadedScripts = 0;
+
+    scripts.forEach((src) => {
+      const script = document.createElement("script");
+      script.type = "module";
+      script.src = src;
+      script.onload = () => {
+        loadedScripts++;
+        // Une fois tous les scripts chargés, initialiser le jeu
+        if (loadedScripts === scripts.length) {
+          initializeGame();
         }
+      };
+      script.onerror = (error) => {
+        console.error("Erreur de chargement du script:", src, error);
+      };
+      document.body.appendChild(script);
+    });
+  }
 
-        // Cacher le menu principal et afficher le jeu
-        menuScreen.classList.add("hidden");
-        gameWrapper.classList.remove("hidden");
+  // Fonction pour initialiser le jeu une fois les scripts chargés
+  function initializeGame() {
+    // Initialiser l'interface du jeu
+    import("./engine/ui_scoring.js")
+      .then((module) => {
+        const { startTimer, initializeGameUI } = module;
 
-        // Initialiser l'interface du jeu et démarrer le timer
+        // Initialiser l'interface et démarrer le timer
         initializeGameUI();
         startTimer();
+      })
+      .catch((error) =>
+        console.error("Erreur lors du chargement du module UI scoring:", error)
+      );
+  }
 
-        // Charger les scripts du jeu
-        loadGameScripts();
-      });
-    })
-    .catch((error) => console.error("Error loading UI scoring module:", error));
-
-  // Gestionnaire pour le bouton Settings
+  // Gestionnaire pour ouvrir le panneau de paramètres
   settingsButton.addEventListener("click", function () {
     settingsPanel.classList.add("visible");
     settingsPanel.classList.remove("hidden");
   });
 
-  // Gestionnaire pour le bouton de fermeture du panneau de paramètres
+  // Gestionnaire pour fermer le panneau de paramètres
   closeSettingsButton.addEventListener("click", function () {
     settingsPanel.classList.remove("visible");
     settingsPanel.classList.add("hidden");
   });
 
-  // Gestionnaires pour les contrôles de volume
+  // Gestionnaires pour le contrôle du volume
   musicVolume.addEventListener("input", function () {
     musicValue.textContent = this.value;
   });
@@ -60,19 +88,3 @@ document.addEventListener("DOMContentLoaded", function () {
     sfxValue.textContent = this.value;
   });
 });
-
-// Fonction pour charger les scripts du jeu
-function loadGameScripts() {
-  const scripts = [
-    "./src/game/engine/mapGeneration.js",
-    "./src/game/engine/player_inputs.js",
-    "./src/game/engine/pause.js",
-  ];
-
-  scripts.forEach((src) => {
-    const script = document.createElement("script");
-    script.type = "module";
-    script.src = src;
-    document.body.appendChild(script);
-  });
-}

@@ -116,3 +116,8 @@ document.addEventListener("keydown", handleKeyDown);
 document.addEventListener("keyup", handleKeyUp);
 
 requestAnimationFrame(updatePosition);
+
+window.addEventListener("resumeGame", () => {
+  console.log("💡 Reprise détectée : Animation du joueur réactivée");
+  requestAnimationFrame(updatePosition);
+});
