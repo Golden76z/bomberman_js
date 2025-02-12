@@ -14,6 +14,7 @@ export const playerInfos = {
   spriteOffsetY: 5,   // (50 - 40) / 2 = 5px offset to center hitbox
   animationDuration: 0.8,
   characterIndex: 0,  // 0 for first character, 1 for second character
+  bombLength: 1
 };
 
 const styles = `

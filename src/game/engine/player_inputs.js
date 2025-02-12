@@ -1,5 +1,5 @@
 import { playerInfos } from '../constants/player_infos.js';
-import { walls } from '../entities/colisionMap.js';
+import { walls } from '../engine/mapGeneration.js';
 import { Explosion } from '../entities/bomb.js';
 import { updateTileMap } from '../constants/levels.js'
 
