@@ -2,10 +2,10 @@ import { handleKeyDown, handleKeyUp, keys } from "./player_inputs.js";
 import { startTimer, stopTimer } from "./ui_scoring.js";
 import { pauseAllExplosions, resumeAllExplosions } from "../entities/bomb.js";
 
-// Exporter isPaused pour l'utiliser dans d'autres modules
 export let isPaused = false;
 
 function togglePause() {
+  console.log("togglePause called");
   const pauseMenu = document.getElementById("pause-container");
 
   if (!pauseMenu) {
@@ -13,74 +13,78 @@ function togglePause() {
     return;
   }
 
-  // Définir d'abord l'état de pause
   isPaused = !isPaused;
   window.isPaused = isPaused;
+  console.log("isPaused:", isPaused);
 
   if (isPaused) {
+    console.log("Activating pause menu");
     pauseMenu.classList.add("visible");
     document.removeEventListener("keydown", handleKeyDown);
     document.removeEventListener("keyup", handleKeyUp);
     stopTimer();
     pauseAllExplosions();
 
-    // Réinitialiser les touches à l'état "non pressées"
     Object.keys(keys).forEach((key) => {
       keys[key] = false;
     });
   } else {
+    console.log("Deactivating pause menu");
     pauseMenu.classList.remove("visible");
     document.addEventListener("keydown", handleKeyDown);
     document.addEventListener("keyup", handleKeyUp);
     startTimer();
     resumeAllExplosions();
   }
-
-  // Appliquer la classe "paused" à tous les éléments de la classe .game-container
-  const eventListeners = document.querySelectorAll(".game-container *");
-  eventListeners.forEach((element) => {
-    if (isPaused) {
-      element.classList.add("paused");
-    } else {
-      element.classList.remove("paused");
-    }
-  });
 }
 
 function handlePause(event) {
-  console.log(event.key);
+  console.log("Key pressed:", event.key);
   if (event.key === "Escape") {
+    console.log("Escape key detected");
     togglePause();
   }
 }
 
-document.addEventListener("DOMContentLoaded", function () {
+export function initializePauseSystem() {
+  console.log("Initializing pause system");
+  // Ajouter l'écouteur d'événements pour la touche Escape
   document.addEventListener("keydown", handlePause);
-  bindPauseMenuActions();
-});
+  console.log("Pause keydown listener added");
 
-function bindPauseMenuActions() {
-  document.getElementById("continue-button")?.addEventListener("click", () => {
-    console.log("Resume the Game...");
-    resumeAllExplosions();
-    togglePause();
-  });
+  // Initialiser les boutons du menu pause
+  const continueButton = document.getElementById("continue-button");
+  const restartButton = document.getElementById("restart-button");
+  const exitButton = document.getElementById("exit-button");
+  const retryButton = document.getElementById("retry-button");
 
-  document.getElementById("restart-button")?.addEventListener("click", () => {
-    console.log("Restart the game...");
-    togglePause();
-    window.location.reload();
-  });
+  if (continueButton) {
+    continueButton.addEventListener("click", () => {
+      console.log("Continue button clicked");
+      resumeAllExplosions();
+      togglePause();
+    });
+  }
 
-  document.getElementById("exit-button")?.addEventListener("click", () => {
-    console.log("Exit the game(reload page)");
-    window.location.reload();
-  });
+  if (restartButton) {
+    restartButton.addEventListener("click", () => {
+      console.log("Restart button clicked");
+      togglePause();
+      window.location.reload();
+    });
+  }
 
-  document.getElementById("retry-button")?.addEventListener("click", () => {
-    console.log("restart the game...");
-    window.location.reload();
-  });
+  if (exitButton) {
+    exitButton.addEventListener("click", () => {
+      console.log("Exit button clicked");
+      window.location.reload();
+    });
+  }
+
+  if (retryButton) {
+    retryButton.addEventListener("click", () => {
+      console.log("Retry button clicked");
+      window.location.reload();
+    });
+  }
 }
-
-export { togglePause };

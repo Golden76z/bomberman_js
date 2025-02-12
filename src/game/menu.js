@@ -10,21 +10,34 @@ document.addEventListener("DOMContentLoaded", function () {
   const musicValue = document.getElementById("music-value");
   const sfxValue = document.getElementById("sfx-value");
 
-  // Gestionnaire pour le bouton Start
-  startButton.addEventListener("click", function () {
-    // Masquer le menu settings s'il est affiché
-    if (!settingsPanel.classList.contains("hidden")) {
-      settingsPanel.classList.add("hidden");
-      settingsPanel.classList.remove("visible");
-    }
+  // Importer les fonctions nécessaires
+  import("./engine/ui_scoring.js")
+    .then((module) => {
+      const { startTimer, initializeGameUI } = module;
 
-    // Cacher le menu principal et afficher le jeu
-    menuScreen.classList.add("hidden");
-    gameWrapper.classList.remove("hidden");
+      // Gestionnaire pour le bouton Start
+      startButton.addEventListener("click", function () {
+        console.log("Start button clicked");
 
-    // Charger les scripts du jeu
-    loadGameScripts();
-  });
+        // Masquer le menu settings s'il est affiché
+        if (!settingsPanel.classList.contains("hidden")) {
+          settingsPanel.classList.add("hidden");
+          settingsPanel.classList.remove("visible");
+        }
+
+        // Cacher le menu principal et afficher le jeu
+        menuScreen.classList.add("hidden");
+        gameWrapper.classList.remove("hidden");
+
+        // Initialiser l'interface du jeu et démarrer le timer
+        initializeGameUI();
+        startTimer();
+
+        // Charger les scripts du jeu
+        loadGameScripts();
+      });
+    })
+    .catch((error) => console.error("Error loading UI scoring module:", error));
 
   // Gestionnaire pour le bouton Settings
   settingsButton.addEventListener("click", function () {
@@ -54,7 +67,6 @@ function loadGameScripts() {
     "./src/game/engine/mapGeneration.js",
     "./src/game/engine/player_inputs.js",
     "./src/game/engine/pause.js",
-    "./src/game/engine/ui_scoring.js",
   ];
 
   scripts.forEach((src) => {

@@ -1,9 +1,8 @@
-import { togglePause } from "./pause.js";
-
 let score = 0;
 let lives = 3;
 let time = 0;
-let timerInterval;
+let timerInterval = null;
+let isTimerRunning = false;
 
 export function updateScore(pts) {
   score += pts;
@@ -11,10 +10,20 @@ export function updateScore(pts) {
 }
 
 export function startTimer() {
+  console.log("Timer function called"); // Debug log
+
+  if (isTimerRunning) {
+    console.log("Timer already running"); // Debug log
+    return;
+  }
+
+  isTimerRunning = true;
+  console.log("Starting timer"); // Debug log
+
   if (timerInterval) {
     clearInterval(timerInterval);
   }
-  console.log("Timer started"); // Ajout du log pour vérifier si le timer démarre
+
   timerInterval = setInterval(function () {
     if (!window.isPaused) {
       time++;
@@ -29,12 +38,11 @@ export function startTimer() {
   }, 1000);
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  startTimer();
-});
-
 export function stopTimer() {
-  clearInterval(timerInterval);
+  if (timerInterval) {
+    clearInterval(timerInterval);
+    isTimerRunning = false;
+  }
 }
 
 function updateLives() {
@@ -54,14 +62,15 @@ function showGameOver() {
   const gameOver = document.getElementById("game-over-container");
   if (gameOver) {
     gameOver.classList.add("visible");
-    window.isPaused = true; // Mettre le jeu en pause quand game over
+    window.isPaused = true;
   } else {
     console.error("Error DOM => game-over-container");
   }
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  startTimer();
+// Fonction d'initialisation du jeu
+export function initializeGameUI() {
+  console.log("Initializing game UI"); // Debug log
   updateScore(0);
-  updateLives(); // Modifier pour juste mettre à jour l'affichage initial
-});
+  updateLives();
+}
