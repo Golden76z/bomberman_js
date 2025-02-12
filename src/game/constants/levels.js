@@ -2,6 +2,7 @@ import { gameInfos } from '../constants/game.js';
 import { createWalls } from '../entities/colisionMap.js'
 import { createMap, walls } from '../engine/mapGeneration.js'
 import { Wall } from '../entities/colisionMap.js'
+import { playerInfos } from './player_infos.js';
 
 let allMaps = null;
 
@@ -161,18 +162,46 @@ export function updateTileMap(x, y) {
   setTimeout(() => {
     // Reset the tile
     currentMap[currentPosY][currentPosX] = 0;
-    if (currentMap[currentPosY - 1][currentPosX] == 2) {
-      currentMap[currentPosY - 1][currentPosX] = 0
-    }
-    if (currentMap[currentPosY + 1][currentPosX] == 2) {
-      currentMap[currentPosY + 1][currentPosX] = 0
-    }
-    if (currentMap[currentPosY][currentPosX - 1] == 2) {
-      currentMap[currentPosY][currentPosX - 1] = 0
-    }
-    if (currentMap[currentPosY][currentPosX + 1] == 2) {
-      currentMap[currentPosY][currentPosX + 1] = 0
-    }
+    for (let i = 1; i <= playerInfos.bombLength; i++) {
+      if (currentPosY - i >= 0 && currentMap[currentPosY - i][currentPosX] !== 1) {
+          if (currentMap[currentPosY - i][currentPosX] === 2) {
+              currentMap[currentPosY - i][currentPosX] = 0;
+          };
+      } else {
+          break;
+      };
+  }
+
+  for (let i = 1; i <= playerInfos.bombLength; i++) {
+      if (currentPosY + i < currentMap.length && currentMap[currentPosY + i][currentPosX] !== 1) {
+          if (currentMap[currentPosY + i][currentPosX] === 2) {
+              currentMap[currentPosY + i][currentPosX] = 0;
+          };
+      } else {
+          break;
+      };
+  }
+
+  for (let j = 1; j <= playerInfos.bombLength; j++) {
+      if (currentPosX - j >= 0 && currentMap[currentPosY][currentPosX - j] !== 1) {
+          if (currentMap[currentPosY][currentPosX - j] === 2) {
+              currentMap[currentPosY][currentPosX - j] = 0;
+          };
+      } else {
+          break;
+      };
+  }
+
+  for (let j = 1; j <= playerInfos.bombLength; j++) {
+      if (currentPosX + j < currentMap[0].length && currentMap[currentPosY][currentPosX + j] !== 1) {
+          if (currentMap[currentPosY][currentPosX + j] === 2) {
+              currentMap[currentPosY][currentPosX + j] = 0;
+          };
+      } else {
+          break;
+      };
+  }
+
 
     // reconstructWalls(currentMap)
     walls.length = 0;  // Clear the array

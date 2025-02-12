@@ -8,6 +8,7 @@ export const playerInfos = {
   moveSpeed: 0.3,
   bomb: 0,
   maxBomb: 1,
+  bombLength : 3
 }
 
 // Getting the player div to apply style to it
