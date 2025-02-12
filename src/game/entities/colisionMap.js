@@ -1,10 +1,10 @@
 import { gameInfos } from '../constants/game.js';
-import { maps } from '../constants/levels.js'
-
-let currentMap = maps[gameInfos.level - 1]
 
 // Wall class to define their coordinates
-class Wall {
+export class Wall {
+  // Tableau statique pour stocker toutes les instances de la classe Wall
+  static allWalls = [];
+
   // Constructor, variable declarations
   constructor(positionX, positionY, type) {
     this.width = gameInfos.width / gameInfos.width_tiles;
@@ -12,9 +12,12 @@ class Wall {
     this.positionX = positionX * this.width;
     this.positionY = positionY * this.height;
     this.type = type;
+
+    // Ajouter l'objet au tableau des murs
+    Wall.allWalls.push(this);
   }
 
-  // Function to check the colision with the player coordinates
+  // Function to check the collision with the player coordinates
   checkCollision(x, y, playerWidth, playerHeight) {
     // returns true if the player is contained within the 2 walls intervals
     return (
@@ -26,8 +29,9 @@ class Wall {
   }
 }
 
+
 // Create walls object whenever we encounter a 0 or a 1
-function createWalls(map) {
+export function createWalls(map) {
   const walls = [];
   map.forEach((row, rowIndex) => {
     row.forEach((cell, colIndex) => {
@@ -38,23 +42,3 @@ function createWalls(map) {
   });
   return walls;
 }
-
-// export function removeAllWalls() {
-//   // Get all wall elements
-//   const wallElements = document.querySelectorAll('.tile');
-
-//   // Remove each wall element from the DOM
-//   wallElements.forEach(wall => {
-//     if (wall && wall.parentNode) {
-//       wall.parentNode.removeChild(wall);
-//     }
-//   });
-// }
-
-// export function reconstructWalls(map){
-//   removeAllWalls();
-//   return createWalls(map);
-// }
-
-// Create walls array from your current map
-export const walls = createWalls(currentMap);

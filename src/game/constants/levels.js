@@ -1,6 +1,7 @@
 import { gameInfos } from '../constants/game.js';
-import { createMap } from '../engine/mapGeneration.js';
-
+import { createWalls } from '../entities/colisionMap.js'
+import { createMap, walls } from '../engine/mapGeneration.js'
+import { Wall } from '../entities/colisionMap.js'
 
 let allMaps = null;
 
@@ -160,21 +161,23 @@ export function updateTileMap(x, y) {
   setTimeout(() => {
     // Reset the tile
     currentMap[currentPosY][currentPosX] = 0;
-    if (currentMap[currentPosY-1][currentPosX] == 2 ){
-      currentMap[currentPosY-1][currentPosX] = 0
+    if (currentMap[currentPosY - 1][currentPosX] == 2) {
+      currentMap[currentPosY - 1][currentPosX] = 0
+    }
+    if (currentMap[currentPosY + 1][currentPosX] == 2) {
+      currentMap[currentPosY + 1][currentPosX] = 0
+    }
+    if (currentMap[currentPosY][currentPosX - 1] == 2) {
+      currentMap[currentPosY][currentPosX - 1] = 0
+    }
+    if (currentMap[currentPosY][currentPosX + 1] == 2) {
+      currentMap[currentPosY][currentPosX + 1] = 0
+    }
 
-    }
-    if (currentMap[currentPosY+1][currentPosX] == 2 ){
-      currentMap[currentPosY+1][currentPosX]= 0
-    }
-    if (currentMap[currentPosY][currentPosX-1] == 2 ){
-      currentMap[currentPosY][currentPosX-1] = 0
-    }
-    if (currentMap[currentPosY][currentPosX+1] == 2 ){
-      currentMap[currentPosY][currentPosX+1] = 0
-    }
-
-    createMap(currentMap);
+    // reconstructWalls(currentMap)
+    walls.length = 0;  // Clear the array
+    walls.push(...createWalls(currentMap));  // Add new wallswalls = createMap(currentMap)
+    createMap(currentMap)
     updateMaps(allMaps);
   }, 2000);
 }
