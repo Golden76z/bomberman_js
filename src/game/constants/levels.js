@@ -1,4 +1,8 @@
 import { gameInfos } from '../constants/game.js';
+import { createWalls } from '../entities/colisionMap.js'
+import { createMap, walls } from '../engine/mapGeneration.js'
+import { Wall } from '../entities/colisionMap.js'
+import { playerInfos } from './player_infos.js';
 
 let allMaps = null;
 
@@ -34,7 +38,7 @@ export let MAP_3 = [
   [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
   [1, 0, 0, 0, 2, 3, 2, 0, 0, 0, 1],
   [1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1],
-  [1, 2, 2, 0, 2, 2, 2, 0, 2, 2, 1],
+  [1, 2, 2, 4, 2, 2, 2, 0, 2, 2, 1],
   [1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1],
   [1, 0, 0, 2, 2, 3, 2, 2, 0, 0, 1],
   [1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1],
@@ -145,6 +149,7 @@ export function updateTileMap(x, y) {
   // Update the current map
   currentMap[currentPosY][currentPosX] = 3;
 
+
   // Printing test
   console.log('---------------------------------------');
   for (let i = 0; i < currentMap.length; i++) {
@@ -157,6 +162,51 @@ export function updateTileMap(x, y) {
   setTimeout(() => {
     // Reset the tile
     currentMap[currentPosY][currentPosX] = 0;
+    for (let i = 1; i <= playerInfos.bombLength; i++) {
+      if (currentPosY - i >= 0 && currentMap[currentPosY - i][currentPosX] !== 1) {
+          if (currentMap[currentPosY - i][currentPosX] === 2) {
+              currentMap[currentPosY - i][currentPosX] = 0;
+          };
+      } else {
+          break;
+      };
+  }
+
+  for (let i = 1; i <= playerInfos.bombLength; i++) {
+      if (currentPosY + i < currentMap.length && currentMap[currentPosY + i][currentPosX] !== 1) {
+          if (currentMap[currentPosY + i][currentPosX] === 2) {
+              currentMap[currentPosY + i][currentPosX] = 0;
+          };
+      } else {
+          break;
+      };
+  }
+
+  for (let j = 1; j <= playerInfos.bombLength; j++) {
+      if (currentPosX - j >= 0 && currentMap[currentPosY][currentPosX - j] !== 1) {
+          if (currentMap[currentPosY][currentPosX - j] === 2) {
+              currentMap[currentPosY][currentPosX - j] = 0;
+          };
+      } else {
+          break;
+      };
+  }
+
+  for (let j = 1; j <= playerInfos.bombLength; j++) {
+      if (currentPosX + j < currentMap[0].length && currentMap[currentPosY][currentPosX + j] !== 1) {
+          if (currentMap[currentPosY][currentPosX + j] === 2) {
+              currentMap[currentPosY][currentPosX + j] = 0;
+          };
+      } else {
+          break;
+      };
+  }
+
+
+    // reconstructWalls(currentMap)
+    walls.length = 0;  // Clear the array
+    walls.push(...createWalls(currentMap));  // Add new wallswalls = createMap(currentMap)
+    createMap(currentMap)
     updateMaps(allMaps);
   }, 2000);
 }
