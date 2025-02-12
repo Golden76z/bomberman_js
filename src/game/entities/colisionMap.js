@@ -39,5 +39,22 @@ function createWalls(map) {
   return walls;
 }
 
+// export function removeAllWalls() {
+//   // Get all wall elements
+//   const wallElements = document.querySelectorAll('.tile');
+
+//   // Remove each wall element from the DOM
+//   wallElements.forEach(wall => {
+//     if (wall && wall.parentNode) {
+//       wall.parentNode.removeChild(wall);
+//     }
+//   });
+// }
+
+// export function reconstructWalls(map){
+//   removeAllWalls();
+//   return createWalls(map);
+// }
+
 // Create walls array from your current map
 export const walls = createWalls(currentMap);

@@ -5,7 +5,7 @@ import { gameInfos } from '../constants/game.js'
 const allMaps = [MAP_1, MAP_2, MAP_3, MAP_4, MAP_5, MAP_6]
 
 // Function to create a map depending on the game state
-function createMap(mapArray) {
+export function createMap(mapArray) {
   const gameMap = document.getElementById('gameMap');
   const player = gameMap.querySelector('.player');
   const info = gameMap.querySelector('.info');

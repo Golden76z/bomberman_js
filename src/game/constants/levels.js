@@ -1,4 +1,6 @@
 import { gameInfos } from '../constants/game.js';
+import { createMap } from '../engine/mapGeneration.js';
+
 
 let allMaps = null;
 
@@ -145,6 +147,7 @@ export function updateTileMap(x, y) {
   // Update the current map
   currentMap[currentPosY][currentPosX] = 3;
 
+
   // Printing test
   console.log('---------------------------------------');
   for (let i = 0; i < currentMap.length; i++) {
@@ -157,6 +160,21 @@ export function updateTileMap(x, y) {
   setTimeout(() => {
     // Reset the tile
     currentMap[currentPosY][currentPosX] = 0;
+    if (currentMap[currentPosY-1][currentPosX] == 2 ){
+      currentMap[currentPosY-1][currentPosX] = 0
+
+    }
+    if (currentMap[currentPosY+1][currentPosX] == 2 ){
+      currentMap[currentPosY+1][currentPosX]= 0
+    }
+    if (currentMap[currentPosY][currentPosX-1] == 2 ){
+      currentMap[currentPosY][currentPosX-1] = 0
+    }
+    if (currentMap[currentPosY][currentPosX+1] == 2 ){
+      currentMap[currentPosY][currentPosX+1] = 0
+    }
+
+    createMap(currentMap);
     updateMaps(allMaps);
   }, 2000);
 }
