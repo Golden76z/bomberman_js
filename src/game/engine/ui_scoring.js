@@ -24,7 +24,6 @@ export function startTimer() {
 
   timerInterval = setInterval(() => {
     if (!isPaused) {
-      // 🚀 Bloque l'incrémentation pendant la pause
       timeLeft++;
       document.getElementById("timer").textContent = `Temps: ${formatTime(
         timeLeft
@@ -41,7 +40,7 @@ export function startTimer() {
 
 export function pauseTimer() {
   console.log("Timer en pause");
-  isPaused = true; // Ajout pour bien bloquer l'incrémentation
+  isPaused = true;
 }
 
 export function resumeTimer() {

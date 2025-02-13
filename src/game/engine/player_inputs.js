@@ -11,6 +11,8 @@ let position = {
   y: playerInfos.positionY,
 };
 
+let animationFrameId;
+
 export let keys = {
   ArrowRight: false,
   ArrowLeft: false,
@@ -23,7 +25,7 @@ export let keys = {
 };
 
 let startTime;
-let previousTime;
+let previousTime = null;
 const moveSpeed = playerInfos.moveSpeed;
 
 const boundaryX = container.clientWidth - playerInfos.width;
@@ -35,7 +37,6 @@ function canMove(newX, newY) {
   );
 }
 
-// Function to update the player position
 function updatePosition(timestamp) {
   if (startTime === undefined) {
     startTime = timestamp;
@@ -51,48 +52,40 @@ function updatePosition(timestamp) {
   let newX = position.x;
   let newY = position.y;
 
-  // Detect which key is being pressed
   if (keys.ArrowRight || keys.d) {
     newX = position.x + moveSpeed * elapsed;
-    if (canMove(newX, position.y)) {
-      position.x = newX;
-    }
+    if (canMove(newX, position.y)) position.x = newX;
   }
   if (keys.ArrowLeft || keys.q) {
     newX = position.x - moveSpeed * elapsed;
-    if (canMove(newX, position.y)) {
-      position.x = newX;
-    }
+    if (canMove(newX, position.y)) position.x = newX;
   }
   if (keys.ArrowUp || keys.z) {
     newY = position.y - moveSpeed * elapsed;
-    if (canMove(position.x, newY)) {
-      position.y = newY;
-    }
+    if (canMove(position.x, newY)) position.y = newY;
   }
   if (keys.ArrowDown || keys.s) {
     newY = position.y + moveSpeed * elapsed;
-    if (canMove(position.x, newY)) {
-      position.y = newY;
-    }
+    if (canMove(position.x, newY)) position.y = newY;
   }
 
-  // Appliquer les limites
   position.x = Math.max(0, Math.min(position.x, boundaryX));
   position.y = Math.max(0, Math.min(position.y, boundaryY));
 
   player.style.transform = `translate(${position.x}px, ${position.y}px)`;
 
-  requestAnimationFrame(updatePosition);
+  animationFrameId = requestAnimationFrame(updatePosition);
 }
 
-// Event listener when a key is pressed
+window.addEventListener("resumeGame", () => {
+  console.log("💡 Reprise détectée : Animation du joueur réactivée");
+  if (animationFrameId) cancelAnimationFrame(animationFrameId);
+  requestAnimationFrame(updatePosition);
+});
 export function handleKeyDown(event) {
   if (keys.hasOwnProperty(event.key) && !window.isPaused) {
     keys[event.key] = true;
     event.preventDefault();
-
-    // Instantiate a new bomb class whenever the player press the spacebar
   } else if (event.key === " " && playerInfos.bomb != playerInfos.maxBomb) {
     new Explosion(
       position.x - playerInfos.width / 3,
@@ -103,7 +96,6 @@ export function handleKeyDown(event) {
   }
 }
 
-// Event listener when a key is released
 export function handleKeyUp(event) {
   if (keys.hasOwnProperty(event.key)) {
     keys[event.key] = false;
@@ -111,7 +103,6 @@ export function handleKeyUp(event) {
   }
 }
 
-// Event listeners
 document.addEventListener("keydown", handleKeyDown);
 document.addEventListener("keyup", handleKeyUp);
 
@@ -119,5 +110,7 @@ requestAnimationFrame(updatePosition);
 
 window.addEventListener("resumeGame", () => {
   console.log("💡 Reprise détectée : Animation du joueur réactivée");
+  if (animationFrameId) cancelAnimationFrame(animationFrameId);
+  previousTime = null;
   requestAnimationFrame(updatePosition);
 });

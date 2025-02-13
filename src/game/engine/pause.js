@@ -1,4 +1,5 @@
 import { pauseTimer, resumeTimer } from "./ui_scoring.js";
+import { pauseAllExplosions, resumeAllExplosions } from "../entities/bomb.js";
 
 let isPaused = false;
 
@@ -28,6 +29,7 @@ export function showPauseMenu() {
   isPaused = true;
   window.isPaused = true; // ✅ Bloque le jeu
   pauseTimer();
+  pauseAllExplosions();
 
   document.getElementById("continue-button").onclick = resumeGame;
   document.getElementById("restart-button").onclick = restartGame;
@@ -43,6 +45,7 @@ function resumeGame() {
   isPaused = false;
   window.isPaused = false; // ✅ Relance le jeu
   resumeTimer();
+  resumeAllExplosions();
 
   // 🚀 Envoie un événement global pour prévenir les autres scripts
   window.dispatchEvent(new Event("resumeGame"));
