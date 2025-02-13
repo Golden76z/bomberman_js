@@ -19,7 +19,7 @@ export function showPauseMenu() {
   const pauseContainer = document.getElementById("pause-container");
 
   if (!pauseContainer) {
-    console.log("❌ ERREUR : #pause-container introuvable !");
+    console.log("ERREUR : #pause-container introuvable !");
     return;
   }
 
@@ -27,7 +27,7 @@ export function showPauseMenu() {
   pauseContainer.classList.remove("hidden");
 
   isPaused = true;
-  window.isPaused = true; // ✅ Bloque le jeu
+  window.isPaused = true;
   pauseTimer();
   pauseAllExplosions();
 
@@ -43,11 +43,10 @@ function resumeGame() {
   pauseContainer.classList.add("hidden");
 
   isPaused = false;
-  window.isPaused = false; // ✅ Relance le jeu
+  window.isPaused = false;
   resumeTimer();
   resumeAllExplosions();
 
-  // 🚀 Envoie un événement global pour prévenir les autres scripts
   window.dispatchEvent(new Event("resumeGame"));
 }
 

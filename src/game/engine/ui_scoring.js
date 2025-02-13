@@ -1,9 +1,9 @@
 import { showGameOver } from "./game-over.js";
 
 let timerInterval;
-let score = 0;
-let lives = 3;
-let timeLeft = 0;
+export let score = 0;
+export let lives = 0;
+export let timeLeft = 0;
 let isPaused = false;
 
 export function initializeGameUI() {
