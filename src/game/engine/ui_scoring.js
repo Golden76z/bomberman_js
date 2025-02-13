@@ -2,7 +2,7 @@ import { showGameOver } from "./game-over.js";
 
 let timerInterval;
 export let score = 0;
-export let lives = 0;
+export let lives = 3;
 export let timeLeft = 0;
 let isPaused = false;
 
