@@ -1,10 +1,11 @@
 import { gameInfos } from '../constants/game.js';
 import { createWalls } from '../entities/colisionMap.js'
 import { createMap, walls } from '../engine/mapGeneration.js'
-import { Wall } from '../entities/colisionMap.js'
 import { playerInfos } from './player_infos.js';
+import { Explosion } from '../entities/bomb.js'
 
 let allMaps = null;
+const activeBombPositions = new Map();
 
 export let MAP_1 = [
   [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
@@ -113,21 +114,23 @@ function updateMaps(maps) {
 
 export let maps = [MAP_1, MAP_2, MAP_3, MAP_4, MAP_5, MAP_6]
 
-// Function to add the bomb to the tilemap
-export function updateTileMap(x, y) {
+// New function to place a bomb
+export function placeBomb(x, y) {
+  // Initialize allMaps if needed
+  if (!allMaps) {
+    allMaps = [
+      [...MAP_1],
+      [...MAP_2],
+      [...MAP_3],
+      [...MAP_4],
+      [...MAP_5],
+      [...MAP_6]
+    ];
+  }
 
-  // Initialize allMaps with fresh copies of the original maps
-  allMaps = [
-    [...MAP_1],
-    [...MAP_2],
-    [...MAP_3],
-    [...MAP_4],
-    [...MAP_5],
-    [...MAP_6]
-  ];
+  const currentMap = allMaps[gameInfos.level - 1];
 
-  let currentMap = allMaps[gameInfos.level - 1];
-
+  // Calculate bomb position on map
   let currentPosX = Math.floor(x % Math.floor(gameInfos.width / gameInfos.width_tiles));
   let currentPosY = Math.floor(y % Math.floor(gameInfos.height / gameInfos.height_tiles));
 
@@ -143,73 +146,94 @@ export function updateTileMap(x, y) {
     currentPosY = Math.floor(y / Math.floor(gameInfos.height / gameInfos.height_tiles));
   }
 
-  console.log(currentPosX);
-  console.log(currentPosY);
+  const bombKey = `${currentPosX},${currentPosY}`;
 
-  // Update the current map
-  currentMap[currentPosY][currentPosX] = 3;
+  // Check if there's already a bomb at this position
+  if (!activeBombPositions.has(bombKey)) {
+    // Place bomb on map
+    currentMap[currentPosY][currentPosX] = 3;
 
+    // Create new Explosion instance
+    const explosion = new Explosion(x, y);
 
-  // Printing test
-  console.log('---------------------------------------');
-  for (let i = 0; i < currentMap.length; i++) {
-    console.log(currentMap[i]);
+    // Store bomb data
+    activeBombPositions.set(bombKey, {
+      explosion,
+      mapX: currentPosX,
+      mapY: currentPosY,
+      map: currentMap
+    });
+
+    // Set up a listener for when the explosion is removed
+    const checkExplosion = setInterval(() => {
+      if (!explosion.element || !explosion.element.parentNode) {
+        // Explosion is finished, handle the map updates
+        handleExplosion(currentPosX, currentPosY, currentMap);
+        activeBombPositions.delete(bombKey);
+        clearInterval(checkExplosion);
+      }
+    }, 100); // Check every 100ms
   }
-
-  // Update all maps with the new state
-  updateMaps(allMaps);
-  // test()
-  setTimeout(() => {
-    // Reset the tile
-    currentMap[currentPosY][currentPosX] = 0;
-    for (let i = 1; i <= playerInfos.bombLength; i++) {
-      if (currentPosY - i >= 0 && currentMap[currentPosY - i][currentPosX] !== 1) {
-        if (currentMap[currentPosY - i][currentPosX] === 2) {
-          currentMap[currentPosY - i][currentPosX] = 0;
-        };
-      } else {
-        break;
-      };
-    }
-
-    for (let i = 1; i <= playerInfos.bombLength; i++) {
-      if (currentPosY + i < currentMap.length && currentMap[currentPosY + i][currentPosX] !== 1) {
-        if (currentMap[currentPosY + i][currentPosX] === 2) {
-          currentMap[currentPosY + i][currentPosX] = 0;
-        };
-      } else {
-        break;
-      };
-    }
-
-    for (let j = 1; j <= playerInfos.bombLength; j++) {
-      if (currentPosX - j >= 0 && currentMap[currentPosY][currentPosX - j] !== 1) {
-        if (currentMap[currentPosY][currentPosX - j] === 2) {
-          currentMap[currentPosY][currentPosX - j] = 0;
-        };
-      } else {
-        break;
-      };
-    }
-
-    for (let j = 1; j <= playerInfos.bombLength; j++) {
-      if (currentPosX + j < currentMap[0].length && currentMap[currentPosY][currentPosX + j] !== 1) {
-        if (currentMap[currentPosY][currentPosX + j] === 2) {
-          currentMap[currentPosY][currentPosX + j] = 0;
-        };
-      } else {
-        break;
-      };
-    }
-
-
-    // reconstructWalls(currentMap)
-    walls.length = 0;  // Clear the array
-    walls.push(...createWalls(currentMap));  // Add new wallswalls = createMap(currentMap)
-    createMap(currentMap)
-    updateMaps(allMaps);
-  }, 2000);
 }
+
+// Helper function to handle explosion effects on the map
+function handleExplosion(x, y, map) {
+  // Clear the bomb
+  map[y][x] = 0;
+
+  // Handle explosion in all directions
+  const directions = [
+    [-1, 0], // up
+    [1, 0],  // down
+    [0, -1], // left
+    [0, 1]   // right
+  ];
+
+  directions.forEach(([dy, dx]) => {
+    for (let i = 1; i <= playerInfos.bombLength; i++) {
+      const newY = y + (dy * i);
+      const newX = x + (dx * i);
+
+      if (newY >= 0 && newY < map.length &&
+        newX >= 0 && newX < map[0].length &&
+        map[newY][newX] !== 1) {
+
+        if (map[newY][newX] === 2) {
+          map[newY][newX] = 0;
+        }
+      } else {
+        break;
+      }
+    }
+  });
+
+  // Update walls and map
+  walls.length = 0;
+  walls.push(...createWalls(map));
+  createMap(map);
+  updateMaps(allMaps);
+}
+
+// Optional: function to check if a position has a bomb
+export function hasBomb(x, y) {
+  return activeBombPositions.has(`${x},${y}`);
+}
+
+// Integrate with your existing pause/resume system
+export function pauseAllBombs() {
+  for (const bombData of activeBombPositions.values()) {
+    bombData.explosion.pause();
+  }
+}
+
+export function resumeAllBombs() {
+  for (const bombData of activeBombPositions.values()) {
+    bombData.explosion.resume();
+  }
+}
+
+// Export pause/resume functions so they can be called from your game pause system
+// export { pauseExplosion, resumeExplosion };
 
 // export const MAP_1 = [
 //   [1,1,1,1,1,1,1,1,1,1,1],

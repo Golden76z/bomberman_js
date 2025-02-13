@@ -1,8 +1,7 @@
 import { handleKeyDown, handleKeyUp, keys } from "./player_inputs.js";
 import { startTimer, stopTimer } from "./ui_scoring.js";
 import { pauseAllExplosions, resumeAllExplosions } from '../entities/bomb.js'
-
-let isPaused = false;
+import { gameInfos } from "../constants/game.js";
 
 // Fonction pour basculer entre l'affichage et le masquage du menu de pause
 function togglePause() {
@@ -14,7 +13,7 @@ function togglePause() {
   }
 
   // Afficher ou masquer le menu de pause
-  if (!isPaused) {
+  if (!gameInfos.pause) {
     pauseMenu.classList.add("visible");
     document.removeEventListener("keydown", handleKeyDown);
     document.removeEventListener("keyup", handleKeyUp);
@@ -29,11 +28,11 @@ function togglePause() {
     document.addEventListener("keyup", handleKeyUp);
     startTimer();
   }
-  isPaused = !isPaused;
+  gameInfos.pause = !gameInfos.pause;
 
   const eventListeners = document.querySelectorAll(".game-container *");
   eventListeners.forEach((element) => {
-    if (isPaused) {
+    if (gameInfos.pause) {
       element.classList.add("paused");
     } else {
       element.classList.remove("paused");
@@ -44,7 +43,7 @@ function togglePause() {
 // Gestionnaire de la touche "Escape" pour mettre en pause ou reprendre le jeu
 function handlePause(event) {
   if (event.key === "Escape") {
-    if (!isPaused) {
+    if (!gameInfos.pause) {
       // Freeze all explosions animations when pressing pause button
       pauseAllExplosions();
       togglePause();

@@ -1,7 +1,7 @@
+import { gameLoop } from './gameLoop.js'
 import { playerInfos } from '../constants/player_infos.js';
 import { walls } from '../engine/mapGeneration.js';
-import { Explosion } from '../entities/bomb.js';
-import { updateTileMap } from '../constants/levels.js'
+import { placeBomb } from '../constants/levels.js'
 
 const player = document.querySelector('.player');
 const container = document.querySelector('.game-container');
@@ -22,14 +22,10 @@ export let keys = {
   d: false,
 };
 
-let startTime;
-let previousTime;
 const moveSpeed = playerInfos.moveSpeed;
-
 const boundaryX = container.clientWidth - playerInfos.width;
 const boundaryY = container.clientHeight - playerInfos.height;
 
-// Modified canMove function to use hitbox
 function canMove(newX, newY) {
   return !walls.some((wall) =>
     wall.checkCollision(
@@ -41,24 +37,15 @@ function canMove(newX, newY) {
   );
 }
 
-// Modified updatePosition function to handle centered hitbox
-function updatePosition(timestamp) {
-  if (startTime === undefined) {
-    startTime = timestamp;
-  }
+function updatePosition(deltaTime) {
+  if (window.isPaused) return;
 
-  const elapsed = timestamp - (previousTime || timestamp);
-  previousTime = timestamp;
-
-  if (window.isPaused) {
-    return;
-  }
-
+  const elapsed = deltaTime;
   let newX = position.x;
   let newY = position.y;
   let isMoving = false;
 
-  // Check X-axis movement
+  // Movement calculations based on elapsed time
   if (keys.ArrowRight || keys.d) {
     newX = position.x + moveSpeed * elapsed;
     if (canMove(newX, position.y)) {
@@ -73,8 +60,6 @@ function updatePosition(timestamp) {
     }
     isMoving = true;
   }
-
-  // Check Y-axis movement
   if (keys.ArrowUp || keys.z) {
     newY = position.y - moveSpeed * elapsed;
     if (canMove(position.x, newY)) {
@@ -94,16 +79,13 @@ function updatePosition(timestamp) {
   position.x = Math.max(0, Math.min(position.x, boundaryX));
   position.y = Math.max(0, Math.min(position.y, boundaryY));
 
-  // Apply position, accounting for sprite being larger than hitbox
+  // Update player position
   player.style.transform = `translate(${position.x}px, ${position.y}px)`;
 
   // Update animations
   updatePlayerAnimation();
-
-  requestAnimationFrame(updatePosition);
 }
 
-// Function to update character selection
 export function updateCharacter(index) {
   playerInfos.characterIndex = index;
   const player = document.querySelector('.player');
@@ -111,21 +93,17 @@ export function updateCharacter(index) {
   player.classList.add(`character-${index}`);
 }
 
-// Modified updatePlayerAnimation function
 function updatePlayerAnimation() {
   const player = document.querySelector('.player');
 
-  // Remove all animation classes first
   player.classList.remove(
     'facing-down', 'facing-up', 'facing-left', 'facing-right',
     'idle-down', 'idle-up', 'idle-left', 'idle-right'
   );
 
-  // Make sure character class is applied
   player.classList.remove('character-0', 'character-1');
   player.classList.add(`character-${playerInfos.characterIndex}`);
 
-  // Add appropriate animation class based on movement
   if (keys.ArrowRight || keys.d) {
     player.classList.add('facing-right');
   } else if (keys.ArrowLeft || keys.q) {
@@ -135,30 +113,24 @@ function updatePlayerAnimation() {
   } else if (keys.ArrowDown || keys.s) {
     player.classList.add('facing-down');
   } else {
-    // Add idle animation based on last direction
-    // You'll need to track last direction
-    player.classList.add('idle-down'); // Default idle state
+    player.classList.add('idle-down');
   }
 }
 
-// Initial character setup
+// Initial setup
 updateCharacter(playerInfos.characterIndex);
 
-// Event listener when a key is pressed
 export function handleKeyDown(event) {
   if (keys.hasOwnProperty(event.key) && !window.isPaused) {
     keys[event.key] = true;
     event.preventDefault();
-
-    // Instantiate a new bomb class whenever the player press the spacebar
   } else if (event.key === ' ' && playerInfos.bomb != playerInfos.maxBomb) {
-    new Explosion(position.x - playerInfos.width / 3, position.y - playerInfos.height / 3);
-    updateTileMap(position.x, position.y)
-    playerInfos.bomb++
+    // Place a bomb and center it
+    placeBomb(position.x - playerInfos.width / 3, position.y - playerInfos.height / 3);
+    playerInfos.bomb++;
   }
 }
 
-// Event listener when a key is released
 export function handleKeyUp(event) {
   if (keys.hasOwnProperty(event.key)) {
     keys[event.key] = false;
@@ -170,4 +142,7 @@ export function handleKeyUp(event) {
 document.addEventListener('keydown', handleKeyDown);
 document.addEventListener('keyup', handleKeyUp);
 
-requestAnimationFrame(updatePosition);
+// Initialize and start the game loop
+gameLoop.start(updatePosition);
+
+

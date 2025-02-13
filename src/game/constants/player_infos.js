@@ -1,22 +1,30 @@
 // player_infos.js
 export const playerInfos = {
-  width: 40,          // Hitbox width
-  height: 40,         // Hitbox height
+  // Player hitbox
+  width: 40,
+  height: 40,
+  // Player visual
+  frameWidth: 50,
+  frameHeight: 50,
+  // PLayer starting position
   positionX: 60,
   positionY: 60,
-  moveSpeed: 0.3,
-  bomb: 0,
-  maxBomb: 1,
   spriteSheet: '../images/player.png',
-  frameWidth: 50,     // Sprite frame width
-  frameHeight: 50,    // Sprite frame height
-  spriteOffsetX: 5,   // (50 - 40) / 2 = 5px offset to center hitbox
-  spriteOffsetY: 5,   // (50 - 40) / 2 = 5px offset to center hitbox
-  animationDuration: 0.8,
-  characterIndex: 0,  // 0 for first character, 1 for second character
-  bombLength: 1
+  animationDuration: 0.5,
+  // Player style: 0 for blue, 1 for red
+  characterIndex: 0,
+  bomb: 0,
+  // Player stats that can be affected by powerups
+  maxBomb: 2,
+  moveSpeed: 0.3,
+  bombLength: 1,
 };
 
+// To center the hitbox in the middle of the character
+playerInfos.spriteOffsetX = (playerInfos.frameWidth - playerInfos.width) / 2
+playerInfos.spriteOffsetY = (playerInfos.frameHeight - playerInfos.height) / 2
+
+// Player css style
 const styles = `
 .player {
   width: ${playerInfos.frameWidth}px;
@@ -91,17 +99,7 @@ const styles = `
   to { background-position-x: -600px; }
 }`;
 
-// Add this to your JavaScript to inject the styles
+// Adding the style to the css file
 const styleSheet = document.createElement('style');
 styleSheet.textContent = styles;
 document.head.appendChild(styleSheet);
-
-// Getting the player div to apply style to it
-const playerElement = document.querySelector('.player');
-
-// Setting the style with playerInfos values
-// playerElement.style.width = `${playerInfos.width}px`;
-// playerElement.style.height = `${playerInfos.height}px`;
-// playerElement.style.backgroundColor = playerInfos.color;
-// playerElement.style.borderRadius = '4px'
-playerElement.style.position = 'absolute'
