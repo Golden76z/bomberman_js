@@ -4,7 +4,7 @@ import { pauseAllExplosions, resumeAllExplosions } from "../entities/bomb.js";
 let isPaused = false;
 
 document.addEventListener("keydown", (event) => {
-  console.log(`Touche pressée : ${event.key}`);
+  //console.log(`Touche pressée : ${event.key}`);
   if (event.key === "p" || event.key === "Escape") {
     if (isPaused) {
       resumeGame();

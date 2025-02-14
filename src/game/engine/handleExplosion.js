@@ -1,5 +1,6 @@
 import { playerInfos } from "../constants/player_infos.js";
 import { walls, updateTile } from "../engine/mapGeneration.js";
+import { updateScore } from "./ui_scoring.js";
 
 // Helper function to handle explosion effects on the map
 export function handleExplosion(x, y, map) {
@@ -31,6 +32,7 @@ export function handleExplosion(x, y, map) {
           count++;
           map[newY][newX] = 0;
           updateTile(newX, newY, 0);
+          updateScore(500);
         }
       } else {
         break;

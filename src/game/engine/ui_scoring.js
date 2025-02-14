@@ -56,3 +56,8 @@ function formatTime(time) {
     "0"
   )}`;
 }
+
+export function updateScore(points) {
+  score += points;
+  updateUI();
+}

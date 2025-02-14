@@ -128,7 +128,7 @@ export function handleKeyDown(event) {
   } else if (
     event.key === " " &&
     playerInfos.bomb != playerInfos.maxBomb &&
-    !isPaused
+    !window.isPaused
   ) {
     // Place a bomb and center it
     placeBomb(
