@@ -32,6 +32,7 @@ html {
   from {
     background-position: 0 0;
   }
+
   to {
     background-position: -896px 0;
   }
@@ -260,19 +261,23 @@ button:focus {
 /* ---------------------- Paramètres ---------------------------- */
 .settings-panel {
   background-color: #333;
-  padding: 40px; /* Augmenter le padding pour plus d'espace */
+  padding: 40px;
+  /* Augmenter le padding pour plus d'espace */
   border-radius: 10px;
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 400px; /* Augmenter la largeur */
-  max-width: 90%; /* Gérer la largeur maximale pour petits écrans */
+  width: 400px;
+  /* Augmenter la largeur */
+  max-width: 90%;
+  /* Gérer la largeur maximale pour petits écrans */
   box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.5);
   z-index: 2000;
   opacity: 0;
   visibility: hidden;
-  display: none; /* Par défaut caché */
+  display: none;
+  /* Par défaut caché */
   transition: opacity 0.3s ease, visibility 0s 0.3s;
 }
 
@@ -285,7 +290,8 @@ button:focus {
 
 .settings-panel h2 {
   color: white;
-  font-size: 28px; /* Augmenter la taille du titre */
+  font-size: 28px;
+  /* Augmenter la taille du titre */
   margin-bottom: 30px;
   text-align: center;
 }
@@ -309,7 +315,8 @@ button:focus {
 
 /* Bouton pour fermer le menu */
 .settings-panel .close-button {
-  background-color: #f44336; /* Rouge */
+  background-color: #f44336;
+  /* Rouge */
   color: white;
   border: none;
   padding: 12px;
@@ -383,6 +390,7 @@ button:focus {
 
 /* -----------------------Responsivity --------------------------- */
 @media (max-width: 768px) {
+
   /* Pour les petits écrans */
   .menu-container {
     padding: 20px;
