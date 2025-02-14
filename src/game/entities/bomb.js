@@ -1,14 +1,15 @@
 import { playerInfos } from "../constants/player_infos.js";
+import { gameInfos } from "../constants/game.js";
 
 const activeExplosions = new Set();
+let tileWidth = gameInfos.width / gameInfos.width_tiles;
+let tileHeight = gameInfos.height / gameInfos.height_tiles;
 
 export class Explosion {
-  constructor(x, y, map) {
+  constructor(x, y) {
     this.x = x;
     this.y = y;
     this.gameBoard = document.getElementById("gameMap");
-    // console.log(this.map);
-    // console.log(map);
     this.element = null;
     this.startTime = null;
     this.duration = 2000;
@@ -28,8 +29,30 @@ export class Explosion {
     this.element = document.createElement("div");
     this.element.className = "explosion";
     this.element.style.position = "absolute";
-    this.element.style.left = `${this.x}px`;
-    this.element.style.top = `${this.y}px`;
+
+    // Calculate which tile we're closest to using the same logic as tilemap
+    let tileX = Math.floor(this.x % tileWidth);
+    let tileY = Math.floor(this.y % tileHeight);
+
+    if (tileX > tileWidth / 2) {
+      this.tileX = Math.floor(this.x / tileWidth) + 1;
+    } else {
+      this.tileX = Math.floor(this.x / tileWidth);
+    }
+
+    if (tileY > tileHeight / 2) {
+      this.tileY = Math.floor(this.y / tileHeight) + 1;
+    } else {
+      this.tileY = Math.floor(this.y / tileHeight);
+    }
+
+    // Convert tile coordinates back to pixels and center the explosion
+    const pixelX = this.tileX * tileWidth;
+    const pixelY = this.tileY * tileHeight;
+
+    // Center the 64x64 explosion in the tile
+    this.element.style.left = `${pixelX + (tileWidth - 64) / 2}px`;
+    this.element.style.top = `${pixelY + (tileHeight - 64) / 2}px`;
     this.element.style.width = "64px";
     this.element.style.height = "64px";
 
