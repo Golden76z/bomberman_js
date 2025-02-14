@@ -2,8 +2,6 @@ import { gameLoop } from "./gameLoop.js";
 import { playerInfos } from "../constants/player_infos.js";
 import { walls } from "../engine/mapGeneration.js";
 import { placeBomb } from "../constants/levels.js";
-import { gameInfos } from "../constants/game.js";
-import { showGameOver } from "./game-over.js";
 
 const player = document.querySelector(".player");
 const container = document.querySelector(".game-container");
