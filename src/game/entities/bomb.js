@@ -1,12 +1,15 @@
 import { playerInfos } from "../constants/player_infos.js";
+import { gameInfos } from "../constants/game.js";
 
 const activeExplosions = new Set();
+let tileWidth = gameInfos.width / gameInfos.width_tiles;
+let tileHeight = gameInfos.height / gameInfos.height_tiles;
 
 export class Explosion {
   constructor(x, y) {
     this.x = x;
     this.y = y;
-    this.gameBoard = document.getElementById('gameMap');
+    this.gameBoard = document.getElementById("gameMap");
     this.element = null;
     this.startTime = null;
     this.duration = 2000;
@@ -23,13 +26,35 @@ export class Explosion {
 
   // Function to create the visual effect and start the animation
   createExplosionEffect() {
-    this.element = document.createElement('div');
-    this.element.className = 'explosion';
-    this.element.style.position = 'absolute';
-    this.element.style.left = `${this.x}px`;
-    this.element.style.top = `${this.y}px`;
-    this.element.style.width = '64px';
-    this.element.style.height = '64px';
+    this.element = document.createElement("div");
+    this.element.className = "explosion";
+    this.element.style.position = "absolute";
+
+    // Calculate which tile we're closest to using the same logic as tilemap
+    let tileX = Math.floor(this.x % tileWidth);
+    let tileY = Math.floor(this.y % tileHeight);
+
+    if (tileX > tileWidth / 2) {
+      this.tileX = Math.floor(this.x / tileWidth) + 1;
+    } else {
+      this.tileX = Math.floor(this.x / tileWidth);
+    }
+
+    if (tileY > tileHeight / 2) {
+      this.tileY = Math.floor(this.y / tileHeight) + 1;
+    } else {
+      this.tileY = Math.floor(this.y / tileHeight);
+    }
+
+    // Convert tile coordinates back to pixels and center the explosion
+    const pixelX = this.tileX * tileWidth;
+    const pixelY = this.tileY * tileHeight;
+
+    // Center the 64x64 explosion in the tile
+    this.element.style.left = `${pixelX + (tileWidth - 64) / 2}px`;
+    this.element.style.top = `${pixelY + (tileHeight - 64) / 2}px`;
+    this.element.style.width = "64px";
+    this.element.style.height = "64px";
 
     this.gameBoard.appendChild(this.element);
     this.startTime = performance.now();
@@ -48,7 +73,9 @@ export class Explosion {
         return;
       }
 
-      this.animationFrameId = requestAnimationFrame((timestamp) => this.animate(timestamp));
+      this.animationFrameId = requestAnimationFrame((timestamp) =>
+        this.animate(timestamp)
+      );
     }
   }
 
@@ -61,7 +88,7 @@ export class Explosion {
       }
       // Pause CSS animations
       if (this.element) {
-        this.element.style.animationPlayState = 'paused';
+        this.element.style.animationPlayState = "paused";
       }
     }
   }
@@ -73,7 +100,7 @@ export class Explosion {
       this.isPaused = false;
       // Resume CSS animations
       if (this.element) {
-        this.element.style.animationPlayState = 'running';
+        this.element.style.animationPlayState = "running";
       }
       this.animate(currentTime);
     }
@@ -95,12 +122,12 @@ export class Explosion {
 
 // Function to freeze all bombs animations both in js and css
 export function pauseAllExplosions() {
-  activeExplosions.forEach(explosion => explosion.pause());
+  activeExplosions.forEach((explosion) => explosion.pause());
 }
 
 // Function to resume all bomb where they were left
 export function resumeAllExplosions() {
-  activeExplosions.forEach(explosion => explosion.resume());
+  activeExplosions.forEach((explosion) => explosion.resume());
 }
 
 // Function that returns the Set containing all the bombs

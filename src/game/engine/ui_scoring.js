@@ -1,58 +1,63 @@
-let score = 0;
-let lives = 3;
-let time = 0;
-let timerInterval;
+import { showGameOver } from "./game-over.js";
 
-export function updateScore(pts) {
-  score += pts;
-  document.getElementById("score").innerText = "Score: " + score;
+let timerInterval;
+export let score = 0;
+export let lives = 3;
+export let timeLeft = 0;
+let isPaused = false;
+
+export function initializeGameUI() {
+  updateUI();
+  startTimer();
 }
 
-//Timer
+function updateUI() {
+  document.getElementById("score").textContent = `Score: ${score}`;
+  document.getElementById("lives").textContent = `Vies: ${lives}`;
+  document.getElementById("timer").textContent = `Temps: ${formatTime(
+    timeLeft
+  )}`;
+}
+
 export function startTimer() {
-  timerInterval = setInterval(function () {
-    time++;
-    let minutes = Math.floor(time / 60);
-    let seconds = time % 60;
-    document.getElementById("timer").innerText =
-      "Temps: " +
-      (minutes < 10 ? "0" + minutes : minutes) +
-      ":" +
-      (seconds < 10 ? "0" + seconds : seconds);
+  if (timerInterval) clearInterval(timerInterval);
+
+  timerInterval = setInterval(() => {
+    if (!isPaused) {
+      timeLeft++;
+      document.getElementById("timer").textContent = `Temps: ${formatTime(
+        timeLeft
+      )}`;
+
+      if (lives <= 0) {
+        console.log("Vies à 0 ! Game Over déclenché.");
+        clearInterval(timerInterval);
+        showGameOver();
+      }
+    }
   }, 1000);
 }
 
-//Stop
-export function stopTimer() {
-  clearInterval(timerInterval);
+export function pauseTimer() {
+  console.log("Timer en pause");
+  isPaused = true;
 }
 
-//Live
-function updateLives() {
-  document.getElementById("lives").innerText = "Vies: " + lives;
+export function resumeTimer() {
+  console.log("Reprise du timer");
+  isPaused = false;
 }
 
-export function decreaseLives() {
-  lives--;
-  updateLives();
-  if (lives <= 0) {
-    showGameOver();
-    stopTimer();
-    //ajouter redemarrage ou quitter le jeu
-  }
+function formatTime(time) {
+  const minutes = Math.floor(time / 60);
+  const seconds = time % 60;
+  return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(
+    2,
+    "0"
+  )}`;
 }
 
-function showGameOver() {
-  const gameOver = document.getElementById("game-over-container");
-  if (gameOver) {
-    gameOver.classList.add("visible");
-  } else {
-    console.error("Error DOM => game-over-container");
-  }
+export function updateScore(points) {
+  score += points;
+  updateUI();
 }
-
-document.addEventListener("DOMContentLoaded", () => {
-  startTimer();
-  updateScore(0);
-  decreaseLives();
-});
