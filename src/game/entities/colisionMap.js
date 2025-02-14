@@ -44,6 +44,7 @@ export class Wall {
   }
 }
 
+
 // Create walls object whenever we encounter a 0 or a 1
 export function createWalls(map) {
   const walls = [];
