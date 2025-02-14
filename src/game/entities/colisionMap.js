@@ -12,6 +12,8 @@ export class Wall {
     this.positionX = positionX * this.width;
     this.positionY = positionY * this.height;
     this.type = type;
+    this.tileX = positionX;
+    this.tileY = positionY;
 
     // Ajouter l'objet au tableau des murs
     Wall.allWalls.push(this);
@@ -27,6 +29,19 @@ export class Wall {
       y + playerHeight > this.positionY
     );
   }
+
+  remove() {
+    // Remove the wall from the static Wall.allWalls array
+    const index = Wall.allWalls.findIndex(wall => wall === this);
+    if (index !== -1) {
+      Wall.allWalls.splice(index, 1);
+    }
+
+    // Optional: if you have some DOM element representing the wall, remove it as well
+    if (this.element) {
+      this.element.remove(); // Assuming there's a DOM element representing the wall
+    }
+  }
 }
 
 
@@ -35,7 +50,7 @@ export function createWalls(map) {
   const walls = [];
   map.forEach((row, rowIndex) => {
     row.forEach((cell, colIndex) => {
-      if (cell === 1 || cell === 2) {
+      if (cell === 1 || cell === 2 || cell === 3) {
         walls.push(new Wall(colIndex, rowIndex, cell));
       }
     });

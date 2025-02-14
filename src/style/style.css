@@ -46,12 +46,16 @@ html {
 }
 
 /* ---------------------------- Sprites ------------------------- */
-.wall {
-  background-image: url("../../images/wall.png");
+.wall1 {
+  background-image: url("../../images/Sprite-0001.png");
+}
+
+.wall2 {
+  background-image: url("../../images/Sprite-0002.png");
 }
 
 .destructible {
-  background-image: url("../../images/breakable.png");
+  background-image: url("../../images/Sprite-0003.png");
 }
 
 .empty {

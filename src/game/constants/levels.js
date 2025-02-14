@@ -1,23 +1,21 @@
 import { gameInfos } from '../constants/game.js';
-import { createWalls } from '../entities/colisionMap.js'
-import { createMap, walls } from '../engine/mapGeneration.js'
-import { playerInfos } from './player_infos.js';
 import { Explosion } from '../entities/bomb.js'
+import { handleExplosion } from '../engine/handleExplosion.js'
 
 let allMaps = null;
 const activeBombPositions = new Map();
 
 export let MAP_1 = [
-  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-  [1, 0, 0, 2, 2, 3, 2, 2, 0, 0, 1],
-  [1, 0, 1, 2, 1, 0, 1, 2, 1, 0, 1],
-  [1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1],
-  [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
-  [1, 0, 2, 2, 2, 3, 2, 2, 2, 0, 1],
-  [1, 2, 1, 2, 1, 0, 1, 0, 1, 2, 1],
-  [1, 2, 2, 0, 2, 2, 2, 0, 2, 2, 1],
-  [1, 0, 1, 2, 1, 0, 1, 2, 1, 0, 1],
-  [1, 0, 0, 2, 2, 3, 2, 2, 0, 0, 1],
+  [2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2],
+  [2, 0, 0, 3, 3, 3, 3, 3, 0, 0, 2],
+  [2, 0, 1, 3, 1, 0, 1, 3, 1, 0, 2],
+  [2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2],
+  [2, 0, 1, 0, 1, 0, 1, 0, 1, 0, 2],
+  [2, 0, 3, 3, 3, 3, 3, 3, 3, 0, 2],
+  [2, 3, 1, 3, 1, 0, 1, 0, 1, 3, 2],
+  [2, 3, 3, 0, 3, 3, 3, 0, 3, 3, 2],
+  [2, 0, 1, 3, 1, 0, 1, 3, 1, 0, 2],
+  [2, 0, 0, 3, 3, 3, 3, 3, 0, 0, 2],
   [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
 ];
 
@@ -91,27 +89,6 @@ export let MAP_6 = [
   [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
 ];
 
-// Function to update the map values
-function updateMaps(maps) {
-  MAP_1.length = 0;
-  MAP_1.push(...maps[0]);
-
-  MAP_2.length = 0;
-  MAP_2.push(...maps[1]);
-
-  MAP_3.length = 0;
-  MAP_3.push(...maps[2]);
-
-  MAP_4.length = 0;
-  MAP_4.push(...maps[3]);
-
-  MAP_5.length = 0;
-  MAP_5.push(...maps[4]);
-
-  MAP_6.length = 0;
-  MAP_6.push(...maps[5]);
-}
-
 export let maps = [MAP_1, MAP_2, MAP_3, MAP_4, MAP_5, MAP_6]
 
 // New function to place a bomb
@@ -151,7 +128,7 @@ export function placeBomb(x, y) {
   // Check if there's already a bomb at this position
   if (!activeBombPositions.has(bombKey)) {
     // Place bomb on map
-    currentMap[currentPosY][currentPosX] = 3;
+    currentMap[currentPosY][currentPosX] = 0;
 
     // Create new Explosion instance
     const explosion = new Explosion(x, y);
@@ -174,44 +151,6 @@ export function placeBomb(x, y) {
       }
     }, 100); // Check every 100ms
   }
-}
-
-// Helper function to handle explosion effects on the map
-function handleExplosion(x, y, map) {
-  // Clear the bomb
-  map[y][x] = 0;
-
-  // Handle explosion in all directions
-  const directions = [
-    [-1, 0], // up
-    [1, 0],  // down
-    [0, -1], // left
-    [0, 1]   // right
-  ];
-
-  directions.forEach(([dy, dx]) => {
-    for (let i = 1; i <= playerInfos.bombLength; i++) {
-      const newY = y + (dy * i);
-      const newX = x + (dx * i);
-
-      if (newY >= 0 && newY < map.length &&
-        newX >= 0 && newX < map[0].length &&
-        map[newY][newX] !== 1) {
-
-        if (map[newY][newX] === 2) {
-          map[newY][newX] = 0;
-        }
-      } else {
-        break;
-      }
-    }
-  });
-
-  // Update walls and map
-  walls.length = 0;
-  walls.push(...createWalls(map));
-  createMap(map);
-  updateMaps(allMaps);
 }
 
 // Optional: function to check if a position has a bomb
