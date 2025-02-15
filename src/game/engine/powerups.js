@@ -25,6 +25,13 @@ export function applyPowerUp(){
   if (randomPowerUp === "lifeAdd"){
     playerInfos.hearts = playerInfos.hearts + powerUps.lifeAdd
   }
+  if (randomPowerUp === "speedBoost"){
+    baseSpeed = playerInfos.moveSpeed
+    playerInfos.moveSpeed = playerInfos.moveSpeed*powerUps.speedBoost
+    setTimeout(()=>{
+      playerInfos.moveSpeed = baseSpeed
+    }, 10000)
+  }
 }
 
 export function canSpawnPowerUp() {
@@ -35,8 +42,14 @@ export function canSpawnPowerUp() {
   }
 }
 
-export function spawnPowerup(){
-  //dropBomb()
+export function spawnPowerup(obj){
+  if (playerInfos.bomb === 3){
+    obj = excludeBombDropsLogic()
+  }
+  if (playerInfos.hearts === 3){
+    obj = excludeHeartDropsLogic()
+  }
+
   if (canSpawnPowerUp()){
     powerUp = generateRandomPowerUp()
     const powerup = document.createElement('div')
@@ -50,18 +63,21 @@ export function spawnPowerup(){
   }
 }
 
-export function dropBomb(){
-  if (playerInfos.bomb == 1){
-    canDrop = 4
+export function excludeHeartsDropsLogic(){
+  let excludeKey = "lifeAdd"
 
-  }
+  let newPowerUps = Object.keys(powerUps).reduce((acc,key)=>
+    {
+      if (key !== excludeKey){
+        acc[key] = powerUps[key]
+        }
+    })
+  return newPowerUps
 }
 
 export function excludeBombDropsLogic(){
-  let excludeKey = ""
-  if (playerInfos.bomb === 3) {
-    excludeKey = "bombAdd"
-  }
+  let excludeKey = "bombAdd"
+
   let newPowerUps = Object.keys(powerUps).reduce((acc,key)=>
     {
       if (key !== excludeKey){
@@ -76,5 +92,6 @@ export const powerUps = {
   bombAdd : 1,
   maxBombAdd : 1,
   lifeAdd : 1,
-
+  invulnerabilite : true,
+  speedBoost : 2,
 }
