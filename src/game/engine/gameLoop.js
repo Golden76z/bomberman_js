@@ -1,4 +1,4 @@
-import { gameInfos } from '../constants/game.js'
+import { gameInfos } from "../constants/game.js";
 
 export class GameLoop {
   constructor(fps = 60) {

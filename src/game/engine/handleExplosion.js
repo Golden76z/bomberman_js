@@ -1,5 +1,6 @@
-import { playerInfos } from '../constants/player_infos.js'
-import { walls, updateTile } from '../engine/mapGeneration.js'
+import { playerInfos } from "../constants/player_infos.js";
+import { walls, updateTile } from "../engine/mapGeneration.js";
+import { updateScore } from "./ui_scoring.js";
 
 // Helper function to handle explosion effects on the map
 export function handleExplosion(x, y, map) {
@@ -11,23 +12,27 @@ export function handleExplosion(x, y, map) {
     [-1, 0],
     [1, 0],
     [0, -1],
-    [0, 1]
+    [0, 1],
   ];
 
-  let count = 0
+  let count = 0;
   directions.forEach(([dy, dx]) => {
     for (let i = 1; i <= playerInfos.bombLength; i++) {
-      const newY = y + (dy * i);
-      const newX = x + (dx * i);
+      const newY = y + dy * i;
+      const newX = x + dx * i;
 
-      if (newY >= 0 && newY < map.length &&
-        newX >= 0 && newX < map[0].length &&
-        map[newY][newX] !== 1) {
-
+      if (
+        newY >= 0 &&
+        newY < map.length &&
+        newX >= 0 &&
+        newX < map[0].length &&
+        map[newY][newX] !== 1
+      ) {
         if (map[newY][newX] === 3) {
-          count++
+          count++;
           map[newY][newX] = 0;
-          updateTile(newX, newY, 0)
+          updateTile(newX, newY, 0);
+          updateScore(500);
         }
       } else {
         break;
@@ -46,7 +51,7 @@ function removeWallsInRange(x, y, walls, map) {
     [-1, 0],
     [1, 0],
     [0, -1],
-    [0, 1]
+    [0, 1],
   ];
 
   // Collect walls to remove
@@ -54,7 +59,7 @@ function removeWallsInRange(x, y, walls, map) {
 
   // Check the bomb's position itself first
   if (map[y][x] === 0) {
-    walls.forEach(wall => {
+    walls.forEach((wall) => {
       if (wall.tileX === x && wall.tileY === y) {
         wallsToRemove.push(wall);
       }
@@ -68,15 +73,17 @@ function removeWallsInRange(x, y, walls, map) {
       const newX = x + dx * i;
 
       if (
-        newY < 0 || newY >= map.length ||
-        newX < 0 || newX >= map[0].length ||
+        newY < 0 ||
+        newY >= map.length ||
+        newX < 0 ||
+        newX >= map[0].length ||
         map[newY][newX] === 1
       ) {
         break; // Stop if we hit an indestructible wall
       }
 
       if (map[newY][newX] === 0) {
-        walls.forEach(wall => {
+        walls.forEach((wall) => {
           if (wall.tileX === newX && wall.tileY === newY) {
             wallsToRemove.push(wall);
           }
@@ -86,7 +93,7 @@ function removeWallsInRange(x, y, walls, map) {
   });
 
   // Remove walls from Wall.allWalls and walls array
-  wallsToRemove.forEach(wall => {
+  wallsToRemove.forEach((wall) => {
     wall.remove();
     const indexInWallsArray = walls.indexOf(wall);
     if (indexInWallsArray !== -1) {

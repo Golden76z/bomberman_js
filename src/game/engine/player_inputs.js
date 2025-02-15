@@ -1,10 +1,10 @@
-import { gameLoop } from './gameLoop.js'
-import { playerInfos } from '../constants/player_infos.js';
-import { walls } from '../engine/mapGeneration.js';
-import { placeBomb } from '../constants/levels.js'
+import { gameLoop } from "./gameLoop.js";
+import { playerInfos } from "../constants/player_infos.js";
+import { walls } from "../engine/mapGeneration.js";
+import { placeBomb } from "../constants/levels.js";
 
-const player = document.querySelector('.player');
-const container = document.querySelector('.game-container');
+const player = document.querySelector(".player");
+const container = document.querySelector(".game-container");
 
 let position = {
   x: playerInfos.positionX,
@@ -88,32 +88,38 @@ function updatePosition(deltaTime) {
 
 export function updateCharacter(index) {
   playerInfos.characterIndex = index;
-  const player = document.querySelector('.player');
-  player.classList.remove('character-0', 'character-1');
+  const player = document.querySelector(".player");
+  player.classList.remove("character-0", "character-1");
   player.classList.add(`character-${index}`);
 }
 
 function updatePlayerAnimation() {
-  const player = document.querySelector('.player');
+  const player = document.querySelector(".player");
 
   player.classList.remove(
-    'facing-down', 'facing-up', 'facing-left', 'facing-right',
-    'idle-down', 'idle-up', 'idle-left', 'idle-right'
+    "facing-down",
+    "facing-up",
+    "facing-left",
+    "facing-right",
+    "idle-down",
+    "idle-up",
+    "idle-left",
+    "idle-right"
   );
 
-  player.classList.remove('character-0', 'character-1');
+  player.classList.remove("character-0", "character-1");
   player.classList.add(`character-${playerInfos.characterIndex}`);
 
   if (keys.ArrowRight || keys.d) {
-    player.classList.add('facing-right');
+    player.classList.add("facing-right");
   } else if (keys.ArrowLeft || keys.q) {
-    player.classList.add('facing-left');
+    player.classList.add("facing-left");
   } else if (keys.ArrowUp || keys.z) {
-    player.classList.add('facing-up');
+    player.classList.add("facing-up");
   } else if (keys.ArrowDown || keys.s) {
-    player.classList.add('facing-down');
+    player.classList.add("facing-down");
   } else {
-    player.classList.add('idle-down');
+    player.classList.add("idle-down");
   }
 }
 
@@ -124,9 +130,16 @@ export function handleKeyDown(event) {
   if (keys.hasOwnProperty(event.key) && !window.isPaused) {
     keys[event.key] = true;
     event.preventDefault();
-  } else if (event.key === ' ' && playerInfos.bomb != playerInfos.maxBomb) {
+  } else if (
+    event.key === " " &&
+    playerInfos.bomb != playerInfos.maxBomb &&
+    !window.isPaused
+  ) {
     // Place a bomb and center it
-    placeBomb(position.x - playerInfos.width / 3, position.y - playerInfos.height / 3);
+    placeBomb(
+      position.x - playerInfos.width / 3,
+      position.y - playerInfos.height / 3
+    );
     playerInfos.bomb++;
   }
 }
@@ -139,10 +152,8 @@ export function handleKeyUp(event) {
 }
 
 // Event listeners
-document.addEventListener('keydown', handleKeyDown);
-document.addEventListener('keyup', handleKeyUp);
+document.addEventListener("keydown", handleKeyDown);
+document.addEventListener("keyup", handleKeyUp);
 
 // Initialize and start the game loop
 gameLoop.start(updatePosition);
-
-

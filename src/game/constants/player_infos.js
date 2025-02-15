@@ -9,7 +9,7 @@ export const playerInfos = {
   // PLayer starting position
   positionX: 60,
   positionY: 60,
-  spriteSheet: '../images/player.png',
+  spriteSheet: "../images/player.png",
   animationDuration: 0.4,
   // Player style: 0 for blue, 1 for red
   characterIndex: 0,
@@ -21,8 +21,9 @@ export const playerInfos = {
 };
 
 // To center the hitbox in the middle of the character
-playerInfos.spriteOffsetX = (playerInfos.frameWidth - playerInfos.width) / 1.8
-playerInfos.spriteOffsetY = (playerInfos.frameHeight - playerInfos.height) / 1.8
+playerInfos.spriteOffsetX = (playerInfos.frameWidth - playerInfos.width) / 1.8;
+playerInfos.spriteOffsetY =
+  (playerInfos.frameHeight - playerInfos.height) / 1.8;
 
 // Player css style
 const styles = `

@@ -1,53 +1,82 @@
+<!DOCTYPE html>
+<html>
+
 <head>
-	<meta charset="UTF-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<title>Bomberman js</title>
-	<link rel="stylesheet" href="/src/style/style.css" />
-	<script type="importmap">
-		{
-			"imports": {
-				"engine/": "./src/engine/",
-				"game/": "./src/game/"
-			}
-		}
-	</script>
-	<script type="module" src="./src/game/engine/mapGeneration.js"></script>
-	<script type="module" src="./src/game/engine/player_inputs.js"></script>
-	<script type="module" src="./src/game/engine/pause.js"></script>
-	<script type="module" src="./src/game/engine/ui_scoring.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bomberman js</title>
+  <link rel="stylesheet" href="/src/style/style.css" />
 </head>
 
 <body>
-	<div class="game-info">
-		<div id="score">Score: 0</div>
-		<div id="timer">Temps: 00:00</div>
-		<div id="lives">Vies: 3</div>
-	</div>
+  <!-- Menu Screen -->
+  <div id="menu-screen" class="menu-container">
+    <div class="menu-content">
+      <div class="title-container">
+        <img src="./images/bomberman-character.png" alt="Bomberman Character" class="character-img" />
+        <a href="https://github.com/Golden76z/bomberman_js" target="_blank" class="github-link">
+          <img src="./images/github-icon.png" alt="GitHub" class="github-icon" />
+        </a>
+      </div>
+      <div class="right-content">
+        <h1 class="game-title">BOMBERMAN</h1>
+        <div class="buttons-container">
+          <button id="start-button">Start Game</button>
+          <button id="settings-button">Settings</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
-	<!-- <h1 class="title">Bomberman</h1> -->
-	<div class="game-container" id="gameMap">
-		<div class="player"></div>
-		<!-- <div class="info">Use arrow keys to move</div> -->
-		<!-- <div class="coordinates"></div> -->
-	</div>
-	<script type="module" src="./src/game/engine/mapGeneration.js"></script>
-	<script type="module" src="./src/game/engine/player_inputs.js"></script>
-</body>
+  <!-- Settings Panel (déplacé en dehors du menu-content) -->
+  <div id="settings-panel" class="settings-panel hidden">
+    <h2>Settings</h2>
+    <div class="volume-control">
+      <label>Music Volume: <span id="music-value">50</span>%</label>
+      <input type="range" id="music-volume" min="0" max="100" value="50" />
+    </div>
+    <div class="volume-control">
+      <label>SFX Volume: <span id="sfx-value">50</span>%</label>
+      <input type="range" id="sfx-volume" min="0" max="100" value="50" />
+    </div>
+    <button class="close-button" id="close-settings-button">
+      Close Settings
+    </button>
+  </div>
 
-<!-- Pause Menu -->
-<div id="pause-container" class="hidden">
-	<div class="menu-content">
-		<h2>PAUSE!</h2>
-		<button id="continue-button">Continue</button>
-		<button id="restart-button">Restart</button>
-		<button id="exit-button">Exit</button>
-	</div>
-</div>
-<!--GAME OVER-->
-<div id="game-over-container" class="hidden">
-	<h2>GAME OVER!</h2>
-	<button id="retry-button">Retry</button>
-</div>
+  <!-- Container du jeu -->
+  <div class="game-wrapper hidden" id="game-wrapper">
+    <div class="game-info">
+      <div id="score">Score: 0</div>
+      <div id="timer">Temps: 00:00</div>
+      <div id="lives">Vies: 3</div>
+    </div>
+    <div class="game-container" id="gameMap">
+      <div class="player"></div>
+    </div>
+  </div>
+
+  <!-- Menu Pause -->
+  <div id="pause-container">
+    <div class="menu-content">
+      <h2>PAUSE!</h2>
+      <div class="buttons-container">
+        <button id="continue-button">Continue</button>
+        <button id="restart-button">Restart</button>
+        <button id="exit-button">Exit</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Game Over -->
+  <div id="game-over-container">
+    <h2>GAME OVER!</h2>
+    <div class="buttons-container">
+      <button id="main-menu-button">Main Menu</button>
+    </div>
+  </div>
+
+  <script type="module" src="./src/game/menu.js"></script>
 </body>
 
 </html>

@@ -1,4 +1,4 @@
-import { gameInfos } from '../constants/game.js';
+import { gameInfos } from "../constants/game.js";
 
 // Wall class to define their coordinates
 export class Wall {
@@ -32,7 +32,7 @@ export class Wall {
 
   remove() {
     // Remove the wall from the static Wall.allWalls array
-    const index = Wall.allWalls.findIndex(wall => wall === this);
+    const index = Wall.allWalls.findIndex((wall) => wall === this);
     if (index !== -1) {
       Wall.allWalls.splice(index, 1);
     }
