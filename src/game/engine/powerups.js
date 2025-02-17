@@ -1,5 +1,6 @@
 import { playerInfos } from "../constants/player_infos"
 
+
 //export let  canDrop = Math.floor(Math.random()*5)
 
 export function generateDropChance(){
@@ -15,9 +16,10 @@ export function generateRandomPowerUp(){
 export function applyPowerUp(obj){
 
   const powerUpKeys = Object.keys(obj)
+
   const randomPowerUp = obj[generateRandomPowerUp()]
   // handling bombRadius powerUp
-  if (randomPowerUp === "bombRadius"){
+  if (randomPowerUp === "bombRadius" &&  playerInfos.positionX == powerUps.positionX){
     playerInfos.bombLength = playerInfos.bombLength + powerUps.bombRadius
   }
   // handling bombAdd powerUp adding a bomb to use
@@ -58,6 +60,7 @@ export function canSpawnPowerUp() {
     return false
   }
 }
+
 // spawning the powerUp(s) in the game
 export function spawnPowerup(obj){
 
@@ -72,17 +75,10 @@ export function spawnPowerup(obj){
 // PowerUp spawn logic (NOT YET COMPLETED!!!)
   if (canSpawnPowerUp()){
     powerUpNumber = generateRandomPowerUp()
-    const powerup = document.createElement('div')
-    powerup.classList.add('powerup')
-    powerup.style.top = `${Math.floor(Math.random()*window.innerHeight)}px`
-    powerup.style.left = `${Math.floor(Math.random()*window.innerWidth)}px`
-    document.body.appendChild(powerup)
-    // remove the powerup if not picked up
-    setTimeout(() => {
-      powerup.remove()
-      }, 3000)
+    applyPowerUp(obj)
   }
 }
+
 // function to exclude lifeAdd from the powerUps pool and returns a new powerUps object
 export function excludeHeartsDropsLogic(){
   let excludeKey = "lifeAdd"
@@ -95,6 +91,7 @@ export function excludeHeartsDropsLogic(){
     })
   return newPowerUps
 }
+
 // function to exclude bombAdd from the powerUps pool and returns a new powerUps object
 export function excludeBombDropsLogic(){
   let excludeKey = "bombAdd"
@@ -108,6 +105,13 @@ export function excludeBombDropsLogic(){
   return newPowerUps
 }
 
+export function canPickPowerUp(){
+  if (playerInfos.positionX == powerUps.positionX && playerInfos.positionY == powerUps.positionY){
+    return true
+  }else{
+    return false
+  }
+}
 // PowerUps object listing all possible powerUps and their values
 export const powerUps = {
   bombRadius : 1,

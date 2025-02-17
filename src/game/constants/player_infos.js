@@ -18,6 +18,10 @@ export const playerInfos = {
   maxBomb: 2,
   moveSpeed: 0.3,
   bombLength: 1,
+  // Player life
+  hearts : 3,
+  extraHeart : 0,
+  invulnerable : false,
 };
 
 // To center the hitbox in the middle of the character
