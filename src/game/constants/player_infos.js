@@ -17,7 +17,7 @@ export const playerInfos = {
   // Player stats that can be affected by powerups
   maxBomb: 2,
   moveSpeed: 0.3,
-  bombLength: 1,
+  bombLength: 2,
 };
 
 // To center the hitbox in the middle of the character

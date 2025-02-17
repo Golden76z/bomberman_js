@@ -1,7 +1,8 @@
 import { gameLoop } from "./gameLoop.js";
 import { playerInfos } from "../constants/player_infos.js";
 import { walls } from "../engine/mapGeneration.js";
-import { placeBomb } from "../constants/levels.js";
+import { placeBomb } from "../engine/handleExplosion.js";
+import { handleExplosionEffect } from '../entities/colisionMap.js'
 
 const player = document.querySelector(".player");
 const container = document.querySelector(".game-container");
@@ -135,11 +136,14 @@ export function handleKeyDown(event) {
     playerInfos.bomb != playerInfos.maxBomb &&
     !window.isPaused
   ) {
+    // Setting up player coordinate centered on his hitbox
+    let x = position.x - playerInfos.width / 3
+    let y = position.y - playerInfos.height / 3
     // Place a bomb and center it
-    placeBomb(
-      position.x - playerInfos.width / 3,
-      position.y - playerInfos.height / 3
-    );
+    placeBomb(x, y);
+
+    // Function to change the walls colors
+    handleExplosionEffect(x, y)
     playerInfos.bomb++;
   }
 }

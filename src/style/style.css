@@ -54,7 +54,11 @@ html {
 }
 
 .destructible {
-  background-image: url("../../images/Sprite-0003.png");
+  background-image: url("../../images/Sprite-0005.png");
+}
+
+.exploding {
+  background-image: url("../../images/Sprite-0004.png");
 }
 
 .empty {
@@ -403,4 +407,15 @@ button:focus {
   .game-title {
     font-size: 6vw;
   }
+}
+
+#explosion-container {
+  pointer-events: none;
+  z-index: 5;
+}
+
+.explosion-animation {
+  image-rendering: pixelated;
+  /* For crisp pixel art */
+  background-repeat: no-repeat;
 }
