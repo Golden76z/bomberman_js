@@ -16,7 +16,6 @@ export let positionXPowerUp
 
 export let positionYPowerUp
 
-
 //export let  canDrop = Math.floor(Math.random()*5)
 
 export function generateDropChance(){
@@ -58,13 +57,21 @@ export function applyPowerUp(obj){
     }
   }
   // handling speed powerup
-  if (randomPowerUp === "speedBoost"&& canPickPowerUp()){
+  if (randomPowerUp === "speedBoost" && canPickPowerUp()){
     baseSpeed = playerInfos.moveSpeed // creating a copy of the player speed to reset it afterwards
     playerInfos.moveSpeed = playerInfos.moveSpeed*powerUps.speedBoost // apply speed powerUp
     // reset player speed after 10 secs
     setTimeout(()=>{
       playerInfos.moveSpeed = baseSpeed
     }, 10000)
+  }
+
+  if (randomPowerUp === "invulnerabilite" && canPickPowerUp()){
+    playerInfos.invulnerable = true // apply powerup
+    // make player vulnerable after 7 secs
+    setTimeout(()=>{
+      playerInfos.invulnerable = false
+    }, 7000)
   }
 }
 
