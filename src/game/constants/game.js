@@ -3,9 +3,29 @@ export const gameInfos = {
   pause: false,
   level: 1,
   fps: 60,
-  tileSize: 54.5, // Fixed size for each tile
+  tileSize: 55, // Fixed size for each tile
   width_tiles: 9,
   height_tiles: 9,
+  wallStyles: {
+    level1: {
+      wall1: "../../images/Sprite-0001.png",
+      wall2: "../../images/Sprite-0002.png",
+      empty: "../../images/grass3.png",
+      destructible: "../../images/Sprite-0005.png"
+    },
+    level2: {
+      wall1: "../../images/Sprite-0001.png",
+      wall2: "../../images/Sprite-0002.png",
+      empty: "../../images/ground.png",
+      destructible: "../../images/Sprite-0005.png"
+    },
+    level3: {
+      wall1: "../../images/level3/wall1.png",
+      wall2: "../../images/level3/wall2.png",
+      empty: "../../images/grass3.png",
+      destructible: "../../images/level3/destructible.png"
+    }
+  }
 };
 
 export function updateGameLevel() {
@@ -29,7 +49,7 @@ updateGameLevel()
 const gameContainer = document.querySelector(".game-container");
 
 // Setting the style depending on the gameInfos object constant
-const gameContainerStyles = () => {
+export const gameContainerStyles = () => {
   return {
     width: `${gameInfos.width}px`,
     height: `${gameInfos.height}px`,
@@ -41,6 +61,37 @@ const gameContainerStyles = () => {
     gridTemplateRows: `repeat(${gameInfos.height_tiles}, ${gameInfos.tileSize}px)`,
   };
 };
+
+export function updateWallStyles() {
+  // Create or get the style element
+  let styleElement = document.getElementById('wall-styles');
+  if (!styleElement) {
+    styleElement = document.createElement('style');
+    styleElement.id = 'wall-styles';
+    document.head.appendChild(styleElement);
+  }
+
+  // Get current level styles
+  const currentStyles = gameInfos.wallStyles[`level${gameInfos.level}`];
+
+  // Update the CSS
+  styleElement.textContent = `
+    .wall1 {
+      background-image: url("${currentStyles.wall1}");
+    }
+    .wall2 {
+      background-image: url("${currentStyles.wall2}");
+    }
+    .empty {
+      background-image: url("${currentStyles.empty}");
+    }
+    .destructible {
+      background-image: url("${currentStyles.destructible}");
+    }
+  `;
+}
+
+updateWallStyles();
 
 // Applying the dynamic styles
 const styles = gameContainerStyles();

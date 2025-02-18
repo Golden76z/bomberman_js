@@ -7,6 +7,7 @@ import { gameInfos } from '../constants/game.js';
 import { getTilesCoordinates } from '../engine/getTileCoordinates.js';
 import { Explosion } from "../entities/bomb.js";
 import { ExplosionAnimation } from '../entities/explosion_effect.js'
+import { checkLevel } from "./checkLevel.js";
 
 const activeBombPositions = new Map();
 
@@ -58,6 +59,7 @@ function removeWallsInRange(x, y, walls, map) {
           break; // Stop this direction if we hit an indestructible wall
         } else if (wall.type === 3 && !wallsToRemove.includes(wall)) {
           wallsToRemove.push(wall);
+          console.log("removewall");
         }
       }
     }
@@ -188,7 +190,7 @@ export function placeBomb(x, y) {
     ];
   }
 
-  const currentMap = maps[gameInfos.level - 1];
+  let currentMap = maps[gameInfos.level - 1];
 
   // Calculate bomb position on map
   let coordinates = getTilesCoordinates(x, y)
@@ -217,6 +219,8 @@ export function placeBomb(x, y) {
         handleExplosion(coordinates[0], coordinates[1], currentMap);
         activeBombPositions.delete(bombKey);
         clearInterval(checkExplosion);
+        currentMap = maps[gameInfos.level - 1];
+        checkLevel(currentMap)
       }
     }, 100); // Check every 100ms
   }
