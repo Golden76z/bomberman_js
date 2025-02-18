@@ -1,5 +1,21 @@
 import { playerInfos } from "../constants/player_infos"
 
+// PowerUps object listing all possible powerUps and their values
+export let powerUps = {
+  bombRadius : 1,
+  bombAdd : 1,
+  maxBombAdd : 1,
+  lifeAdd : 1,
+  invulnerabilite : true,
+  speedBoost : 2,
+  positionX : positionXPowerUp,
+  positionY : positionYPowerUp,
+}
+
+export let positionXPowerUp
+
+export let positionYPowerUp
+
 
 //export let  canDrop = Math.floor(Math.random()*5)
 
@@ -19,19 +35,19 @@ export function applyPowerUp(obj){
 
   const randomPowerUp = obj[generateRandomPowerUp()]
   // handling bombRadius powerUp
-  if (randomPowerUp === "bombRadius" &&  playerInfos.positionX == powerUps.positionX){
+  if (randomPowerUp === "bombRadius" && canPickPowerUp()){
     playerInfos.bombLength = playerInfos.bombLength + powerUps.bombRadius
   }
   // handling bombAdd powerUp adding a bomb to use
-  if (randomPowerUp === "bombAdd"){
+  if (randomPowerUp === "bombAdd"&& canPickPowerUp()){
     playerInfos.bomb = playerInfos.bomb + powerUps.bombAdd
   }
   // handling maxBomb powerUp
-  if (randomPowerUp === "maxBombAdd"){
+  if (randomPowerUp === "maxBombAdd"&& canPickPowerUp()){
     playerInfos.maxBomb = playerInfos.maxBomb + powerUps.maxBombAdd
   }
   // handling Life powerup
-  if (randomPowerUp === "lifeAdd"){
+  if (randomPowerUp === "lifeAdd"&& canPickPowerUp()){
     // If player is full HP add an extra heart to the bar
     if (playerInfos.extraHeart === 0 && playerInfos.hearts === 3){
       playerInfos.extraHeart = playerInfos.extraHeart + powerUps.lifeAdd
@@ -42,7 +58,7 @@ export function applyPowerUp(obj){
     }
   }
   // handling speed powerup
-  if (randomPowerUp === "speedBoost"){
+  if (randomPowerUp === "speedBoost"&& canPickPowerUp()){
     baseSpeed = playerInfos.moveSpeed // creating a copy of the player speed to reset it afterwards
     playerInfos.moveSpeed = playerInfos.moveSpeed*powerUps.speedBoost // apply speed powerUp
     // reset player speed after 10 secs
@@ -111,13 +127,4 @@ export function canPickPowerUp(){
   }else{
     return false
   }
-}
-// PowerUps object listing all possible powerUps and their values
-export const powerUps = {
-  bombRadius : 1,
-  bombAdd : 1,
-  maxBombAdd : 1,
-  lifeAdd : 1,
-  invulnerabilite : true,
-  speedBoost : 2,
 }
