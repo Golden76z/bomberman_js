@@ -1,82 +1,130 @@
 <!DOCTYPE html>
 <html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bomberman js</title>
+    <link rel="stylesheet" href="/src/style/style.css" />
+  </head>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Bomberman js</title>
-  <link rel="stylesheet" href="/src/style/style.css" />
-</head>
-
-<body>
-  <!-- Menu Screen -->
-  <div id="menu-screen" class="menu-container">
-    <div class="menu-content">
-      <div class="title-container">
-        <img src="./images/bomberman-character.png" alt="Bomberman Character" class="character-img" />
-        <a href="https://github.com/Golden76z/bomberman_js" target="_blank" class="github-link">
-          <img src="./images/github-icon.png" alt="GitHub" class="github-icon" />
-        </a>
-      </div>
-      <div class="right-content">
-        <h1 class="game-title">BOMBERMAN</h1>
-        <div class="buttons-container">
-          <button id="start-button">Start Game</button>
-          <button id="settings-button">Settings</button>
+  <body>
+    <!-- Menu Screen -->
+    <div id="menu-screen" class="menu-container">
+      <div class="menu-content">
+        <div class="title-container">
+          <img
+            src="./images/bomberman-character.png"
+            alt="Bomberman Character"
+            class="character-img"
+          />
+          <a
+            href="https://github.com/Golden76z/bomberman_js"
+            target="_blank"
+            class="github-link"
+          >
+            <img
+              src="./images/github-icon.png"
+              alt="GitHub"
+              class="github-icon"
+            />
+          </a>
+        </div>
+        <div class="right-content">
+          <h1 class="game-title">BOMBERMAN</h1>
+          <div class="buttons-container">
+            <button id="start-button">Start Game</button>
+            <button id="settings-button">Settings</button>
+            <button id="leaderboard-button">Leaderboard</button>
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- Settings Panel (déplacé en dehors du menu-content) -->
-  <div id="settings-panel" class="settings-panel hidden">
-    <h2>Settings</h2>
-    <div class="volume-control">
-      <label>Music Volume: <span id="music-value">50</span>%</label>
-      <input type="range" id="music-volume" min="0" max="100" value="50" />
+    <!-- Settings Panel (déplacé en dehors du menu-content) -->
+    <div id="settings-panel" class="settings-panel hidden">
+      <h2>Settings</h2>
+      <div class="volume-control">
+        <label>Music Volume: <span id="music-value">50</span>%</label>
+        <input type="range" id="music-volume" min="0" max="100" value="50" />
+      </div>
+      <div class="volume-control">
+        <label>SFX Volume: <span id="sfx-value">50</span>%</label>
+        <input type="range" id="sfx-volume" min="0" max="100" value="50" />
+      </div>
+      <button class="close-button" id="close-settings-button">
+        Close Settings
+      </button>
     </div>
-    <div class="volume-control">
-      <label>SFX Volume: <span id="sfx-value">50</span>%</label>
-      <input type="range" id="sfx-volume" min="0" max="100" value="50" />
-    </div>
-    <button class="close-button" id="close-settings-button">
-      Close Settings
-    </button>
-  </div>
 
-  <!-- Container du jeu -->
-  <div class="game-wrapper hidden" id="game-wrapper">
-    <div class="game-info">
-      <div id="score">Score: 0</div>
-      <div id="timer">Temps: 00:00</div>
-      <div id="lives">Vies: 3</div>
+    <!--Leaderboard Panel-->
+    <div id="leaderboard-panel" class="leaderboard-panel hidden">
+      <h2>Leaderboard</h2>
+      <div id="leaderboard-menu" class="leaderboard-container">
+        <div class="leaderboard-scores"></div>
+        <div class="pagination">
+          <button id="prev-page">Previous</button>
+          <span class="page-info">Page 1 of 1</span>
+          <button id="next-page">Next</button>
+        </div>
+      </div>
+      <button class="close-button" id="close-leaderboard-button">
+        Close Leaderboard
+      </button>
     </div>
-    <div class="game-container" id="gameMap">
-      <div class="player"></div>
-    </div>
-  </div>
 
-  <!-- Menu Pause -->
-  <div id="pause-container">
-    <div class="menu-content">
-      <h2>PAUSE!</h2>
-      <div class="buttons-container">
-        <button id="continue-button">Continue</button>
-        <button id="restart-button">Restart</button>
-        <button id="exit-button">Exit</button>
+    <!-- Container du jeu -->
+    <div class="game-wrapper hidden" id="game-wrapper">
+      <div class="game-info">
+        <div id="score">Score: 0</div>
+        <div id="timer">Temps: 00:00</div>
+        <div id="lives">Vies: 3</div>
+      </div>
+      <div class="game-container" id="gameMap">
+        <div class="player"></div>
       </div>
     </div>
-  </div>
 
-  <!-- Game Over -->
-  <div id="game-over-container">
-    <h2>GAME OVER!</h2>
-    <div class="buttons-container">
-      <button id="main-menu-button">Main Menu</button>
+    <!-- Menu Pause -->
+    <div id="pause-container">
+      <div class="menu-content">
+        <h2>PAUSE!</h2>
+        <div class="buttons-container">
+          <button id="continue-button">Continue</button>
+          <button id="restart-button">Restart</button>
+          <button id="exit-button">Exit</button>
+        </div>
+      </div>
     </div>
-  </div>
 
-  <script type="module" src="./src/game/menu.js"></script>
-</body>
+    <!-- Game Over -->
+    <div id="game-over-container">
+      <h2>GAME OVER!</h2>
+      <div id="final-score">
+        Your Score: <span id="end-game-score"> 0</span>
+      </div>
+      <div id="player-name-input" class="name-input-container">
+        <input
+          type="text"
+          id="player-name"
+          placeholder="Enter your name"
+          maxlength="15"
+        />
+        <button id="submit-name-button">Submit Score</button>
+      </div>
+      <div class="leaderboard-game-over" class="leaderboard-container">
+        <h3>Top Scores</h3>
+        <div class="leaderboard-scores"></div>
+        <div class="pagination">
+          <button id="prev-page">Previous</button>
+          <span class="page-info"> Page 1 of 1 </span>
+          <button id="next-page">Next;</button>
+        </div>
+      </div>
+      <div class="buttons-container">
+        <button id="main-menu-button">Main Menu</button>
+      </div>
+    </div>
 
+    <script type="module" src="./src/game/menu.js"></script>
+  </body>
 </html>
