@@ -1,12 +1,11 @@
 import { pauseTimer, resumeTimer } from "./ui_scoring.js";
 import { pauseAllExplosions, resumeAllExplosions } from "../entities/bomb.js";
-
-let isPaused = false;
+import { gameInfos } from '../constants/game.js'
 
 document.addEventListener("keydown", (event) => {
   //console.log(`Touche pressée : ${event.key}`);
   if (event.key === "p" || event.key === "Escape") {
-    if (isPaused) {
+    if (gameInfos.pause) {
       resumeGame();
     } else {
       showPauseMenu();
@@ -26,7 +25,7 @@ export function showPauseMenu() {
   pauseContainer.classList.add("visible");
   pauseContainer.classList.remove("hidden");
 
-  isPaused = true;
+  gameInfos.pause = true;
   window.isPaused = true;
   pauseTimer();
   pauseAllExplosions();
@@ -42,7 +41,7 @@ function resumeGame() {
   pauseContainer.classList.remove("visible");
   pauseContainer.classList.add("hidden");
 
-  isPaused = false;
+  gameInfos.pause = false;
   window.isPaused = false;
   resumeTimer();
   resumeAllExplosions();

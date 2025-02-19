@@ -7,7 +7,14 @@ html {
   padding: 0;
   height: 100%;
   overflow: hidden;
-  background-color: black;
+  background-color: #33333320;
+  background-image: url('../../images/test.png');
+  background-size: cover;
+  /* Cover the entire viewport */
+  background-position: center;
+  /* Center the background */
+  background-repeat: no-repeat;
+  /* Don't repeat the gif */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -45,7 +52,7 @@ html {
 }
 
 /* ---------------------------- Sprites ------------------------- */
-.wall1 {
+/* .wall1 {
   background-image: url("../../images/Sprite-0001.png");
 }
 
@@ -54,11 +61,11 @@ html {
 }
 
 .destructible {
-  background-image: url("../../images/Sprite-0003.png");
-}
+  background-image: url("../../images/Sprite-0005.png");
+} */
 
-.empty {
-  background-image: url("../../images/ground.png");
+.exploding {
+  background-image: url("../../images/Sprite-0004.png");
 }
 
 /* -----------------Game UI (Score, HP and time)----------------- */
@@ -87,7 +94,6 @@ html {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: black;
   z-index: 1000;
 }
 
@@ -369,7 +375,7 @@ button:focus {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: black;
+  background-color: transparent;
 }
 
 .game-container {
@@ -377,6 +383,7 @@ button:focus {
   display: grid;
   background-color: #f0f0f0;
   overflow: hidden;
+  margin-top: 10%;
 }
 
 /* ---------------------- Utilitaires --------------------------- */
@@ -403,4 +410,15 @@ button:focus {
   .game-title {
     font-size: 6vw;
   }
+}
+
+#explosion-container {
+  pointer-events: none;
+  z-index: 5;
+}
+
+.explosion-animation {
+  image-rendering: pixelated;
+  /* For crisp pixel art */
+  background-repeat: no-repeat;
 }
