@@ -2,12 +2,13 @@ import { gameInfos, updateGameLevel, updateWallStyles, gameContainerStyles } fro
 import { createWalls } from "../entities/colisionMap.js"
 import { createMap } from "./mapGeneration.js"
 import { walls } from "./mapGeneration.js"
-import { maps } from "../constants/levels.js"
+import { maps, originalMaps } from "../constants/levels.js"
 import { gameLoop } from "./gameLoop.js"
 import { getBoundaryX, getBoundaryY, updatePosition } from "./player_inputs.js"
 import { updatePlayerAnimation, position } from "./player_inputs.js"
 import { activeBombPositions } from "./handleExplosion.js"
 import { Wall } from "../entities/colisionMap.js"
+import { playerInfos } from "../constants/player_infos.js"
 
 // Function to check if the number of wall is equal to 0 or not
 export function checkWalls() {
@@ -27,7 +28,6 @@ export function checkWalls() {
 export function checkLevel(currentMap) {
   // Safety check - ensure we have a map
   if (!currentMap) {
-    console.error("No map provided to checkLevel");
     currentMap = maps[gameInfos.level - 1];
   }
 
@@ -39,31 +39,37 @@ export function checkLevel(currentMap) {
     }
   }
 
-  console.log(`Checking level completion: ${count} destroyable walls remaining`);
-
-  if (count === 0) {
-    console.log(`Level ${gameInfos.level} complete! Moving to next level.`);
+  // If we change level or restart a map
+  if (count === 0 || gameInfos.restart) {
 
     // Clear any active bombs before changing level
     activeBombPositions.forEach((bombData, key) => {
-      if (bombData.explosion && bombData.explosion.element) {
-        bombData.explosion.element.remove();
+      if (bombData.checkExplosionInterval) {
+        clearInterval(bombData.checkExplosionInterval);
       }
+
+      // Remove all the explosions elements
+      if (bombData.explosion && bombData.explosion.element) {
+        // Calling the remove method stored inside the bomb class
+        bombData.explosion.remove();
+      }
+
+      // Delete from active bombs map
       activeBombPositions.delete(key);
     });
 
     // Increment level
-    gameInfos.level++;
+    if (!gameInfos.restart) {
+      gameInfos.level++;
+    }
+    gameInfos.restart = false
     updateGameLevel();
 
     // Get the new map
-    const newMap = maps[gameInfos.level - 1];
+    const newMap = originalMaps[gameInfos.level - 1];
     if (!newMap) {
-      console.error(`No map found for level ${gameInfos.level}`);
       return;
     }
-
-    console.log(`New map dimensions: ${newMap.length}x${newMap[0].length}`);
 
     // Update game container
     const gameContainer = document.querySelector(".game-container");
@@ -89,6 +95,9 @@ export function checkLevel(currentMap) {
     // Reset player position
     position.x = 60;
     position.y = 60;
+    playerInfos.maxBomb = 1
+    playerInfos.bomb = 0
+    playerInfos.bombLength = 1
     updatePlayerAnimation();
 
     // Recalculate boundaries

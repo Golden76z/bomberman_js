@@ -242,7 +242,6 @@ export function placeBomb(x, y) {
       map: currentMap,
     });
 
-    // Set up a listener for when the explosion is removed
     const checkExplosion = setInterval(() => {
       if (!explosion.element || !explosion.element.parentNode) {
         // Explosion is finished, handle the map updates
@@ -257,6 +256,15 @@ export function placeBomb(x, y) {
         }, 1000)
       }
     }, 100); // Check every 100ms
+
+    // Store bomb data WITH the interval ID
+    activeBombPositions.set(bombKey, {
+      explosion,
+      mapX: coordinates[0],
+      mapY: coordinates[1],
+      map: currentMap,
+      checkExplosionInterval: checkExplosion  // Store the interval ID here
+    });
   }
 }
 

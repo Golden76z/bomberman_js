@@ -1,6 +1,7 @@
 // Set the object of the game
 export const gameInfos = {
   pause: false,
+  restart: false,
   level: 1,
   fps: 60,
   tileSize: 55, // Fixed size for each tile
