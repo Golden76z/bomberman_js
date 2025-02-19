@@ -17,7 +17,11 @@ export const playerInfos = {
   // Player stats that can be affected by powerups
   maxBomb: 2,
   moveSpeed: 0.3,
-  bombLength: 1,
+  bombLength: 4,
+  // Player life
+  hearts: 3,
+  extraHeart: 0,
+  invulnerable: false,
 };
 
 // To center the hitbox in the middle of the character
@@ -101,6 +105,6 @@ const styles = `
 }`;
 
 // Adding the style to the css file
-const styleSheet = document.createElement("style");
+const styleSheet = document.createElement('style');
 styleSheet.textContent = styles;
 document.head.appendChild(styleSheet);

@@ -7,7 +7,9 @@ let currentMap = maps[gameInfos.level - 1];
 const tileElements = [];
 
 // Initial map rendering with references to each tile
-function createMap(mapArray) {
+export function createMap(mapArray) {
+  console.log(mapArray);
+
   const gameMap = document.getElementById("gameMap");
   const player = gameMap.querySelector(".player");
   const info = gameMap.querySelector(".info");
@@ -15,9 +17,9 @@ function createMap(mapArray) {
   gameMap.innerHTML = "";
   tileElements.length = 0;
 
-  mapArray.forEach((row, rowIndex) => {
+  mapArray.forEach((row) => {
     const tileRow = [];
-    row.forEach((cell, colIndex) => {
+    row.forEach((cell) => {
       const tile = document.createElement("div");
       tile.classList.add("tile");
 

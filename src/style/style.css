@@ -7,7 +7,14 @@ html {
   padding: 0;
   height: 100%;
   overflow: hidden;
-  background-color: black;
+  background-color: #33333320;
+  background-image: url('../../images/test.png');
+  background-size: cover;
+  /* Cover the entire viewport */
+  background-position: center;
+  /* Center the background */
+  background-repeat: no-repeat;
+  /* Don't repeat the gif */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -32,6 +39,7 @@ html {
   from {
     background-position: 0 0;
   }
+
   to {
     background-position: -896px 0;
   }
@@ -44,7 +52,7 @@ html {
 }
 
 /* ---------------------------- Sprites ------------------------- */
-.wall1 {
+/* .wall1 {
   background-image: url("../../images/Sprite-0001.png");
 }
 
@@ -53,11 +61,11 @@ html {
 }
 
 .destructible {
-  background-image: url("../../images/Sprite-0003.png");
-}
+  background-image: url("../../images/Sprite-0005.png");
+} */
 
-.empty {
-  background-image: url("../../images/ground.png");
+.exploding {
+  background-image: url("../../images/Sprite-0004.png");
 }
 
 /* -----------------Game UI (Score, HP and time)----------------- */
@@ -86,7 +94,6 @@ html {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: black;
   z-index: 1000;
 }
 
@@ -260,19 +267,23 @@ button:focus {
 /* ---------------------- Paramètres ---------------------------- */
 .settings-panel {
   background-color: #333;
-  padding: 40px; /* Augmenter le padding pour plus d'espace */
+  padding: 40px;
+  /* Augmenter le padding pour plus d'espace */
   border-radius: 10px;
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 400px; /* Augmenter la largeur */
-  max-width: 90%; /* Gérer la largeur maximale pour petits écrans */
+  width: 400px;
+  /* Augmenter la largeur */
+  max-width: 90%;
+  /* Gérer la largeur maximale pour petits écrans */
   box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.5);
   z-index: 2000;
   opacity: 0;
   visibility: hidden;
-  display: none; /* Par défaut caché */
+  display: none;
+  /* Par défaut caché */
   transition: opacity 0.3s ease, visibility 0s 0.3s;
 }
 
@@ -285,7 +296,8 @@ button:focus {
 
 .settings-panel h2 {
   color: white;
-  font-size: 28px; /* Augmenter la taille du titre */
+  font-size: 28px;
+  /* Augmenter la taille du titre */
   margin-bottom: 30px;
   text-align: center;
 }
@@ -309,7 +321,8 @@ button:focus {
 
 /* Bouton pour fermer le menu */
 .settings-panel .close-button {
-  background-color: #f44336; /* Rouge */
+  background-color: #f44336;
+  /* Rouge */
   color: white;
   border: none;
   padding: 12px;
@@ -362,7 +375,7 @@ button:focus {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: black;
+  background-color: transparent;
 }
 
 .game-container {
@@ -370,6 +383,7 @@ button:focus {
   display: grid;
   background-color: #f0f0f0;
   overflow: hidden;
+  margin-top: 10%;
 }
 
 /* ---------------------- Utilitaires --------------------------- */
@@ -383,6 +397,7 @@ button:focus {
 
 /* -----------------------Responsivity --------------------------- */
 @media (max-width: 768px) {
+
   /* Pour les petits écrans */
   .menu-container {
     padding: 20px;
@@ -395,4 +410,15 @@ button:focus {
   .game-title {
     font-size: 6vw;
   }
+}
+
+#explosion-container {
+  pointer-events: none;
+  z-index: 5;
+}
+
+.explosion-animation {
+  image-rendering: pixelated;
+  /* For crisp pixel art */
+  background-repeat: no-repeat;
 }

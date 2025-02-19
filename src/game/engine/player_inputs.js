@@ -1,12 +1,13 @@
 import { gameLoop } from "./gameLoop.js";
 import { playerInfos } from "../constants/player_infos.js";
 import { walls } from "../engine/mapGeneration.js";
-import { placeBomb } from "../constants/levels.js";
+import { placeBomb } from "../engine/handleExplosion.js";
+import { handleExplosionEffect } from '../entities/colisionMap.js'
 
 const player = document.querySelector(".player");
 const container = document.querySelector(".game-container");
 
-let position = {
+export let position = {
   x: playerInfos.positionX,
   y: playerInfos.positionY,
 };
@@ -23,16 +24,40 @@ export let keys = {
 };
 
 const moveSpeed = playerInfos.moveSpeed;
-const boundaryX = container.clientWidth - playerInfos.width;
-const boundaryY = container.clientHeight - playerInfos.height;
+const TILE_SIZE = 54; // Define tile size as a constant
+
+// Convert boundaries to functions that calculate based on current map size
+export function getBoundaryX() {
+  const mapWidth = walls.length; // Assuming walls array length represents map width
+  return (mapWidth * TILE_SIZE) - playerInfos.width;
+}
+
+export function getBoundaryY() {
+  const mapHeight = walls[0]?.length || walls.length; // Assuming square map
+  return (mapHeight * TILE_SIZE) - playerInfos.height;
+}
 
 function canMove(newX, newY) {
+  const currentBoundaryX = getBoundaryX();
+  const currentBoundaryY = getBoundaryY();
+
+  // Add boundary checks here
+  if (newX < 0 || newX > currentBoundaryX || newY < 0 || newY > currentBoundaryY) {
+    return false;
+  }
+
   return !walls.some((wall) =>
-    wall.checkCollision(newX, newY, playerInfos.width, playerInfos.height)
+    wall.checkCollision(
+      newX,
+      newY,
+      playerInfos.width,
+      playerInfos.height
+    )
   );
 }
 
-function updatePosition(deltaTime) {
+
+export function updatePosition(deltaTime) {
   if (window.isPaused) return;
 
   const elapsed = deltaTime;
@@ -70,9 +95,9 @@ function updatePosition(deltaTime) {
     isMoving = true;
   }
 
-  // Apply boundaries
-  position.x = Math.max(0, Math.min(position.x, boundaryX));
-  position.y = Math.max(0, Math.min(position.y, boundaryY));
+  // Apply boundaries using the functions
+  position.x = Math.max(0, Math.min(position.x, getBoundaryX()));
+  position.y = Math.max(0, Math.min(position.y, getBoundaryY()));
 
   // Update player position
   player.style.transform = `translate(${position.x}px, ${position.y}px)`;
@@ -88,7 +113,7 @@ export function updateCharacter(index) {
   player.classList.add(`character-${index}`);
 }
 
-function updatePlayerAnimation() {
+export function updatePlayerAnimation() {
   const player = document.querySelector(".player");
 
   player.classList.remove(
@@ -130,11 +155,14 @@ export function handleKeyDown(event) {
     playerInfos.bomb != playerInfos.maxBomb &&
     !window.isPaused
   ) {
+    // Setting up player coordinate centered on his hitbox
+    let x = position.x - playerInfos.width / 3
+    let y = position.y - playerInfos.height / 3
     // Place a bomb and center it
-    placeBomb(
-      position.x - playerInfos.width / 3,
-      position.y - playerInfos.height / 3
-    );
+    placeBomb(x, y);
+
+    // Function to change the walls colors
+    handleExplosionEffect(x, y)
     playerInfos.bomb++;
   }
 }
