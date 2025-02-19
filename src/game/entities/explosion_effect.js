@@ -1,7 +1,7 @@
 // Animation constants
 const SPRITE_FRAME_WIDTH = 64; // Original sprite frame width
 const SPRITE_FRAME_HEIGHT = 64; // Original sprite frame height
-const ANIMATION_DURATION = 700; // Total duration in ms
+const ANIMATION_DURATION = 550; // Total duration in ms
 const FRAME_COUNT = 7;
 const FRAME_DURATION = ANIMATION_DURATION / FRAME_COUNT;
 

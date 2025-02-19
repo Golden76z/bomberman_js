@@ -8,6 +8,8 @@ const tileElements = [];
 
 // Initial map rendering with references to each tile
 export function createMap(mapArray) {
+  console.log(mapArray);
+
   const gameMap = document.getElementById("gameMap");
   const player = gameMap.querySelector(".player");
   const info = gameMap.querySelector(".info");

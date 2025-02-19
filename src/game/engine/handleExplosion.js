@@ -9,7 +9,7 @@ import { Explosion } from "../entities/bomb.js";
 import { ExplosionAnimation } from '../entities/explosion_effect.js'
 import { checkLevel } from "./checkLevel.js";
 
-const activeBombPositions = new Map();
+export const activeBombPositions = new Map();
 
 const ANIMATION_DURATION = 700;
 
@@ -59,7 +59,6 @@ function removeWallsInRange(x, y, walls, map) {
           break; // Stop this direction if we hit an indestructible wall
         } else if (wall.type === 3 && !wallsToRemove.includes(wall)) {
           wallsToRemove.push(wall);
-          console.log("removewall");
         }
       }
     }
@@ -85,14 +84,23 @@ function removeWallsInRange(x, y, walls, map) {
   return wallsToRemove.length; // Return count of removed walls
 }
 
-// Updated handleExplosion function with responsive animation
+// Updated handleExplosion function with improved debugging and safety
 export function handleExplosion(x, y, map) {
+  // Safety check
+  if (y >= map.length || x >= map[0].length) {
+    return;
+  }
+
   // Clear the bomb
   map[y][x] = 0;
 
   // Get map dimensions and calculate tile size
   const gameContainer = document.getElementById('gameMap');
-  const tileSize = gameInfos.width / gameInfos.width_tiles; // Use the same tile size as walls
+  if (!gameContainer) {
+    return;
+  }
+
+  const tileSize = gameInfos.width / gameInfos.width_tiles;
 
   // Create container for explosion animations if it doesn't exist
   let container = document.getElementById('explosion-container');
@@ -122,40 +130,61 @@ export function handleExplosion(x, y, map) {
 
   // First pass: Show explosion animations and mark walls for explosion
   directions.forEach(({ dx, dy, dir }) => {
+
     for (let i = 1; i <= playerInfos.bombLength; i++) {
       const newY = y + dy * i;
       const newX = x + dx * i;
 
+      // Validate coordinates are within map bounds
       if (
-        newY >= 0 &&
-        newY < map.length &&
-        newX >= 0 &&
-        newX < map[0].length
+        newY < 0 ||
+        newY >= map.length ||
+        newX < 0 ||
+        newX >= map[0].length
       ) {
-        const wall = Wall.allWalls.find(w =>
-          w.tileX === newX && w.tileY === newY
-        );
+        break; // Stop if we're out of bounds
+      }
 
-        if (wall) {
-          if (wall.type === 1 || wall.type === 2) {
-            break; // Stop this direction if we hit an indestructible wall
-          } else if (wall.type === 3) {
-            wall.explode(); // Add red filter effect
-          }
+      // Debug what tile type we're on
+      // console.log(`  Map value at position: ${map[newY][newX]}`);
+
+      // Find wall at these coordinates
+      const wall = Wall.allWalls.find(w =>
+        w.tileX === newX && w.tileY === newY
+      );
+
+      if (wall) {
+        if (wall.type === 1 || wall.type === 2) {
+          break; // Stop this direction if we hit an indestructible wall
+        } else if (wall.type === 3) {
+          wall.explode(); // Add red filter effect
         }
+      }
 
-        // Create explosion animation
-        const isEnd = i === playerInfos.bombLength ||
-          (i < playerInfos.bombLength &&
-            (map[newY + dy][newX + dx] === 1 ||
-              newY + dy < 0 ||
-              newY + dy >= map.length ||
-              newX + dx < 0 ||
-              newX + dx >= map[0].length));
+      // Safely calculate if this is the end position
+      const nextY = newY + dy;
+      const nextX = newX + dx;
 
-        const explosion = new ExplosionAnimation(newX, newY, tileSize, dir, isEnd);
-        container.appendChild(explosion.element);
-      } else {
+      // First check if the next position is in bounds
+      const isNextPositionOutOfBounds =
+        nextY < 0 ||
+        nextY >= map.length ||
+        nextX < 0 ||
+        nextX >= map[0].length;
+
+      // Then check if it's blocked (but only if it's in bounds)
+      const isNextPositionBlocked = isNextPositionOutOfBounds || map[nextY][nextX] === 1;
+
+      // Determine if this is the end of the explosion
+      const isEnd = i === playerInfos.bombLength ||
+        (i < playerInfos.bombLength && isNextPositionBlocked);
+
+      const explosion = new ExplosionAnimation(newX, newY, tileSize, dir, isEnd);
+      container.appendChild(explosion.element);
+
+      // Stop if hit a wall
+      const wallAtPosition = Wall.allWalls.find(w => w.tileX === newX && w.tileY === newY);
+      if (wallAtPosition && (wallAtPosition.type === 1 || wallAtPosition.type === 2)) {
         break;
       }
     }
@@ -163,6 +192,7 @@ export function handleExplosion(x, y, map) {
 
   // Remove the walls and update the map
   const count = removeWallsInRange(x, y, walls, map);
+
   if (count > 0) {
     updateMultipleMaps(maps);
     updateScore(500 * count);
@@ -170,7 +200,7 @@ export function handleExplosion(x, y, map) {
 
   // Clean up container after animation
   setTimeout(() => {
-    if (container && !container.hasChildNodes()) {
+    if (container && document.contains(container) && !container.hasChildNodes()) {
       container.remove();
     }
   }, ANIMATION_DURATION + 100);
@@ -220,7 +250,11 @@ export function placeBomb(x, y) {
         activeBombPositions.delete(bombKey);
         clearInterval(checkExplosion);
         currentMap = maps[gameInfos.level - 1];
-        checkLevel(currentMap)
+
+        // Check if the map is cleared and load the next map
+        setTimeout(() => {
+          checkLevel(currentMap)
+        }, 1000)
       }
     }, 100); // Check every 100ms
   }
