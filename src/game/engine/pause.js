@@ -1,6 +1,8 @@
 import { pauseTimer, resumeTimer } from "./ui_scoring.js";
 import { pauseAllExplosions, resumeAllExplosions } from "../entities/bomb.js";
 import { gameInfos } from '../constants/game.js'
+import { checkLevel } from "./checkLevel.js";
+import { maps } from '../constants/levels.js'
 
 document.addEventListener("keydown", (event) => {
   //console.log(`Touche pressée : ${event.key}`);
@@ -52,7 +54,17 @@ function resumeGame() {
 function restartGame() {
   console.log("Redémarrage du jeu");
   window.isPaused = false;
-  window.location.reload();
+  gameInfos.pause = false;
+  // window.location.reload();
+  gameInfos.restart = true
+
+  // Remove the pause menu from the screen
+  const pauseContainer = document.getElementById("pause-container");
+  pauseContainer.classList.add("hidden");
+  pauseContainer.classList.remove("visible");
+
+  // Resets the map
+  checkLevel(maps[gameInfos.level - 1])
 }
 
 function exitToMenu() {
