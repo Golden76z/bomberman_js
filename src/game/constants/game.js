@@ -1,6 +1,6 @@
 // Set the object of the game
 export const gameInfos = {
-  pause: false,
+  pause: true,
   restart: false,
   level: 1,
   fps: 60,
@@ -9,10 +9,10 @@ export const gameInfos = {
   height_tiles: 9,
   wallStyles: {
     level1: {
-      wall1: "../../images/Sprite-0001.png",
-      wall2: "../../images/Sprite-0002.png",
-      empty: "../../images/grass3.png",
-      destructible: "../../images/Sprite-0005.png"
+      wall1: "../../images/grass1.png",
+      wall2: "../../images/grass2.png",
+      empty: "../../images/grass4.png",
+      destructible: "../../images/grass3.png"
     },
     level2: {
       wall1: "../../images/Sprite-0001.png",
@@ -21,10 +21,10 @@ export const gameInfos = {
       destructible: "../../images/Sprite-0005.png"
     },
     level3: {
-      wall1: "../../images/level3/wall1.png",
-      wall2: "../../images/level3/wall2.png",
-      empty: "../../images/grass3.png",
-      destructible: "../../images/level3/destructible.png"
+      wall1: "../../images/brick1.png",
+      wall2: "../../images/brick2.png",
+      empty: "../../images/brick4.png",
+      destructible: "../../images/brick3.png"
     }
   }
 };
