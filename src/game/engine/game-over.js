@@ -1,5 +1,6 @@
 import { pauseTimer, score, lives, timeLeft } from "./ui_scoring.js";
 import { pauseAllExplosions } from "../entities/bomb.js";
+import { loadLeaderboard } from "./leaderboard.js";
 
 let isPaused = false;
 export function showGameOver() {
@@ -12,6 +13,16 @@ export function showGameOver() {
   }
   gameOverContainer.classList.add("visible");
   gameOverContainer.classList.remove("hidden");
+
+  document.getElementById("end-game-score").textContent = score;
+
+  const playerNameInput = document.getElementById("player-name-input");
+  if (playerNameInput) {
+    playerNameInput.style.display = "block";
+    document.getElementById("player-name").value = "";
+  }
+
+  loadLeaderboard(1, "gameOver");
 
   isPaused = true;
   window.isPaused = true;

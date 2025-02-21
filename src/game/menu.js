@@ -1,3 +1,5 @@
+import { initLeaderboard } from "./engine/leaderboard.js";
+
 document.addEventListener("DOMContentLoaded", function () {
   const menuScreen = document.getElementById("menu-screen");
   const gameWrapper = document.getElementById("game-wrapper");
@@ -9,6 +11,8 @@ document.addEventListener("DOMContentLoaded", function () {
   const sfxVolume = document.getElementById("sfx-volume");
   const musicValue = document.getElementById("music-value");
   const sfxValue = document.getElementById("sfx-value");
+
+  initLeaderboard();
 
   // Gestionnaire pour démarrer le jeu
   startButton.addEventListener("click", function () {
