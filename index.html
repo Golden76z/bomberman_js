@@ -20,11 +20,13 @@
           <button id="settings-button">Settings</button>
         </div>
         <a href="https://github.com/Golden76z/bomberman_js" target="_blank" class="github-link">
+          <span>Project Link</span>
           <img src="./images/github-icon.png" alt="GitHub" class="github-icon" />
         </a>
       </div>
     </div>
   </div>
+
 
   <!-- Settings Panel (déplacé en dehors du menu-content) -->
   <div id="settings-panel" class="settings-panel hidden">
@@ -51,6 +53,7 @@
     </div>
     <div class="game-container" id="gameMap">
       <div class="player"></div>
+      <div class="ai-player"></div>
     </div>
   </div>
 
@@ -73,7 +76,7 @@
       <button id="main-menu-button">Main Menu</button>
     </div>
   </div>
-
+  <div id="fps-counter">FPS: 0</div>
   <script type="module" src="./src/game/menu.js"></script>
 </body>
 

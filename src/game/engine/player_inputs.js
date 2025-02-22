@@ -3,6 +3,8 @@ import { playerInfos } from "../constants/player_infos.js";
 import { walls } from "../engine/mapGeneration.js";
 import { placeBomb } from "../engine/handleExplosion.js";
 import { handleExplosionEffect } from '../entities/colisionMap.js'
+import { gameInfos } from "../constants/game.js";
+import { AIController } from "../entities/ai.js";
 
 const player = document.querySelector(".player");
 const container = document.querySelector(".game-container");
@@ -102,6 +104,11 @@ export function updatePosition(deltaTime) {
   // Update player position
   player.style.transform = `translate(${position.x}px, ${position.y}px)`;
 
+  // At the start of updatePosition function, get AI input
+  if (!gameInfos.pause) {
+    aiController.update(deltaTime);
+  }
+
   // Update animations
   updatePlayerAnimation();
 }
@@ -163,6 +170,7 @@ export function handleKeyDown(event) {
 
     // Function to change the walls colors
     handleExplosionEffect(x, y)
+
     playerInfos.bomb++;
   }
 }
@@ -180,3 +188,4 @@ document.addEventListener("keyup", handleKeyUp);
 
 // Initialize and start the game loop
 gameLoop.start(updatePosition);
+const aiController = new AIController(walls);

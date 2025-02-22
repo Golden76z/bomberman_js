@@ -15,9 +15,9 @@ export const playerInfos = {
   characterIndex: 0,
   bomb: 0,
   // Player stats that can be affected by powerups
-  maxBomb: 1,
+  maxBomb: 3,
   moveSpeed: 0.3,
-  bombLength: 1,
+  bombLength: 4,
   // Player life
   hearts: 3,
   extraHeart: 0,

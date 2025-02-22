@@ -253,7 +253,7 @@ export function placeBomb(x, y) {
         // Check if the map is cleared and load the next map
         setTimeout(() => {
           checkLevel(currentMap)
-        }, 1000)
+        }, 1200)
       }
     }, 100); // Check every 100ms
 

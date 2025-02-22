@@ -28,25 +28,22 @@ export class GameLoop {
       const deltaTime = currentTime - this.lastFrameTime;
       this.accumulator += deltaTime;
 
-      // FPS counter
+      // FPS counter check every second
       if (currentTime - this.lastFpsUpdate >= 1000) {
         this.currentFps = this.frameCount;
         this.frameCount = 0;
         this.lastFpsUpdate = currentTime;
-        // console.log(`Current FPS: ${this.currentFps}`);
+        document.getElementById("fps-counter").textContent = `FPS: ${this.currentFps}`;
       }
 
-      if (this.accumulator >= this.frameInterval) {
-        const updateCount = Math.floor(this.accumulator / this.frameInterval);
-
-        for (let i = 0; i < updateCount; i++) {
-          updateFn(this.frameInterval);
-        }
-
-        this.accumulator -= updateCount * this.frameInterval;
-        this.lastFrameTime = currentTime;
+      // Update game state for every frame
+      while (this.accumulator >= this.frameInterval) {
+        updateFn(this.frameInterval);
+        this.accumulator -= this.frameInterval;
         this.frameCount++;
       }
+
+      this.lastFrameTime = currentTime;
 
       requestAnimationFrame(animate);
     };

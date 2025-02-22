@@ -187,22 +187,41 @@ html {
   color: rgb(207, 255, 48);
 }
 
-.github-link {
-  position: absolute;
-  bottom: 20px;
-  right: 20px;
-}
-
 .github-icon {
-  width: 40px;
-  height: 40px;
+  width: 20px;
+  height: 20px;
   opacity: 0.7;
   transition: opacity 0.3s;
+  border-radius: 50%;
+  /* Makes it circular */
+  object-fit: cover;
+  /* Ensures the image fits properly */
+  border: 5px solid white;
+  /* Adds the white border */
 }
 
 .github-icon:hover {
   opacity: 1;
 }
+
+
+.github-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  /* Space between icon and text */
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: bold;
+  color: white;
+  /* Adjust color as needed */
+}
+
+.github-link span {
+  white-space: nowrap;
+  /* Prevents text from breaking */
+}
+
 
 /* ---------------------- Menu pause ---------------------------- */
 #pause-container {
@@ -444,4 +463,16 @@ button:focus {
   image-rendering: pixelated;
   /* For crisp pixel art */
   background-repeat: no-repeat;
+}
+
+#fps-counter {
+  position: fixed;
+  bottom: 10px;
+  left: 10px;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  font-size: 14px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-family: "Press Start 2P", cursive;
 }
