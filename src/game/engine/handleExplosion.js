@@ -8,11 +8,126 @@ import { getTilesCoordinates } from '../engine/getTileCoordinates.js';
 import { Explosion } from "../entities/bomb.js";
 import { ExplosionAnimation } from '../entities/explosion_effect.js'
 import { checkLevel } from "./checkLevel.js";
+import { canSpawnPowerUp, powerUps, generateRandomPowerUp, canPickPowerUp, applyPowerUp } from "./powerups.js";
 
 export const activeBombPositions = new Map();
 
 const ANIMATION_DURATION = 700;
 
+// Add these styles to your CSS
+const powerUpStyles = `
+@keyframes float {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+@keyframes pickup {
+  0% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+
+.powerup {
+  position: absolute;
+  pointer-events: none;
+  transition: all 0.3s ease-out;
+  opacity: 0;
+  transform: scale(0);
+}
+
+.powerup.active {
+  opacity: 1;
+  transform: scale(1);
+  animation: float 1s infinite ease-in-out;
+}
+
+.powerup.pickup {
+  animation: pickup 0.3s ease-out forwards;
+}
+`;
+
+// Add the styles to the document
+const styleSheet = document.createElement("style");
+styleSheet.textContent = powerUpStyles;
+document.head.appendChild(styleSheet);
+
+// Modified spawn function with enhanced animations
+function spawnPowerUpWithAnimation(tileX, tileY) {
+  const gameContainer = document.getElementById('gameMap');
+  const tileSize = gameInfos.width / gameInfos.width_tiles;
+
+  const powerUpElement = document.createElement('div');
+  powerUpElement.className = 'powerup';
+
+  powerUpElement.style.left = `${tileX * tileSize}px`;
+  powerUpElement.style.top = `${tileY * tileSize}px`;
+  powerUpElement.style.width = `${tileSize}px`;
+  powerUpElement.style.height = `${tileSize}px`;
+
+  // Set powerup position for collision detection
+  powerUps.positionX = tileX;
+  powerUps.positionY = tileY;
+
+  // Select appropriate powerup pool and type
+  let availablePowerUps = { ...powerUps };
+  if (playerInfos.bomb === playerInfos.maxBomb) {
+    availablePowerUps = excludeBombDropsLogic();
+  }
+  if (playerInfos.hearts === 3 && playerInfos.extraHeart === 1) {
+    availablePowerUps = excludeHeartDropsLogic();
+  }
+
+  const powerUpType = Object.keys(availablePowerUps)[generateRandomPowerUp()];
+  powerUpElement.dataset.type = powerUpType;
+  powerUpElement.style.backgroundImage = `url('../images/powerups/${powerUpType}.png')`;
+  powerUpElement.style.backgroundSize = 'contain';
+
+  gameContainer.appendChild(powerUpElement);
+
+  // Start appear animation
+  requestAnimationFrame(() => {
+    powerUpElement.classList.add('active');
+  });
+
+  let isBeingCollected = false;
+
+  const checkCollision = setInterval(() => {
+    if (canPickPowerUp() && !isBeingCollected) {
+      isBeingCollected = true;
+
+      // Play pickup animation
+      powerUpElement.classList.remove('active');
+      powerUpElement.classList.add('pickup');
+
+      // Wait for animation to complete before removing
+      setTimeout(() => {
+        if (powerUpElement.parentNode) {
+          applyPowerUp(availablePowerUps, powerUpType);
+          powerUpElement.remove();
+        }
+        clearInterval(checkCollision);
+      }, 300); // Match this with the pickup animation duration
+    }
+  }, 100);
+
+  // Remove after 10 seconds if not collected
+  setTimeout(() => {
+    if (powerUpElement.parentNode && !isBeingCollected) {
+      powerUpElement.classList.remove('active');
+      powerUpElement.classList.add('pickup');
+
+      setTimeout(() => {
+        if (powerUpElement.parentNode) {
+          powerUpElement.remove();
+        }
+      }, 300);
+
+      clearInterval(checkCollision);
+    }
+  }, 10000);
+}
+
+// Modify the removeWallsInRange function to handle powerup spawning
 function removeWallsInRange(x, y, walls, map) {
   const directions = [
     [-1, 0],
@@ -21,8 +136,8 @@ function removeWallsInRange(x, y, walls, map) {
     [0, 1],
   ];
 
-  // Collect walls to remove
   const wallsToRemove = [];
+  const powerUpSpawnPoints = [];
 
   // Check the bomb's position itself first
   if (map[y][x] === 0) {
@@ -31,6 +146,7 @@ function removeWallsInRange(x, y, walls, map) {
     );
     if (centerWall) {
       wallsToRemove.push(centerWall);
+      powerUpSpawnPoints.push({ x: centerWall.tileX, y: centerWall.tileY });
     }
   }
 
@@ -40,48 +156,46 @@ function removeWallsInRange(x, y, walls, map) {
       const newY = y + dy * i;
       const newX = x + dx * i;
 
-      if (
-        newY < 0 ||
-        newY >= map.length ||
-        newX < 0 ||
-        newX >= map[0].length
-      ) {
-        break; // Stop if we're out of bounds
+      if (newY < 0 || newY >= map.length || newX < 0 || newX >= map[0].length) {
+        break;
       }
 
-      // Find wall at these coordinates
       const wall = Wall.allWalls.find(wall =>
         wall.tileX === newX && wall.tileY === newY
       );
 
       if (wall) {
         if (wall.type === 1) {
-          break; // Stop this direction if we hit an indestructible wall
+          break;
         } else if (wall.type === 3 && !wallsToRemove.includes(wall)) {
           wallsToRemove.push(wall);
+          powerUpSpawnPoints.push({ x: wall.tileX, y: wall.tileY });
         }
       }
     }
   });
 
-  // Remove walls
+  // Remove walls and spawn powerups
   wallsToRemove.forEach((wall) => {
-    // Call the wall's remove method to handle both DOM and array cleanup
     wall.remove();
-
-    // Also remove from the walls array passed to this function
     const indexInWallsArray = walls.indexOf(wall);
     if (indexInWallsArray !== -1) {
       walls.splice(indexInWallsArray, 1);
     }
 
-    // Update the map
     if (wall.tileX !== undefined && wall.tileY !== undefined) {
       map[wall.tileY][wall.tileX] = 0;
     }
   });
 
-  return wallsToRemove.length; // Return count of removed walls
+  // Handle powerup spawning for each destroyed wall
+  powerUpSpawnPoints.forEach(point => {
+    if (canSpawnPowerUp()) {
+      spawnPowerUpWithAnimation(point.x, point.y);
+    }
+  });
+
+  return wallsToRemove.length;
 }
 
 // Updated handleExplosion function with improved debugging and safety

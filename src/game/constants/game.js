@@ -9,22 +9,22 @@ export const gameInfos = {
   height_tiles: 9,
   wallStyles: {
     level1: {
-      wall1: "../../images/grass1.png",
-      wall2: "../../images/grass2.png",
-      empty: "../../images/grass4.png",
-      destructible: "../../images/grass3.png"
+      wall1: "../../images/tiles/grass1.png",
+      wall2: "../../images/tiles/grass2.png",
+      empty: "../../images/tiles/grass4.png",
+      destructible: "../../images/tiles/grass3.png"
     },
     level2: {
-      wall1: "../../images/Sprite-0001.png",
-      wall2: "../../images/Sprite-0002.png",
-      empty: "../../images/ground.png",
-      destructible: "../../images/Sprite-0005.png"
+      wall1: "../../images/tiles/Sprite-0001.png",
+      wall2: "../../images/tiles/Sprite-0002.png",
+      empty: "../../images/tiles/ground.png",
+      destructible: "../../images/tiles/Sprite-0005.png"
     },
     level3: {
-      wall1: "../../images/brick1.png",
-      wall2: "../../images/brick2.png",
-      empty: "../../images/brick4.png",
-      destructible: "../../images/brick3.png"
+      wall1: "../../images/tiles/brick1.png",
+      wall2: "../../images/tiles/brick2.png",
+      empty: "../../images/tiles/brick4.png",
+      destructible: "../../images/tiles/brick3.png"
     }
   }
 };

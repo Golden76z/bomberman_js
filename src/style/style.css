@@ -24,13 +24,13 @@ html {
 
 /* ----------------------- Bomb animations ------------------------ */
 .bomb {
-  background: url("../../images/baseBomb3.png");
+  background: url("../../images/bombs/baseBomb3.png");
   background-position: 0 0;
   background-size: 64px 64px;
 }
 
 .explosion {
-  background: url("../../images/baseBomb3.png");
+  background: url("../../images/bombs/baseBomb3.png");
   background-size: 896px 64px;
   animation: explode 2s steps(14) forwards;
 }
@@ -65,7 +65,7 @@ html {
 } */
 
 .exploding {
-  background-image: url("../../images/Sprite-0004.png");
+  background-image: url("../../images/tiles/Sprite-0004.png");
 }
 
 /* -----------------Game UI (Score, HP and time)----------------- */

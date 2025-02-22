@@ -1,20 +1,19 @@
-import { playerInfos } from "../constants/player_infos"
-
-// PowerUps object listing all possible powerUps and their values
-export let powerUps = {
-  bombRadius: 1,
-  bombAdd: 1,
-  maxBombAdd: 1,
-  lifeAdd: 1,
-  invulnerabilite: true,
-  speedBoost: 2,
-  positionX: positionXPowerUp,
-  positionY: positionYPowerUp,
-}
+import { playerInfos } from "../constants/player_infos.js"
 
 export let positionXPowerUp
 
 export let positionYPowerUp
+// PowerUps object listing all possible powerUps and their values
+export let powerUps = {
+  bombRadius: 1,
+  speedBoost: 2,
+  maxBombAdd: 1,
+  lifeAdd: 1,
+  invulnerability: true,
+  bombAdd: 1,
+  positionX: positionXPowerUp,
+  positionY: positionYPowerUp,
+}
 
 //export let  canDrop = Math.floor(Math.random()*5)
 
@@ -25,7 +24,7 @@ export function generateDropChance() {
 
 export function generateRandomPowerUp() {
   // Generate a random number to serve as an index for the powerUps array
-  return Math.floor(Math.random() * powerUps.length())
+  return Math.floor(Math.random() * 5)
 }
 
 export function applyPowerUp(obj) {
@@ -66,7 +65,7 @@ export function applyPowerUp(obj) {
     }, 10000)
   }
 
-  if (randomPowerUp === "invulnerabilite" && canPickPowerUp()) {
+  if (randomPowerUp === "invulnerability" && canPickPowerUp()) {
     playerInfos.invulnerable = true // apply powerup
     // make player vulnerable after 7 secs
     setTimeout(() => {
