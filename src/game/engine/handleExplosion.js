@@ -8,75 +8,47 @@ import { getTilesCoordinates } from '../engine/getTileCoordinates.js';
 import { Explosion } from "../entities/bomb.js";
 import { ExplosionAnimation } from '../entities/explosion_effect.js'
 import { checkLevel } from "./checkLevel.js";
-import { canSpawnPowerUp, powerUps, generateRandomPowerUp, canPickPowerUp, applyPowerUp } from "./powerups.js";
+import { canSpawnPowerUp, powerUps, generateRandomPowerUp, applyPowerUp, powerUpStyles } from "./powerups.js";
 
 export const activeBombPositions = new Map();
 
 const ANIMATION_DURATION = 700;
-
-// Add these styles to your CSS
-const powerUpStyles = `
-@keyframes float {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.2); }
-  100% { transform: scale(1); }
-}
-
-@keyframes pickup {
-  0% { transform: scale(1); opacity: 1; }
-  100% { transform: scale(1.5); opacity: 0; }
-}
-
-.powerup {
-  position: absolute;
-  pointer-events: none;
-  transition: all 0.3s ease-out;
-  opacity: 0;
-  transform: scale(0);
-}
-
-.powerup.active {
-  opacity: 1;
-  transform: scale(1);
-  animation: float 1s infinite ease-in-out;
-}
-
-.powerup.pickup {
-  animation: pickup 0.3s ease-out forwards;
-}
-`;
 
 // Add the styles to the document
 const styleSheet = document.createElement("style");
 styleSheet.textContent = powerUpStyles;
 document.head.appendChild(styleSheet);
 
-// Modified spawn function with enhanced animations
-function spawnPowerUpWithAnimation(tileX, tileY) {
+// Updated function to check if either player or AI can pick up the powerup
+export function canPickPowerUp(actor, powerUpElement) {
+  const actorInfo = actor === 'player' ? playerInfos : actor.playerInfos;
+  const tileSize = gameInfos.width / gameInfos.width_tiles;
+
+  // Get actor's tile position
+  const actorTileX = Math.floor(actorInfo.positionX / tileSize);
+  const actorTileY = Math.floor(actorInfo.positionY / tileSize);
+
+  // Get powerup's tile position
+  const powerupRect = powerUpElement.getBoundingClientRect();
+  const powerupTileX = Math.floor(parseInt(powerUpElement.style.left) / tileSize);
+  const powerupTileY = Math.floor(parseInt(powerUpElement.style.top) / tileSize);
+
+  return actorTileX === powerupTileX && actorTileY === powerupTileY;
+}
+
+export function spawnPowerUpWithAnimation(tileX, tileY) {
   const gameContainer = document.getElementById('gameMap');
   const tileSize = gameInfos.width / gameInfos.width_tiles;
 
   const powerUpElement = document.createElement('div');
   powerUpElement.className = 'powerup';
-
   powerUpElement.style.left = `${tileX * tileSize}px`;
   powerUpElement.style.top = `${tileY * tileSize}px`;
   powerUpElement.style.width = `${tileSize}px`;
   powerUpElement.style.height = `${tileSize}px`;
 
-  // Set powerup position for collision detection
-  powerUps.positionX = tileX;
-  powerUps.positionY = tileY;
-
-  // Select appropriate powerup pool and type
-  let availablePowerUps = { ...powerUps };
-  if (playerInfos.bomb === playerInfos.maxBomb) {
-    availablePowerUps = excludeBombDropsLogic();
-  }
-  if (playerInfos.hearts === 3 && playerInfos.extraHeart === 1) {
-    availablePowerUps = excludeHeartDropsLogic();
-  }
-
+  // Select powerup type
+  const availablePowerUps = { ...powerUps };
   const powerUpType = Object.keys(availablePowerUps)[generateRandomPowerUp()];
   powerUpElement.dataset.type = powerUpType;
   powerUpElement.style.backgroundImage = `url('../images/powerups/${powerUpType}.png')`;
@@ -91,22 +63,19 @@ function spawnPowerUpWithAnimation(tileX, tileY) {
 
   let isBeingCollected = false;
 
+  // Check for both player and AI collision
   const checkCollision = setInterval(() => {
-    if (canPickPowerUp() && !isBeingCollected) {
+    // Check player collision
+    if (canPickPowerUp('player', powerUpElement) && !isBeingCollected) {
+      collectPowerUp(powerUpElement, 'player', checkCollision);
       isBeingCollected = true;
+    }
 
-      // Play pickup animation
-      powerUpElement.classList.remove('active');
-      powerUpElement.classList.add('pickup');
-
-      // Wait for animation to complete before removing
-      setTimeout(() => {
-        if (powerUpElement.parentNode) {
-          applyPowerUp(availablePowerUps, powerUpType);
-          powerUpElement.remove();
-        }
-        clearInterval(checkCollision);
-      }, 300); // Match this with the pickup animation duration
+    // Check AI collision
+    const aiElement = document.querySelector('.ai-player');
+    if (aiElement && canPickPowerUp(window.aiController, powerUpElement) && !isBeingCollected) {
+      collectPowerUp(powerUpElement, window.aiController, checkCollision);
+      isBeingCollected = true;
     }
   }, 100);
 
@@ -127,7 +96,24 @@ function spawnPowerUpWithAnimation(tileX, tileY) {
   }, 10000);
 }
 
-// Modify the removeWallsInRange function to handle powerup spawning
+function collectPowerUp(powerUpElement, collector, checkInterval) {
+  // Play pickup animation
+  powerUpElement.classList.remove('active');
+  powerUpElement.classList.add('pickup');
+
+  // Apply powerup after animation starts
+  const powerUpType = powerUpElement.dataset.type;
+  applyPowerUp(collector, powerUpType);
+
+  // Remove element after animation
+  setTimeout(() => {
+    if (powerUpElement.parentNode) {
+      powerUpElement.remove();
+    }
+    clearInterval(checkInterval);
+  }, 300);
+}
+
 function removeWallsInRange(x, y, walls, map) {
   const directions = [
     [-1, 0],
@@ -321,7 +307,7 @@ export function handleExplosion(x, y, map) {
 }
 
 // Function to place a bomb on the map
-export function placeBomb(x, y) {
+export function placeBomb(x, y, owner) {
   // Initialize maps if needed
   if (!maps) {
     maps = [
@@ -346,7 +332,7 @@ export function placeBomb(x, y) {
     currentMap[coordinates[1]][coordinates[0]] = 0;
 
     // Create new Explosion instance
-    const explosion = new Explosion(x, y);
+    const explosion = new Explosion(x, y, owner);
 
     // Store bomb data
     activeBombPositions.set(bombKey, {

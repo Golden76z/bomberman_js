@@ -1,8 +1,40 @@
 import { playerInfos } from "../constants/player_infos.js"
 
-export let positionXPowerUp
+// Power-ups css animations
+export const powerUpStyles = `
+@keyframes float {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
 
+@keyframes pickup {
+  0% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+
+.powerup {
+  position: absolute;
+  pointer-events: none;
+  transition: all 0.3s ease-out;
+  opacity: 0;
+  transform: scale(0);
+}
+
+.powerup.active {
+  opacity: 1;
+  transform: scale(1);
+  animation: float 1s infinite ease-in-out;
+}
+
+.powerup.pickup {
+  animation: pickup 0.3s ease-out forwards;
+}
+`;
+
+export let positionXPowerUp
 export let positionYPowerUp
+
 // PowerUps object listing all possible powerUps and their values
 export let powerUps = {
   bombRadius: 1,
@@ -27,50 +59,41 @@ export function generateRandomPowerUp() {
   return Math.floor(Math.random() * 5)
 }
 
-export function applyPowerUp(obj) {
+// Updated function to handle both player and AI powerup application
+export function applyPowerUp(actor, powerUpType) {
+  const actorInfo = actor === 'player' ? playerInfos : actor.playerInfos;
 
-  const powerUpKeys = Object.keys(obj)
+  switch (powerUpType) {
+    case 'bombRadius':
+      actorInfo.bombLength += powerUps.bombRadius;
+      break;
 
-  const randomPowerUp = obj[generateRandomPowerUp()]
-  // handling bombRadius powerUp
-  if (randomPowerUp === "bombRadius" && canPickPowerUp()) {
-    playerInfos.bombLength = playerInfos.bombLength + powerUps.bombRadius
-  }
-  // handling bombAdd powerUp adding a bomb to use
-  if (randomPowerUp === "bombAdd" && canPickPowerUp()) {
-    playerInfos.bomb = playerInfos.bomb + powerUps.bombAdd
-  }
-  // handling maxBomb powerUp
-  if (randomPowerUp === "maxBombAdd" && canPickPowerUp()) {
-    playerInfos.maxBomb = playerInfos.maxBomb + powerUps.maxBombAdd
-  }
-  // handling Life powerup
-  if (randomPowerUp === "lifeAdd" && canPickPowerUp()) {
-    // If player is full HP add an extra heart to the bar
-    if (playerInfos.extraHeart === 0 && playerInfos.hearts === 3) {
-      playerInfos.extraHeart = playerInfos.extraHeart + powerUps.lifeAdd
-    }
-    // If the player has missing hearts and isn't dead heal for 1 heart
-    if (playerInfos.hearts < 3 && playerInfos.hearts > 0) {
-      playerInfos.hearts = playerInfos.hearts + powerUps.lifeAdd
-    }
-  }
-  // handling speed powerup
-  if (randomPowerUp === "speedBoost" && canPickPowerUp()) {
-    baseSpeed = playerInfos.moveSpeed // creating a copy of the player speed to reset it afterwards
-    playerInfos.moveSpeed = playerInfos.moveSpeed * powerUps.speedBoost // apply speed powerUp
-    // reset player speed after 10 secs
-    setTimeout(() => {
-      playerInfos.moveSpeed = baseSpeed
-    }, 10000)
-  }
+    case 'bombAdd':
+      actorInfo.maxBomb += powerUps.maxBombAdd;
+      break;
 
-  if (randomPowerUp === "invulnerability" && canPickPowerUp()) {
-    playerInfos.invulnerable = true // apply powerup
-    // make player vulnerable after 7 secs
-    setTimeout(() => {
-      playerInfos.invulnerable = false
-    }, 7000)
+    case 'lifeAdd':
+      if (actorInfo.extraHeart === 0 && actorInfo.hearts === 3) {
+        actorInfo.extraHeart += powerUps.lifeAdd;
+      } else if (actorInfo.hearts < 3 && actorInfo.hearts > 0) {
+        actorInfo.hearts += powerUps.lifeAdd;
+      }
+      break;
+
+    case 'speedBoost':
+      const baseSpeed = actorInfo.moveSpeed;
+      actorInfo.moveSpeed *= powerUps.speedBoost;
+      setTimeout(() => {
+        actorInfo.moveSpeed = baseSpeed;
+      }, 10000);
+      break;
+
+    case 'invulnerability':
+      actorInfo.invulnerable = true;
+      setTimeout(() => {
+        actorInfo.invulnerable = false;
+      }, 7000);
+      break;
   }
 }
 

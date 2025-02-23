@@ -1,14 +1,16 @@
 import { playerInfos } from "../constants/player_infos.js";
 import { gameInfos } from "../constants/game.js";
+import { aiController } from "../engine/player_inputs.js";
 
 const activeExplosions = new Set();
 let tileWidth = gameInfos.width / gameInfos.width_tiles;
 let tileHeight = gameInfos.height / gameInfos.height_tiles;
 
 export class Explosion {
-  constructor(x, y) {
+  constructor(x, y, owner) {
     this.x = x;
     this.y = y;
+    this.owner = owner;
     this.gameBoard = document.getElementById("gameMap");
     this.element = null;
     this.startTime = null;
@@ -18,9 +20,7 @@ export class Explosion {
     this.totalPausedTime = 0;
     this.animationFrameId = null;
 
-    // Add this explosion to active explosions
     activeExplosions.add(this);
-
     this.createExplosionEffect();
   }
 
@@ -110,8 +110,16 @@ export class Explosion {
   remove() {
     if (this.element && this.element.parentNode) {
       this.element.parentNode.removeChild(this.element);
-      playerInfos.bomb--;
-      // Remove from the Set when time is done
+
+      console.log(this.owner);
+
+      // Decrement bomb count for the correct owner
+      if (this.owner === 'player') {
+        playerInfos.bomb--;
+      } else if (this.owner === 'ai') {
+        aiController.playerInfos.bomb--
+      }
+
       activeExplosions.delete(this);
     }
     if (this.animationFrameId) {

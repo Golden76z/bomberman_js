@@ -491,11 +491,14 @@ export class AIController {
     this.updateAIPosition();
     this.updateAIAnimation();
 
+    // Store AI controller reference for powerup system
+    window.aiController = this;
+
     if (this.shouldPlaceBomb()) {
       const x = this.position.x - this.playerInfos.width / 3;
       const y = this.position.y - this.playerInfos.height / 3;
 
-      placeBomb(x, y);
+      placeBomb(x, y, "ai");
       handleExplosionEffect(x, y);
       this.playerInfos.bomb++;
     }

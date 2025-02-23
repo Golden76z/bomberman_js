@@ -166,7 +166,7 @@ export function handleKeyDown(event) {
     let x = position.x - playerInfos.width / 3
     let y = position.y - playerInfos.height / 3
     // Place a bomb and center it
-    placeBomb(x, y);
+    placeBomb(x, y, "player");
 
     // Function to change the walls colors
     handleExplosionEffect(x, y)
@@ -188,4 +188,4 @@ document.addEventListener("keyup", handleKeyUp);
 
 // Initialize and start the game loop
 gameLoop.start(updatePosition);
-const aiController = new AIController(walls);
+export const aiController = new AIController(walls);
