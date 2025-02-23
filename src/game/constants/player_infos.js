@@ -19,7 +19,7 @@ export const playerInfos = {
   moveSpeed: 0.3,
   bombLength: 1,
   // Player life
-  hearts: 3,
+  hearts: 1,
   extraHeart: 0,
   invulnerable: false,
 };

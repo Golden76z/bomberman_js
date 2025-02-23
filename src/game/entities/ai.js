@@ -3,16 +3,23 @@ import { placeBomb } from "../engine/handleExplosion.js";
 import { handleExplosionEffect } from '../entities/colisionMap.js';
 import { activeBombPositions } from '../engine/handleExplosion.js';
 
+const aiRegistry = new Set();
+
 export class AIController {
-  constructor(walls) {
+  constructor(x, y, hp, walls, id) {
+    this.id = id || `ai-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     this.blockedDirections = new Set();
     this.walls = walls;
-    this.playerInfos = {
+    this.positionX = x;
+    this.positionY = y;
+    this.disabled = false;
+    this.aiInfos = {
       width: 40,
       height: 40,
       frameWidth: 50,
       frameHeight: 50,
       moveSpeed: 0.3,
+      health: hp,
       bomb: 0,
       maxBomb: 1,
       bombLength: 1,
@@ -27,7 +34,19 @@ export class AIController {
     this.inDanger = false;
     this.escapeDirection = null;
     this.dangerTimeout = null;
-    this.escapeSpeed = this.playerInfos.moveSpeed * 1.5; // Faster escape speed
+    this.escapeSpeed = this.aiInfos.moveSpeed * 1;
+
+    // Initialize keys object
+    this.keys = {
+      ArrowRight: false,
+      ArrowLeft: false,
+      ArrowUp: false,
+      ArrowDown: false,
+      z: false,
+      q: false,
+      s: false,
+      d: false,
+    };
 
     this.injectStyles();
     this.createAIPlayer();
@@ -38,6 +57,50 @@ export class AIController {
     this.bombInterval = 5000;
     this.lastBombPlaced = Date.now();
     this.updateAIPosition();
+
+    // Register this AI instance
+    aiRegistry.add(this);
+  }
+
+  // Disable this AI
+  disable() {
+    this.disabled = true;
+    if (this.aiElement) {
+      this.aiElement.style.display = 'none';
+    }
+  }
+
+  // Enable this AI
+  enable() {
+    this.disabled = false;
+    if (this.aiElement) {
+      this.aiElement.style.display = '';
+    }
+  }
+
+  // Remove this AI instance from the game
+  destroy() {
+    if (this.aiElement) {
+      this.aiElement.remove();
+    }
+    aiRegistry.delete(this);
+  }
+
+  // Static methods to manage multiple AIs
+  static getAllAIs() {
+    return Array.from(aiRegistry);
+  }
+
+  static areAllAIsDisabled() {
+    return Array.from(aiRegistry).every(ai => ai.disabled);
+  }
+
+  static getEnabledAICount() {
+    return Array.from(aiRegistry).filter(ai => !ai.disabled).length;
+  }
+
+  static getDisabledAICount() {
+    return Array.from(aiRegistry).filter(ai => ai.disabled).length;
   }
 
   injectStyles() {
@@ -47,16 +110,16 @@ export class AIController {
       styleSheet.id = styleId;
       styleSheet.textContent = `
         .ai-player {
-          width: ${this.playerInfos.frameWidth}px;
-          height: ${this.playerInfos.frameHeight}px;
+          width: ${this.aiInfos.frameWidth}px;
+          height: ${this.aiInfos.frameHeight}px;
           position: absolute;
-          background-image: url(${this.playerInfos.spriteSheet});
+          background-image: url(${this.aiInfos.spriteSheet});
           background-repeat: no-repeat;
           background-size: 600px 100px;
           image-rendering: pixelated;
           transform-origin: center;
-          margin-left: -${this.playerInfos.spriteOffsetX}px;
-          margin-top: -${this.playerInfos.spriteOffsetY}px;
+          margin-left: -${this.aiInfos.spriteOffsetX}px;
+          margin-top: -${this.aiInfos.spriteOffsetY}px;
         }
 
         .ai-player.character-0 {
@@ -68,19 +131,19 @@ export class AIController {
         }
 
         .ai-player.facing-down {
-          animation: aiWalkDown ${this.playerInfos.animationDuration}s steps(3) infinite;
+          animation: aiWalkDown ${this.aiInfos.animationDuration}s steps(3) infinite;
         }
 
         .ai-player.facing-left {
-          animation: aiWalkLeft ${this.playerInfos.animationDuration}s steps(3) infinite;
+          animation: aiWalkLeft ${this.aiInfos.animationDuration}s steps(3) infinite;
         }
 
         .ai-player.facing-right {
-          animation: aiWalkRight ${this.playerInfos.animationDuration}s steps(3) infinite;
+          animation: aiWalkRight ${this.aiInfos.animationDuration}s steps(3) infinite;
         }
 
         .ai-player.facing-up {
-          animation: aiWalkUp ${this.playerInfos.animationDuration}s steps(3) infinite;
+          animation: aiWalkUp ${this.aiInfos.animationDuration}s steps(3) infinite;
         }
 
         .ai-player.idle-down {
@@ -125,7 +188,7 @@ export class AIController {
 
   createAIPlayer() {
     // Remove existing AI player if it exists
-    const existingAI = document.querySelector('.ai-player');
+    const existingAI = document.querySelector('.ai-player${this.id}');
     if (existingAI) {
       existingAI.remove();
     }
@@ -141,7 +204,7 @@ export class AIController {
     }
 
     // Set initial character appearance
-    this.aiElement.classList.add(`character-${this.playerInfos.characterIndex}`);
+    this.aiElement.classList.add(`character-${this.aiInfos.characterIndex}`);
     this.aiElement.classList.add('idle-down');
   }
 
@@ -157,8 +220,8 @@ export class AIController {
     this.aiElement.className = 'ai-player';
 
     // Copy styles from player class
-    this.aiElement.style.width = `${this.playerInfos.frameWidth}px`;
-    this.aiElement.style.height = `${this.playerInfos.frameHeight}px`;
+    this.aiElement.style.width = `${this.aiInfos.frameWidth}px`;
+    this.aiElement.style.height = `${this.aiInfos.frameHeight}px`;
     this.aiElement.style.position = 'absolute';
     this.aiElement.style.backgroundImage = 'url(../images/player.png)';
     this.aiElement.style.backgroundRepeat = 'no-repeat';
@@ -173,17 +236,19 @@ export class AIController {
     }
 
     // Set initial character appearance
-    this.aiElement.classList.add(`character-${this.playerInfos.characterIndex}`);
+    this.aiElement.classList.add(`character-${this.aiInfos.characterIndex}`);
     this.aiElement.classList.add('idle-down');
   }
 
   updateAIPosition() {
+    if (this.disabled || !this.position || !this.aiElement) return;
     if (this.aiElement) {
       this.aiElement.style.transform = `translate(${this.position.x}px, ${this.position.y}px)`;
     }
   }
 
   updateAIAnimation() {
+    if (this.disabled || !this.aiElement) return;
     if (!this.aiElement) return;
 
     this.aiElement.classList.remove(
@@ -198,7 +263,7 @@ export class AIController {
     );
 
     // Keep character index
-    this.aiElement.classList.add(`character-${this.playerInfos.characterIndex}`);
+    this.aiElement.classList.add(`character-${this.aiInfos.characterIndex}`);
 
     // Add direction based animation
     switch (this.direction) {
@@ -220,8 +285,8 @@ export class AIController {
   }
 
   getInitialPosition() {
-    const maxX = (gameInfos.width_tiles * gameInfos.tileSize) - 100;
-    const maxY = (gameInfos.height_tiles * gameInfos.tileSize) - 100;
+    const maxX = (gameInfos.width_tiles * gameInfos.tileSize) - this.positionX;
+    const maxY = (gameInfos.height_tiles * gameInfos.tileSize) - this.positionY;
 
     return {
       x: maxX,
@@ -245,8 +310,8 @@ export class AIController {
   }
 
   canMove(newX, newY) {
-    const boundaryX = (gameInfos.width_tiles * gameInfos.tileSize) - this.playerInfos.width;
-    const boundaryY = (gameInfos.height_tiles * gameInfos.tileSize) - this.playerInfos.height;
+    const boundaryX = (gameInfos.width_tiles * gameInfos.tileSize) - this.aiInfos.width;
+    const boundaryY = (gameInfos.height_tiles * gameInfos.tileSize) - this.aiInfos.height;
 
     // Check boundaries
     if (newX < 0 || newX > boundaryX || newY < 0 || newY > boundaryY) {
@@ -257,8 +322,8 @@ export class AIController {
     return !this.walls.some(wall => wall.checkCollision(
       newX,
       newY,
-      this.playerInfos.width,
-      this.playerInfos.height
+      this.aiInfos.width,
+      this.aiInfos.height
     ));
   }
 
@@ -267,7 +332,7 @@ export class AIController {
     const aiTileY = Math.floor(this.position.y / gameInfos.tileSize);
 
     // Check if AI is in cross pattern from bomb, accounting for bomb length
-    for (let i = 0; i <= this.playerInfos.bombLength; i++) {
+    for (let i = 0; i <= this.aiInfos.bombLength; i++) {
       // Check horizontal line
       if (aiTileY === bombY && (
         aiTileX === bombX + i ||
@@ -354,6 +419,7 @@ export class AIController {
   }
 
   checkForDanger() {
+    if (this.disabled) return false;
     if (activeBombPositions.size === 0) {
       this.inDanger = false;
       return false;
@@ -387,22 +453,18 @@ export class AIController {
   }
 
   simulateKeyPress(deltaTime) {
-    const keys = {
-      ArrowRight: false,
-      ArrowLeft: false,
-      ArrowUp: false,
-      ArrowDown: false,
-      z: false,
-      q: false,
-      s: false,
-      d: false,
-    };
+    if (this.disabled || !this.position) {
+      return this.keys;
+    }
+
+    // Reset all keys to false
+    Object.keys(this.keys).forEach(key => this.keys[key] = false);
 
     // Check for danger
     this.checkForDanger();
 
     // Use escape speed when in danger, normal speed otherwise
-    const moveAmount = (this.inDanger ? this.escapeSpeed : this.playerInfos.moveSpeed) * deltaTime;
+    const moveAmount = (this.inDanger ? this.escapeSpeed : this.aiInfos.moveSpeed) * deltaTime;
     let newX = this.position.x;
     let newY = this.position.y;
 
@@ -444,20 +506,20 @@ export class AIController {
       // Set movement keys
       switch (activeDirection) {
         case 'ArrowRight':
-          keys.ArrowRight = true;
-          keys.d = true;
+          this.keys.ArrowRight = true;
+          this.keys.d = true;
           break;
         case 'ArrowLeft':
-          keys.ArrowLeft = true;
-          keys.q = true;
+          this.keys.ArrowLeft = true;
+          this.keys.q = true;
           break;
         case 'ArrowUp':
-          keys.ArrowUp = true;
-          keys.z = true;
+          this.keys.ArrowUp = true;
+          this.keys.z = true;
           break;
         case 'ArrowDown':
-          keys.ArrowDown = true;
-          keys.s = true;
+          this.keys.ArrowDown = true;
+          this.keys.s = true;
           break;
       }
     }
@@ -469,13 +531,14 @@ export class AIController {
       this.blockedDirections.clear();
     }
 
-    return keys;
+    return this.keys;
   }
 
   shouldPlaceBomb() {
+    if (this.disabled) return false;
     const currentTime = Date.now();
     if (currentTime - this.lastBombPlaced > this.bombInterval &&
-      this.playerInfos.bomb < this.playerInfos.maxBomb) {
+      this.aiInfos.bomb < this.aiInfos.maxBomb) {
       this.lastBombPlaced = currentTime;
       return true;
     }
@@ -483,6 +546,7 @@ export class AIController {
   }
 
   update(deltaTime) {
+    if (this.disabled || !this.position || !this.aiElement) return;
     if (gameInfos.pause) return;
 
     const keys = this.simulateKeyPress(deltaTime);
@@ -495,18 +559,18 @@ export class AIController {
     window.aiController = this;
 
     if (this.shouldPlaceBomb()) {
-      const x = this.position.x - this.playerInfos.width / 3;
-      const y = this.position.y - this.playerInfos.height / 3;
+      const x = this.position.x - this.aiInfos.width / 3;
+      const y = this.position.y - this.aiInfos.height / 3;
 
       placeBomb(x, y, "ai");
       handleExplosionEffect(x, y);
-      this.playerInfos.bomb++;
+      this.aiInfos.bomb++;
     }
 
     return {
       keys,
       position: this.position,
-      characterIndex: this.playerInfos.characterIndex
+      characterIndex: this.aiInfos.characterIndex
     };
   }
 }

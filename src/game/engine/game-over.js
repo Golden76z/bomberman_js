@@ -1,5 +1,6 @@
-import { pauseTimer, score, lives, timeLeft } from "./ui_scoring.js";
+import { pauseTimer, score, timeLeft } from "./ui_scoring.js";
 import { pauseAllExplosions } from "../entities/bomb.js";
+import { playerInfos } from "../constants/player_infos.js";
 
 let isPaused = false;
 export function showGameOver() {
@@ -23,7 +24,7 @@ export function showGameOver() {
 
 export function restartGame() {
   score = 0;
-  lives = 3;
+  playerInfos.hearts = 0;
   timeLeft = 0;
   window.location.reload();
 }

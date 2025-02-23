@@ -1,8 +1,8 @@
+import { playerInfos } from "../constants/player_infos.js";
 import { showGameOver } from "./game-over.js";
 
 let timerInterval;
 export let score = 0;
-export let lives = 3;
 export let timeLeft = 0;
 let isPaused = false;
 
@@ -13,7 +13,7 @@ export function initializeGameUI() {
 
 function updateUI() {
   document.getElementById("score").textContent = `Score: ${score}`;
-  document.getElementById("lives").textContent = `Vies: ${lives}`;
+  document.getElementById("lives").textContent = `HP: ${playerInfos.hearts}`;
   document.getElementById("timer").textContent = `Temps: ${formatTime(
     timeLeft
   )}`;
@@ -29,7 +29,7 @@ export function startTimer() {
         timeLeft
       )}`;
 
-      if (lives <= 0) {
+      if (playerInfos.hearts <= 0) {
         console.log("Vies à 0 ! Game Over déclenché.");
         clearInterval(timerInterval);
         showGameOver();
@@ -39,12 +39,12 @@ export function startTimer() {
 }
 
 export function pauseTimer() {
-  console.log("Timer en pause");
+  // console.log("Timer en pause");
   isPaused = true;
 }
 
 export function resumeTimer() {
-  console.log("Reprise du timer");
+  // console.log("Reprise du timer");
   isPaused = false;
 }
 
@@ -59,5 +59,6 @@ function formatTime(time) {
 
 export function updateScore(points) {
   score += points;
+
   updateUI();
 }

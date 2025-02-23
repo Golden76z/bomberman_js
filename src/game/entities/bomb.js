@@ -117,7 +117,9 @@ export class Explosion {
       if (this.owner === 'player') {
         playerInfos.bomb--;
       } else if (this.owner === 'ai') {
-        aiController.playerInfos.bomb--
+        for (let i = 0; i < aiController.length; i++) {
+          aiController[i].aiInfos.bomb--
+        }
       }
 
       activeExplosions.delete(this);

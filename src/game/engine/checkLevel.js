@@ -9,6 +9,8 @@ import { updatePlayerAnimation, position } from "./player_inputs.js"
 import { activeBombPositions } from "./handleExplosion.js"
 import { Wall } from "../entities/colisionMap.js"
 import { playerInfos } from "../constants/player_infos.js"
+import { aiController } from "./player_inputs.js"
+import { AIController } from "../entities/ai.js"
 
 export function transitionToNextLevel() {
   return new Promise((resolve) => {
@@ -87,84 +89,86 @@ export function checkLevel(currentMap) {
     currentMap = maps[gameInfos.level - 1];
   }
 
-
-  // Check if all destroyable walls are gone
-  let count = 0;
-  for (let i = 0; i < walls.length; i++) {
-    if (walls[i].type === 3) {
-      count++;
-    }
-  }
-
   // If we change level or restart a map
-  if (count === 0 || gameInfos.restart) {
-    transitionToNextLevel()
-    setTimeout(() => {
-      // Clear any active bombs before changing level
-      activeBombPositions.forEach((bombData, key) => {
-        if (bombData.checkExplosionInterval) {
-          clearInterval(bombData.checkExplosionInterval);
-        }
-
-        // Remove all the explosions elements
-        if (bombData.explosion && bombData.explosion.element) {
-          // Calling the remove method stored inside the bomb class
-          bombData.explosion.remove();
-        }
-
-        // Delete from active bombs map
-        activeBombPositions.delete(key);
-      });
-
-      // Increment level
-      if (!gameInfos.restart) {
-        gameInfos.level++;
-      }
-      gameInfos.restart = false
-      updateGameLevel();
-
-      // Get the new map
-      const newMap = originalMaps[gameInfos.level - 1];
-      if (!newMap) {
-        return;
+  transitionToNextLevel()
+  setTimeout(() => {
+    // Clear any active bombs before changing level
+    activeBombPositions.forEach((bombData, key) => {
+      if (bombData.checkExplosionInterval) {
+        clearInterval(bombData.checkExplosionInterval);
       }
 
-      // Update game container
-      const gameContainer = document.querySelector(".game-container");
-
-      // Create new map and walls
-      createMap(newMap);
-
-      // Reset wall collection
-      walls.length = 0;
-      Wall.allWalls.length = 0; // Make sure to reset both arrays
-
-      // Create fresh walls
-      const newWalls = createWalls(newMap);
-      walls.push(...newWalls);
-
-      // Apply styles
-      const styles = gameContainerStyles();
-      for (const [key, value] of Object.entries(styles)) {
-        gameContainer.style[key] = value;
+      // Remove all the explosions elements
+      if (bombData.explosion && bombData.explosion.element) {
+        // Calling the remove method stored inside the bomb class
+        bombData.explosion.remove();
       }
-      updateWallStyles();
 
-      // Reset player position
-      position.x = 60;
-      position.y = 60;
-      playerInfos.maxBomb = 4
-      playerInfos.bomb = 0
-      playerInfos.bombLength = 4
-      updatePlayerAnimation();
+      // Delete from active bombs map
+      activeBombPositions.delete(key);
+    });
 
-      // Recalculate boundaries
-      getBoundaryX();
-      getBoundaryY();
+    // Increment level
+    if (!gameInfos.restart) {
+      gameInfos.level++;
+    }
+    gameInfos.restart = false
+    updateGameLevel();
 
-      // Restart game loop
-      gameLoop.start(updatePosition);
-    }, 700)
+    // Get the new map
+    const newMap = originalMaps[gameInfos.level - 1];
+    if (!newMap) {
+      return;
+    }
 
-  }
+    // Update game container
+    const gameContainer = document.querySelector(".game-container");
+
+    // Create new map and walls
+    createMap(newMap);
+
+    // Reset wall collection
+    walls.length = 0;
+    Wall.allWalls.length = 0; // Make sure to reset both arrays
+
+    // Create fresh walls
+    const newWalls = createWalls(newMap);
+    walls.push(...newWalls);
+
+    // Apply styles
+    const styles = gameContainerStyles();
+    for (const [key, value] of Object.entries(styles)) {
+      gameContainer.style[key] = value;
+    }
+    updateWallStyles();
+
+    // Reset player position
+    position.x = 60;
+    position.y = 60;
+    playerInfos.maxBomb = 1
+    playerInfos.bomb = 0
+    playerInfos.bombLength = 1
+    playerInfos.hearts = 1
+    updatePlayerAnimation();
+
+    if (gameInfos.level == 1) {
+      aiController.length = 0
+      aiController.push(new AIController(100, 100, 1, walls))
+    } else if (gameInfos.level == 2) {
+      aiController.length = 0
+      aiController.push(new AIController(100, 100, 1, walls))
+      aiController.push(new AIController(550, 100, 1, walls))
+    } else {
+      aiController.length = 0
+      aiController.push(new AIController(100, 100, 1, walls))
+    }
+
+    // Recalculate boundaries
+    getBoundaryX();
+    getBoundaryY();
+
+    // Restart game loop
+    gameLoop.start(updatePosition);
+  }, 700)
+
 }

@@ -9,6 +9,7 @@ import { Explosion } from "../entities/bomb.js";
 import { ExplosionAnimation } from '../entities/explosion_effect.js'
 import { checkLevel } from "./checkLevel.js";
 import { canSpawnPowerUp, powerUps, generateRandomPowerUp, applyPowerUp, powerUpStyles } from "./powerups.js";
+import { aiController } from "./player_inputs.js";
 
 export const activeBombPositions = new Map();
 
@@ -21,12 +22,13 @@ document.head.appendChild(styleSheet);
 
 // Updated function to check if either player or AI can pick up the powerup
 export function canPickPowerUp(actor, powerUpElement) {
-  const actorInfo = actor === 'player' ? playerInfos : actor.playerInfos;
+  const actorInfo = actor === 'player' ? playerInfos : aiController.playerInfos;
   const tileSize = gameInfos.width / gameInfos.width_tiles;
 
   // Get actor's tile position
-  const actorTileX = Math.floor(actorInfo.positionX / tileSize);
-  const actorTileY = Math.floor(actorInfo.positionY / tileSize);
+  let coordinates = getTilesCoordinates(actorInfo.positionX, actorInfo.positionY)
+  const actorTileX = coordinates[0];
+  const actorTileY = coordinates[1];
 
   // Get powerup's tile position
   const powerupRect = powerUpElement.getBoundingClientRect();
@@ -71,12 +73,12 @@ export function spawnPowerUpWithAnimation(tileX, tileY) {
       isBeingCollected = true;
     }
 
-    // Check AI collision
-    const aiElement = document.querySelector('.ai-player');
-    if (aiElement && canPickPowerUp(window.aiController, powerUpElement) && !isBeingCollected) {
-      collectPowerUp(powerUpElement, window.aiController, checkCollision);
-      isBeingCollected = true;
-    }
+    // // Check AI collision
+    // const aiElement = document.querySelector('.ai-player');
+    // if (aiElement && canPickPowerUp("ai", powerUpElement) && !isBeingCollected) {
+    //   collectPowerUp(powerUpElement, window.aiController, checkCollision);
+    //   isBeingCollected = true;
+    // }
   }, 100);
 
   // Remove after 10 seconds if not collected
@@ -114,7 +116,7 @@ function collectPowerUp(powerUpElement, collector, checkInterval) {
   }, 300);
 }
 
-function removeWallsInRange(x, y, walls, map) {
+function removeWallsInRange(x, y, walls, map, ownerBombLength) {
   const directions = [
     [-1, 0],
     [1, 0],
@@ -138,7 +140,7 @@ function removeWallsInRange(x, y, walls, map) {
 
   // Check in all four directions
   directions.forEach(([dy, dx]) => {
-    for (let i = 1; i <= playerInfos.bombLength; i++) {
+    for (let i = 1; i <= ownerBombLength; i++) {
       const newY = y + dy * i;
       const newX = x + dx * i;
 
@@ -185,7 +187,31 @@ function removeWallsInRange(x, y, walls, map) {
 }
 
 // Updated handleExplosion function with improved debugging and safety
-export function handleExplosion(x, y, map) {
+export function handleExplosion(x, y, map, owner) {
+  let ownerBombLength = owner === "player" ? playerInfos.bombLength : 1;
+
+  // Check for player damage
+  if (playerInfos.hearts > 0 && isInExplosionRange(
+    x, y,
+    playerInfos.positionX,
+    playerInfos.positionY,
+    ownerBombLength
+  )) {
+    handlePlayerDamage();
+  }
+
+  // Check for AI damage
+  for (let i = 0; i < aiController.length; i++) {
+    if (aiController[i] && !aiController[i].disabled && isInExplosionRange(
+      x, y,
+      aiController[i].position.x,
+      aiController[i].position.y,
+      ownerBombLength
+    )) {
+      handleAIDamage(i);
+    }
+  }
+
   // Safety check
   if (y >= map.length || x >= map[0].length) {
     return;
@@ -231,7 +257,7 @@ export function handleExplosion(x, y, map) {
   // First pass: Show explosion animations and mark walls for explosion
   directions.forEach(({ dx, dy, dir }) => {
 
-    for (let i = 1; i <= playerInfos.bombLength; i++) {
+    for (let i = 1; i <= ownerBombLength; i++) {
       const newY = y + dy * i;
       const newX = x + dx * i;
 
@@ -276,8 +302,8 @@ export function handleExplosion(x, y, map) {
       const isNextPositionBlocked = isNextPositionOutOfBounds || map[nextY][nextX] === 1;
 
       // Determine if this is the end of the explosion
-      const isEnd = i === playerInfos.bombLength ||
-        (i < playerInfos.bombLength && isNextPositionBlocked);
+      const isEnd = i === ownerBombLength ||
+        (i < ownerBombLength && isNextPositionBlocked);
 
       const explosion = new ExplosionAnimation(newX, newY, tileSize, dir, isEnd);
       container.appendChild(explosion.element);
@@ -291,7 +317,7 @@ export function handleExplosion(x, y, map) {
   });
 
   // Remove the walls and update the map
-  const count = removeWallsInRange(x, y, walls, map);
+  const count = removeWallsInRange(x, y, walls, map, ownerBombLength);
 
   if (count > 0) {
     updateMultipleMaps(maps);
@@ -345,15 +371,15 @@ export function placeBomb(x, y, owner) {
     const checkExplosion = setInterval(() => {
       if (!explosion.element || !explosion.element.parentNode) {
         // Explosion is finished, handle the map updates
-        handleExplosion(coordinates[0], coordinates[1], currentMap);
+        handleExplosion(coordinates[0], coordinates[1], currentMap, owner);
         activeBombPositions.delete(bombKey);
         clearInterval(checkExplosion);
         currentMap = maps[gameInfos.level - 1];
 
         // Check if the map is cleared and load the next map
-        setTimeout(() => {
-          checkLevel(currentMap)
-        }, 1200)
+        // setTimeout(() => {
+        //   checkLevel(currentMap)
+        // }, 1200)
       }
     }, 100); // Check every 100ms
 
@@ -385,3 +411,119 @@ export function resumeAllBombs() {
     bombData.explosion.resume();
   }
 }
+
+function isInExplosionRange(explosionX, explosionY, targetX, targetY, explosionLength) {
+  // Convert pixel positions to tile coordinates
+  const targetTileX = Math.floor(targetX / gameInfos.tileSize);
+  const targetTileY = Math.floor(targetY / gameInfos.tileSize);
+
+  // Check if target is in cross pattern from explosion, accounting for explosion length
+  for (let i = 0; i <= explosionLength; i++) {
+    // Check horizontal line
+    if (targetTileY === explosionY && (
+      targetTileX === explosionX + i ||
+      targetTileX === explosionX - i
+    )) {
+      return true;
+    }
+
+    // Check vertical line
+    if (targetTileX === explosionX && (
+      targetTileY === explosionY + i ||
+      targetTileY === explosionY - i
+    )) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+function handlePlayerDamage() {
+  if (!playerInfos.invulnerable) {
+    if (playerInfos.extraHeart > 0) {
+      playerInfos.extraHeart--;
+    } else {
+      playerInfos.hearts--;
+    }
+    updateScore(0)
+
+    // Make player invulnerable briefly
+    playerInfos.invulnerable = true;
+    const playerElement = document.querySelector('.player');
+    if (playerElement) {
+      playerElement.style.opacity = '0.5';
+    }
+
+    // Reset invulnerability after 2 seconds
+    setTimeout(() => {
+      playerInfos.invulnerable = false;
+      if (playerElement) {
+        playerElement.style.opacity = '1';
+      }
+    }, 2000);
+
+    // Optional: Add visual feedback
+    if (playerElement) {
+      playerElement.style.animation = 'damage 0.5s';
+      setTimeout(() => {
+        playerElement.style.animation = '';
+      }, 500);
+    }
+  }
+}
+
+function handleAIDamage(index) {
+  if (aiController.length == 0) return;
+
+  aiController[index].aiInfos.health--;
+
+  if (aiController[index].aiInfos.health <= 0) {
+    // Remove AI element
+    const aiElement = document.querySelector('.ai-player');
+    if (aiElement) {
+      aiElement.remove();
+    }
+
+    // Disabling the ai if it's health reaches 0
+    aiController[index].aiInfos.health = 0;
+    aiController[index].disabled = true;
+
+  } else {
+    // Visual effect if it takes damage without being killed
+    const aiElement = document.querySelector('.ai-player');
+    if (aiElement) {
+      aiElement.style.animation = 'damage 0.5s';
+      setTimeout(() => {
+        aiElement.style.animation = '';
+      }, 500);
+    }
+  }
+
+  console.log(aiController);
+
+  let count = 0
+  for (let i = 0; i < aiController.length; i++) {
+    if (!aiController[i].disabled) {
+      count++
+    }
+  }
+  console.log(count);
+
+  if (count == 0) {
+    const currentMap = maps[gameInfos.level - 1];
+    checkLevel(currentMap);
+  }
+}
+
+// Add damage animation to existing styles
+const damageStyles = `
+@keyframes damage {
+  0% { filter: brightness(100%); }
+  50% { filter: brightness(200%) saturate(200%) hue-rotate(345deg); }
+  100% { filter: brightness(100%); }
+}`;
+
+const styleSheetDamage = document.createElement('style');
+styleSheetDamage.textContent = damageStyles;
+document.head.appendChild(styleSheetDamage);

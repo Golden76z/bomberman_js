@@ -1,4 +1,5 @@
 import { playerInfos } from "../constants/player_infos.js"
+import { updateScore } from "./ui_scoring.js";
 
 // Power-ups css animations
 export const powerUpStyles = `
@@ -38,7 +39,7 @@ export let positionYPowerUp
 // PowerUps object listing all possible powerUps and their values
 export let powerUps = {
   bombRadius: 1,
-  speedBoost: 2,
+  speedBoost: 0.1,
   maxBombAdd: 1,
   lifeAdd: 1,
   invulnerability: true,
@@ -61,6 +62,8 @@ export function generateRandomPowerUp() {
 
 // Updated function to handle both player and AI powerup application
 export function applyPowerUp(actor, powerUpType) {
+  // console.log(powerUpType);
+
   const actorInfo = actor === 'player' ? playerInfos : actor.playerInfos;
 
   switch (powerUpType) {
@@ -68,21 +71,28 @@ export function applyPowerUp(actor, powerUpType) {
       actorInfo.bombLength += powerUps.bombRadius;
       break;
 
-    case 'bombAdd':
+    case 'maxBombAdd':
       actorInfo.maxBomb += powerUps.maxBombAdd;
       break;
 
     case 'lifeAdd':
-      if (actorInfo.extraHeart === 0 && actorInfo.hearts === 3) {
-        actorInfo.extraHeart += powerUps.lifeAdd;
-      } else if (actorInfo.hearts < 3 && actorInfo.hearts > 0) {
-        actorInfo.hearts += powerUps.lifeAdd;
-      }
+      document.getElementById('lives').innerHTML = `HP: ${actorInfo.hearts}`
+      actorInfo.hearts += powerUps.lifeAdd;
+      updateScore(0)
+
+      // if (actorInfo.extraHeart === 0 && actorInfo.hearts === 3) {
+      //   console.log(actorInfo);
+      //   console.log(playerInfos);
+
+
+      // } else if (actorInfo.hearts < 3 && actorInfo.hearts > 0) {
+      //   actorInfo.hearts += powerUps.lifeAdd;
+      // }
       break;
 
     case 'speedBoost':
       const baseSpeed = actorInfo.moveSpeed;
-      actorInfo.moveSpeed *= powerUps.speedBoost;
+      actorInfo.moveSpeed += powerUps.speedBoost;
       setTimeout(() => {
         actorInfo.moveSpeed = baseSpeed;
       }, 10000);
@@ -109,11 +119,11 @@ export function canSpawnPowerUp() {
 // spawning the powerUp(s) in the game
 export function spawnPowerup(obj) {
 
-  if (playerInfos.bomb === 3) {
+  if (playerInfos.maxBomb === 3) {
     // Quality of life change to not spawn a bomb refill if the player has full bombs
     obj = excludeBombDropsLogic() // excluding the addBomb powerUp from the powerUps pool
   }
-  if (playerInfos.hearts === 3 && playerInfos.extraHeart === 1) {
+  if (playerInfos.hearts === 2) {
     // Quality of life change to not spawn a heart if the player has full hearts and has an extra heart
     obj = excludeHeartDropsLogic() // excluding the addLife powerUps from the powerUps pool
   }

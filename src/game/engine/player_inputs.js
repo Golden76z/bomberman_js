@@ -97,6 +97,9 @@ export function updatePosition(deltaTime) {
     isMoving = true;
   }
 
+  playerInfos.positionX = position.x
+  playerInfos.positionY = position.y
+
   // Apply boundaries using the functions
   position.x = Math.max(0, Math.min(position.x, getBoundaryX()));
   position.y = Math.max(0, Math.min(position.y, getBoundaryY()));
@@ -106,7 +109,9 @@ export function updatePosition(deltaTime) {
 
   // At the start of updatePosition function, get AI input
   if (!gameInfos.pause) {
-    aiController.update(deltaTime);
+    for (let i = 0; i < aiController.length; i++) {
+      aiController[i].update(deltaTime);
+    }
   }
 
   // Update animations
@@ -169,7 +174,7 @@ export function handleKeyDown(event) {
     placeBomb(x, y, "player");
 
     // Function to change the walls colors
-    handleExplosionEffect(x, y)
+    handleExplosionEffect(x, y, "player")
 
     playerInfos.bomb++;
   }
@@ -188,4 +193,4 @@ document.addEventListener("keyup", handleKeyUp);
 
 // Initialize and start the game loop
 gameLoop.start(updatePosition);
-export const aiController = new AIController(walls);
+export let aiController = [new AIController(100, 100, 1, walls)]
