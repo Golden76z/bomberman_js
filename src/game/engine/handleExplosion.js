@@ -476,23 +476,27 @@ function handlePlayerDamage() {
 function handleAIDamage(index) {
   if (aiController.length == 0) return;
 
-  aiController[index].aiInfos.health--;
+  const currentAI = aiController[index];
+  if (!currentAI) return;
 
-  if (aiController[index].aiInfos.health <= 0) {
-    // Remove AI element
-    const aiElement = document.querySelector('.ai-player');
+  currentAI.aiInfos.health--;
+
+  // Get the specific AI element using its unique ID
+  const aiElement = document.querySelector(`.ai-player-${currentAI.id}`);
+
+  if (currentAI.aiInfos.health <= 0) {
+    // Remove the specific AI element
     if (aiElement) {
       aiElement.remove();
     }
 
-    // Disabling the ai if it's health reaches 0
-    aiController[index].aiInfos.health = 0;
-    aiController[index].disabled = true;
-
+    // Disabling the ai if its health reaches 0
+    currentAI.aiInfos.health = 0;
+    currentAI.disabled = true;
   } else {
     // Visual effect if it takes damage without being killed
-    const aiElement = document.querySelector('.ai-player');
     if (aiElement) {
+      // Add damage animation class
       aiElement.style.animation = 'damage 0.5s';
       setTimeout(() => {
         aiElement.style.animation = '';
@@ -500,17 +504,11 @@ function handleAIDamage(index) {
     }
   }
 
-  console.log(aiController);
+  // Count remaining active AIs
+  const remainingAIs = aiController.filter(ai => !ai.disabled).length;
 
-  let count = 0
-  for (let i = 0; i < aiController.length; i++) {
-    if (!aiController[i].disabled) {
-      count++
-    }
-  }
-  console.log(count);
-
-  if (count == 0) {
+  // If no AIs remain, proceed to next level
+  if (remainingAIs === 0) {
     const currentMap = maps[gameInfos.level - 1];
     checkLevel(currentMap);
   }

@@ -188,38 +188,16 @@ export class AIController {
 
   createAIPlayer() {
     // Remove existing AI player if it exists
-    const existingAI = document.querySelector('.ai-player${this.id}');
+    const existingAI = document.querySelector(`.ai-player-${this.id}`);
     if (existingAI) {
       existingAI.remove();
     }
 
     // Create new AI player element
     this.aiElement = document.createElement('div');
-    this.aiElement.className = 'ai-player';
+    this.aiElement.className = `ai-player ai-player-${this.id}`; // Add unique class
 
-    // Add to game container
-    const gameContainer = document.querySelector('.game-container');
-    if (gameContainer) {
-      gameContainer.appendChild(this.aiElement);
-    }
-
-    // Set initial character appearance
-    this.aiElement.classList.add(`character-${this.aiInfos.characterIndex}`);
-    this.aiElement.classList.add('idle-down');
-  }
-
-  createAIPlayer() {
-    // Remove existing AI player if it exists
-    const existingAI = document.querySelector('.ai-player');
-    if (existingAI) {
-      existingAI.remove();
-    }
-
-    // Create new AI player element
-    this.aiElement = document.createElement('div');
-    this.aiElement.className = 'ai-player';
-
-    // Copy styles from player class
+    // Copy styles
     this.aiElement.style.width = `${this.aiInfos.frameWidth}px`;
     this.aiElement.style.height = `${this.aiInfos.frameHeight}px`;
     this.aiElement.style.position = 'absolute';
@@ -228,6 +206,8 @@ export class AIController {
     this.aiElement.style.backgroundSize = '600px 100px';
     this.aiElement.style.imageRendering = 'pixelated';
     this.aiElement.style.transformOrigin = 'center';
+    this.aiElement.style.marginLeft = `-${this.aiInfos.spriteOffsetX}px`;
+    this.aiElement.style.marginTop = `-${this.aiInfos.spriteOffsetY}px`;
 
     // Add to game container
     const gameContainer = document.querySelector('.game-container');
@@ -353,73 +333,13 @@ export class AIController {
     return false;
   }
 
-  calculateEscapeRoute(bombX, bombY) {
+  checkForDanger() {
+    if (this.disabled) return false;
+
+    // Get AI's current tile position
     const aiTileX = Math.floor(this.position.x / gameInfos.tileSize);
     const aiTileY = Math.floor(this.position.y / gameInfos.tileSize);
 
-    // Check all four directions
-    const directions = [
-      { direction: 'ArrowRight', dx: 1, dy: 0 },
-      { direction: 'ArrowLeft', dx: -1, dy: 0 },
-      { direction: 'ArrowUp', dx: 0, dy: -1 },
-      { direction: 'ArrowDown', dx: 0, dy: 1 }
-    ];
-
-    let bestDirection = null;
-    let maxSafetyScore = -Infinity;
-
-    for (const dir of directions) {
-      const newTileX = aiTileX + dir.dx;
-      const newTileY = aiTileY + dir.dy;
-
-      // Calculate pixel position for collision check
-      const newX = newTileX * gameInfos.tileSize;
-      const newY = newTileY * gameInfos.tileSize;
-
-      // Skip if movement is blocked
-      if (!this.canMove(newX, newY)) continue;
-
-      // Calculate safety score based on:
-      // 1. Distance from bomb
-      // 2. Whether the new position is out of explosion range
-      // 3. Number of available escape routes from the new position
-      let safetyScore = 0;
-
-      // Distance from bomb (higher is better)
-      const distanceFromBomb = Math.abs(newTileX - bombX) + Math.abs(newTileY - bombY);
-      safetyScore += distanceFromBomb * 2;
-
-      // Check if position is out of explosion range
-      if (!this.isInExplosionRange(bombX, bombY)) {
-        safetyScore += 10;
-      }
-
-      // Count available escape routes from new position
-      let availableRoutes = 0;
-      for (const escapeDir of directions) {
-        const escapeTileX = newTileX + escapeDir.dx;
-        const escapeTileY = newTileY + escapeDir.dy;
-        const escapeX = escapeTileX * gameInfos.tileSize;
-        const escapeY = escapeTileY * gameInfos.tileSize;
-
-        if (this.canMove(escapeX, escapeY)) {
-          availableRoutes++;
-        }
-      }
-      safetyScore += availableRoutes * 2;
-
-      // Update best direction if this is the safest option
-      if (safetyScore > maxSafetyScore) {
-        maxSafetyScore = safetyScore;
-        bestDirection = dir.direction;
-      }
-    }
-
-    return bestDirection || this.getRandomDirection();
-  }
-
-  checkForDanger() {
-    if (this.disabled) return false;
     if (activeBombPositions.size === 0) {
       this.inDanger = false;
       return false;
@@ -428,11 +348,9 @@ export class AIController {
     let mostDangerousBomb = null;
     let shortestDistance = Infinity;
 
+    // Check all active bombs, including the one just placed
     for (const [key, bombData] of activeBombPositions.entries()) {
       if (this.isInExplosionRange(bombData.mapX, bombData.mapY)) {
-        const aiTileX = Math.floor(this.position.x / gameInfos.tileSize);
-        const aiTileY = Math.floor(this.position.y / gameInfos.tileSize);
-
         const distance = Math.abs(aiTileX - bombData.mapX) + Math.abs(aiTileY - bombData.mapY);
 
         if (distance < shortestDistance) {
@@ -452,6 +370,106 @@ export class AIController {
     return false;
   }
 
+  calculateEscapeRoute(bombX, bombY) {
+    const aiTileX = Math.floor(this.position.x / gameInfos.tileSize);
+    const aiTileY = Math.floor(this.position.y / gameInfos.tileSize);
+
+    const directions = [
+      { direction: 'ArrowRight', dx: 1, dy: 0 },
+      { direction: 'ArrowLeft', dx: -1, dy: 0 },
+      { direction: 'ArrowUp', dx: 0, dy: -1 },
+      { direction: 'ArrowDown', dx: 0, dy: 1 }
+    ];
+
+    let bestDirection = null;
+    let maxSafetyScore = -Infinity;
+
+    for (const dir of directions) {
+      const newTileX = aiTileX + dir.dx;
+      const newTileY = aiTileY + dir.dy;
+
+      const newX = newTileX * gameInfos.tileSize;
+      const newY = newTileY * gameInfos.tileSize;
+
+      if (!this.canMove(newX, newY)) continue;
+
+      let safetyScore = 0;
+
+      // Heavily weight positions that are completely out of bomb range
+      if (!this.isInExplosionRange(bombX, bombY)) {
+        safetyScore += 20;
+      }
+
+      // Weight distance from bomb
+      const distanceFromBomb = Math.abs(newTileX - bombX) + Math.abs(newTileY - bombY);
+      safetyScore += distanceFromBomb * 3;
+
+      // Check for available escape routes from new position
+      let availableRoutes = 0;
+      for (const escapeDir of directions) {
+        const escapeTileX = newTileX + escapeDir.dx;
+        const escapeTileY = newTileY + escapeDir.dy;
+        const escapeX = escapeTileX * gameInfos.tileSize;
+        const escapeY = escapeTileY * gameInfos.tileSize;
+
+        if (this.canMove(escapeX, escapeY)) {
+          availableRoutes++;
+        }
+      }
+      safetyScore += availableRoutes * 2;
+
+      if (safetyScore > maxSafetyScore) {
+        maxSafetyScore = safetyScore;
+        bestDirection = dir.direction;
+      }
+    }
+
+    return bestDirection || this.getRandomDirection();
+  }
+
+  isSafeToPlaceBomb() {
+    if (this.disabled) return false;
+
+    // Get AI's current tile position
+    const aiTileX = Math.floor(this.position.x / gameInfos.tileSize);
+    const aiTileY = Math.floor(this.position.y / gameInfos.tileSize);
+
+    // Check if AI is in a corner (has walls on two adjacent sides)
+    let adjacentWalls = 0;
+    const directions = [
+      { dx: 1, dy: 0 },
+      { dx: -1, dy: 0 },
+      { dx: 0, dy: 1 },
+      { dx: 0, dy: -1 }
+    ];
+
+    for (const dir of directions) {
+      const checkX = (aiTileX + dir.dx) * gameInfos.tileSize;
+      const checkY = (aiTileY + dir.dy) * gameInfos.tileSize;
+
+      if (!this.canMove(checkX, checkY)) {
+        adjacentWalls++;
+      }
+    }
+
+    // If there are 2 or more adjacent walls, it's likely a corner - don't place bomb
+    if (adjacentWalls >= 2) return false;
+
+    // Check if there's at least one escape route
+    let hasEscapeRoute = false;
+    for (const dir of directions) {
+      const escapeX = (aiTileX + dir.dx) * gameInfos.tileSize;
+      const escapeY = (aiTileY + dir.dy) * gameInfos.tileSize;
+
+      if (this.canMove(escapeX, escapeY)) {
+        hasEscapeRoute = true;
+        break;
+      }
+    }
+
+    return hasEscapeRoute;
+  }
+
   simulateKeyPress(deltaTime) {
     if (this.disabled || !this.position) {
       return this.keys;
@@ -461,18 +479,22 @@ export class AIController {
     Object.keys(this.keys).forEach(key => this.keys[key] = false);
 
     // Check for danger
-    this.checkForDanger();
+    const isInDanger = this.checkForDanger();
 
     // Use escape speed when in danger, normal speed otherwise
     const moveAmount = (this.inDanger ? this.escapeSpeed : this.aiInfos.moveSpeed) * deltaTime;
     let newX = this.position.x;
     let newY = this.position.y;
 
-    // Determine active direction
-    const activeDirection = this.inDanger ? this.escapeDirection : this.direction;
+    // If in danger, immediately switch to escape behavior
+    if (isInDanger) {
+      // Cancel the current direction and use escape direction
+      this.direction = this.escapeDirection;
+      this.lastDirectionChange = Date.now(); // Reset direction change timer
+    }
 
-    // Calculate new position
-    switch (activeDirection) {
+    // Calculate new position based on current direction
+    switch (this.direction) {
       case 'ArrowRight':
         newX += moveAmount;
         break;
@@ -491,8 +513,9 @@ export class AIController {
     if (!this.canMove(newX, newY)) {
       if (this.inDanger) {
         // If current escape route is blocked, try a different direction
-        this.blockedDirections.add(this.escapeDirection);
-        this.escapeDirection = this.getRandomDirection();
+        this.blockedDirections.add(this.direction);
+        this.direction = this.getRandomDirection();
+        this.escapeDirection = this.direction;
       } else {
         this.blockedDirections.add(this.direction);
         this.direction = this.getRandomDirection();
@@ -504,7 +527,7 @@ export class AIController {
       this.blockedDirections.clear();
 
       // Set movement keys
-      switch (activeDirection) {
+      switch (this.direction) {
         case 'ArrowRight':
           this.keys.ArrowRight = true;
           this.keys.d = true;
@@ -537,10 +560,49 @@ export class AIController {
   shouldPlaceBomb() {
     if (this.disabled) return false;
     const currentTime = Date.now();
+
+    // Don't place bomb if already in danger
+    if (this.inDanger) return false;
+
+    // Get current tile position
+    const aiTileX = Math.floor(this.position.x / gameInfos.tileSize);
+    const aiTileY = Math.floor(this.position.y / gameInfos.tileSize);
+
+    // Check if there's at least one clear escape route before placing bomb
+    const directions = [
+      { dx: 1, dy: 0 },
+      { dx: -1, dy: 0 },
+      { dx: 0, dy: 1 },
+      { dx: 0, dy: -1 }
+    ];
+
+    let hasEscapeRoute = false;
+    for (const dir of directions) {
+      const escapeX = (aiTileX + dir.dx) * gameInfos.tileSize;
+      const escapeY = (aiTileY + dir.dy) * gameInfos.tileSize;
+
+      if (this.canMove(escapeX, escapeY)) {
+        hasEscapeRoute = true;
+        break;
+      }
+    }
+
+    if (!hasEscapeRoute) return false;
+
     if (currentTime - this.lastBombPlaced > this.bombInterval &&
       this.aiInfos.bomb < this.aiInfos.maxBomb) {
-      this.lastBombPlaced = currentTime;
-      return true;
+      // Pre-calculate escape route before placing bomb
+      const potentialBombX = aiTileX;
+      const potentialBombY = aiTileY;
+
+      // Simulate the bomb placement and find best escape route
+      this.escapeDirection = this.calculateEscapeRoute(potentialBombX, potentialBombY);
+
+      if (this.escapeDirection) {
+        this.lastBombPlaced = currentTime;
+        this.inDanger = true; // Immediately mark as in danger
+        return true;
+      }
     }
     return false;
   }
@@ -565,6 +627,11 @@ export class AIController {
       placeBomb(x, y, "ai");
       handleExplosionEffect(x, y);
       this.aiInfos.bomb++;
+
+      // Force immediate movement away from the bomb
+      this.inDanger = true;
+      this.direction = this.escapeDirection;
+      this.lastDirectionChange = Date.now();
     }
 
     return {

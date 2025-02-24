@@ -154,13 +154,20 @@ export function checkLevel(currentMap) {
     if (gameInfos.level == 1) {
       aiController.length = 0
       aiController.push(new AIController(100, 100, 1, walls))
+      updateBackground(1)
     } else if (gameInfos.level == 2) {
+      console.log("test");
+
       aiController.length = 0
       aiController.push(new AIController(100, 100, 1, walls))
       aiController.push(new AIController(550, 100, 1, walls))
+      updateBackground(2)
     } else {
       aiController.length = 0
       aiController.push(new AIController(100, 100, 1, walls))
+      aiController.push(new AIController(760, 100, 1, walls))
+      aiController.push(new AIController(100, 550, 1, walls))
+      updateBackground(3)
     }
 
     // Recalculate boundaries
@@ -170,5 +177,25 @@ export function checkLevel(currentMap) {
     // Restart game loop
     gameLoop.start(updatePosition);
   }, 700)
+}
 
+
+function updateBackground(level) {
+  // Define background images for each level
+  const backgrounds = {
+    1: "url('../images/background_forest.gif')",
+    2: "url('../images/background_cave.png')",
+    3: "url('../images/background_lava.png')",
+  };
+
+  // Get the HTML element
+  const html = document.documentElement;
+
+  // Remove previous background to force update
+  html.style.removeProperty("background-image");
+
+  // Apply the new background with a short delay to ensure it updates
+  setTimeout(() => {
+    html.style.backgroundImage = backgrounds[level] || "url('../images/background_forest.gif')"
+  }, 50);
 }

@@ -1,6 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap");
 
 /* Reset de base */
+
 body,
 html {
   margin: 0;
@@ -8,7 +9,6 @@ html {
   height: 100%;
   overflow: hidden;
   background-color: #33333320;
-  background-image: url('../../images/background_forest.gif');
   background-size: cover;
   /* Cover the entire viewport */
   background-position: center;
@@ -20,6 +20,10 @@ html {
   align-items: center;
   flex-direction: column;
   font-family: "Press Start 2P", cursive;
+}
+
+html {
+  background-image: url('../../images/background_forest.gif');
 }
 
 /* ----------------------- Bomb animations ------------------------ */
