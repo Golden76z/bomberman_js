@@ -3,6 +3,7 @@ import { pauseAllExplosions, resumeAllExplosions } from "../entities/bomb.js";
 import { gameInfos } from '../constants/game.js'
 import { checkLevel } from "./checkLevel.js";
 import { maps } from '../constants/levels.js'
+import { transitionToNextLevel } from "./checkLevel.js";
 
 document.addEventListener("keydown", (event) => {
   //console.log(`Touche pressée : ${event.key}`);
@@ -68,8 +69,12 @@ function restartGame() {
 }
 
 function exitToMenu() {
-  console.log("Retour au menu principal");
-  document.getElementById("game-wrapper").classList.add("hidden");
-  document.getElementById("menu-screen").classList.remove("hidden");
-  window.location.reload();
+  transitionToNextLevel()
+
+  setTimeout(() => {
+    console.log("Retour au menu principal");
+    document.getElementById("game-wrapper").classList.add("hidden");
+    document.getElementById("menu-screen").classList.remove("hidden");
+    window.location.reload();
+  }, 700)
 }

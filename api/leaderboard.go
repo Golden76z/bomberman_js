@@ -45,7 +45,6 @@ func loadScoresFromFile() {
 
 
 	if err := json.Unmarshal(data, &allScores); err != nil {
-		log.Printf("Error parsing scores: %v", err)
 		allScores = []PlayerScore{}
 	}
 }

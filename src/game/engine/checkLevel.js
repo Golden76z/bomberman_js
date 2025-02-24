@@ -9,6 +9,64 @@ import { updatePlayerAnimation, position } from "./player_inputs.js"
 import { activeBombPositions } from "./handleExplosion.js"
 import { Wall } from "../entities/colisionMap.js"
 import { playerInfos } from "../constants/player_infos.js"
+import { aiController } from "./player_inputs.js"
+import { AIController } from "../entities/ai.js"
+
+export function transitionToNextLevel() {
+  return new Promise((resolve) => {
+    // Create overlay element if it doesn't exist
+    let overlay = document.querySelector('.level-transition-overlay');
+    if (!overlay) {
+      overlay = document.createElement('div');
+      overlay.className = 'level-transition-overlay';
+      document.body.appendChild(overlay);
+
+      // Add the CSS for the overlay
+      const style = document.createElement('style');
+      style.textContent = `
+        .level-transition-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background-color: black;
+          opacity: 0;
+          z-index: 1000;
+          pointer-events: none;
+          transition: opacity 0.8s ease-in-out;
+        }
+      `;
+      document.head.appendChild(style);
+    }
+
+    // Fade in
+    overlay.style.opacity = '0';
+    overlay.style.display = 'block';
+
+    // Force reflow to ensure transition works
+    void overlay.offsetWidth;
+
+    // Start fade in
+    overlay.style.opacity = '1';
+
+    // Wait for fade in to complete
+    setTimeout(() => {
+      // Update level and map here while screen is black
+      resolve();
+
+      // Start fade out after a short delay
+      setTimeout(() => {
+        overlay.style.opacity = '0';
+
+        // Remove overlay after fade out
+        setTimeout(() => {
+          overlay.style.display = 'none';
+        }, 500);
+      }, 600); // Short delay before fade out starts
+    }, 500); // Time for fade in
+  });
+}
 
 // Function to check if the number of wall is equal to 0 or not
 export function checkWalls() {
@@ -31,17 +89,9 @@ export function checkLevel(currentMap) {
     currentMap = maps[gameInfos.level - 1];
   }
 
-  // Check if all destroyable walls are gone
-  let count = 0;
-  for (let i = 0; i < walls.length; i++) {
-    if (walls[i].type === 3) {
-      count++;
-    }
-  }
-
   // If we change level or restart a map
-  if (count === 0 || gameInfos.restart) {
-
+  transitionToNextLevel()
+  setTimeout(() => {
     // Clear any active bombs before changing level
     activeBombPositions.forEach((bombData, key) => {
       if (bombData.checkExplosionInterval) {
@@ -98,7 +148,27 @@ export function checkLevel(currentMap) {
     playerInfos.maxBomb = 1
     playerInfos.bomb = 0
     playerInfos.bombLength = 1
+    playerInfos.hearts = 1
     updatePlayerAnimation();
+
+    if (gameInfos.level == 1) {
+      aiController.length = 0
+      aiController.push(new AIController(100, 100, 1, walls))
+      updateBackground(1)
+    } else if (gameInfos.level == 2) {
+      console.log("test");
+
+      aiController.length = 0
+      aiController.push(new AIController(100, 100, 1, walls))
+      aiController.push(new AIController(550, 100, 1, walls))
+      updateBackground(2)
+    } else {
+      aiController.length = 0
+      aiController.push(new AIController(100, 100, 1, walls))
+      aiController.push(new AIController(760, 100, 1, walls))
+      aiController.push(new AIController(100, 550, 1, walls))
+      updateBackground(3)
+    }
 
     // Recalculate boundaries
     getBoundaryX();
@@ -106,5 +176,26 @@ export function checkLevel(currentMap) {
 
     // Restart game loop
     gameLoop.start(updatePosition);
-  }
+  }, 700)
+}
+
+
+function updateBackground(level) {
+  // Define background images for each level
+  const backgrounds = {
+    1: "url('../images/background_forest.gif')",
+    2: "url('../images/background_cave.png')",
+    3: "url('../images/background_lava.png')",
+  };
+
+  // Get the HTML element
+  const html = document.documentElement;
+
+  // Remove previous background to force update
+  html.style.removeProperty("background-image");
+
+  // Apply the new background with a short delay to ensure it updates
+  setTimeout(() => {
+    html.style.backgroundImage = backgrounds[level] || "url('../images/background_forest.gif')"
+  }, 50);
 }

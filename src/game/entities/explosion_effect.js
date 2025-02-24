@@ -15,7 +15,7 @@ export class ExplosionAnimation {
     this.element.style.height = `${tileSize}px`;
     this.element.style.left = `${x * tileSize}px`;
     this.element.style.top = `${y * tileSize}px`;
-    this.element.style.backgroundImage = 'url("../images/explosion_effect.png")';
+    this.element.style.backgroundImage = 'url("../images/bombs/explosion_effect.png")';
 
     // Scale background size proportionally
     const spriteSheetWidth = SPRITE_FRAME_WIDTH * 7; // 7 frames

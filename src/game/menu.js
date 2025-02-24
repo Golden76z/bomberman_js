@@ -1,3 +1,7 @@
+import { gameInfos } from "./constants/game.js";
+import { transitionToNextLevel } from "./engine/checkLevel.js";
+window.isPaused = true;
+
 import { initLeaderboard } from "./engine/leaderboard.js";
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -17,13 +21,18 @@ document.addEventListener("DOMContentLoaded", function () {
   // Gestionnaire pour démarrer le jeu
   startButton.addEventListener("click", function () {
     console.log("Start button clicked");
+    transitionToNextLevel();
+    window.isPaused = false;
+    gameInfos.pause = false;
 
     // Masquer le menu principal et afficher le jeu
-    menuScreen.classList.add("hidden");
-    gameWrapper.classList.remove("hidden");
+    setTimeout(() => {
+      menuScreen.classList.add("hidden");
+      gameWrapper.classList.remove("hidden");
 
-    // Charger les scripts nécessaires pour le jeu
-    loadGameScripts();
+      // Charger les scripts nécessaires pour le jeu
+      loadGameScripts();
+    }, 700);
   });
 
   // Fonction pour charger les scripts du jeu de manière synchrone

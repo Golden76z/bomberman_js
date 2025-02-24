@@ -10,32 +10,27 @@
   <body>
     <!-- Menu Screen -->
     <div id="menu-screen" class="menu-container">
-      <div class="menu-content">
-        <div class="title-container">
-          <img
-            src="./images/bomberman-character.png"
-            alt="Bomberman Character"
-            class="character-img"
-          />
-          <a
-            href="https://github.com/Golden76z/bomberman_js"
-            target="_blank"
-            class="github-link"
-          >
-            <img
-              src="./images/github-icon.png"
-              alt="GitHub"
-              class="github-icon"
-            />
-          </a>
-        </div>
-        <div class="right-content">
+      <div class="menu-background">
+        <!-- <img src="./images/bomberman-background.jpg" style="visibility: hidden; width: 100%; height: auto;" /> -->
+        <div class="menu-content">
           <h1 class="game-title">BOMBERMAN</h1>
           <div class="buttons-container">
             <button id="start-button">Start Game</button>
             <button id="settings-button">Settings</button>
             <button id="leaderboard-button">Leaderboard</button>
           </div>
+          <a
+            href="https://github.com/Golden76z/bomberman_js"
+            target="_blank"
+            class="github-link"
+          >
+            <span>Project Link</span>
+            <img
+              src="./images/github-icon.png"
+              alt="GitHub"
+              class="github-icon"
+            />
+          </a>
         </div>
       </div>
     </div>
@@ -75,12 +70,13 @@
     <!-- Container du jeu -->
     <div class="game-wrapper hidden" id="game-wrapper">
       <div class="game-info">
-        <div id="score">Score: 0</div>
-        <div id="timer">Temps: 00:00</div>
-        <div id="lives">Vies: 3</div>
+        <div id="score">Stats: 0</div>
+        <div id="timer">Timer: 00:00</div>
+        <div id="lives">HP: 3</div>
       </div>
       <div class="game-container" id="gameMap">
         <div class="player"></div>
+        <div class="ai-player"></div>
       </div>
     </div>
 
@@ -124,7 +120,7 @@
         <button id="main-menu-button">Main Menu</button>
       </div>
     </div>
-
+    <div id="fps-counter">FPS: 0</div>
     <script type="module" src="./src/game/menu.js"></script>
   </body>
 </html>
