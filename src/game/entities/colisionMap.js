@@ -78,7 +78,14 @@ export class Wall {
 }
 
 // Function to handle explosion effect in all directions
-export function handleExplosionEffect(centerX, centerY) {
+export function handleExplosionEffect(centerX, centerY, owner) {
+  let ownerBombLength
+  if (owner == "player") {
+    ownerBombLength = playerInfos.bombLength
+  } else {
+    ownerBombLength = 1
+  }
+
   // Getting the x and y coordiantes on the tilemap with the pixels coordinates
   let coordinates = getTilesCoordinates(centerX, centerY)
 
@@ -90,7 +97,7 @@ export function handleExplosionEffect(centerX, centerY) {
   ];
 
   directions.forEach(([dy, dx]) => {
-    for (let i = 1; i <= playerInfos.bombLength; i++) {
+    for (let i = 1; i <= ownerBombLength; i++) {
       const newY = coordinates[1] + (dy * i);
       const newX = coordinates[0] + (dx * i);
 

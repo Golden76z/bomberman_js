@@ -1,6 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap");
 
 /* Reset de base */
+
 body,
 html {
   margin: 0;
@@ -8,7 +9,6 @@ html {
   height: 100%;
   overflow: hidden;
   background-color: #33333320;
-  background-image: url('../../images/test.png');
   background-size: cover;
   /* Cover the entire viewport */
   background-position: center;
@@ -22,15 +22,19 @@ html {
   font-family: "Press Start 2P", cursive;
 }
 
+html {
+  background-image: url('../../images/background_forest.gif');
+}
+
 /* ----------------------- Bomb animations ------------------------ */
 .bomb {
-  background: url("../../images/baseBomb3.png");
+  background: url("../../images/bombs/baseBomb3.png");
   background-position: 0 0;
   background-size: 64px 64px;
 }
 
 .explosion {
-  background: url("../../images/baseBomb3.png");
+  background: url("../../images/bombs/baseBomb3.png");
   background-size: 896px 64px;
   animation: explode 2s steps(14) forwards;
 }
@@ -65,7 +69,7 @@ html {
 } */
 
 .exploding {
-  background-image: url("../../images/Sprite-0004.png");
+  background-image: url("../../images/tiles/Sprite-0004.png");
 }
 
 /* -----------------Game UI (Score, HP and time)----------------- */
@@ -85,6 +89,7 @@ html {
 }
 
 /* ------------------------ Menu principal ----------------------- */
+
 .menu-container {
   display: flex;
   justify-content: center;
@@ -97,62 +102,67 @@ html {
   z-index: 1000;
 }
 
+.menu-background {
+  display: inline-block;
+  /* This will make it fit the content */
+  background-image: url('../../images/title_menu.png');
+  background-size: 100% 100%;
+  /* Makes the background stretch with the div */
+  background-repeat: no-repeat;
+  background-position: center;
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+  position: relative;
+  padding: 20px;
+  /* Adjust as needed */
+  box-sizing: border-box;
+  min-width: 950px;
+  /* Set to your image's natural width */
+  min-height: 475px;
+  /* Ensures padding is included in width/height */
+}
+
+
 .menu-content {
+  position: relative;
   display: flex;
-  width: 100%;
-  height: 100%;
+  flex-direction: column;
+  justify-content: center;
   padding: 40px;
-  position: relative;
-}
-
-/* Conteneur gauche avec l'image */
-.title-container {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: center;
-  position: relative;
-  padding-left: 20px;
-}
-
-.character-img {
-  height: 70vh;
-  max-width: 100%;
-  object-fit: contain;
-}
-
-/* Conteneur droit avec le titre et les boutons */
-.right-content {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: flex-start;
-  padding-right: 100px;
+  width: auto;
+  /* Let the content determine width */
+  height: auto;
+  /* Let the content determine height */
 }
 
 .game-title {
   font-family: "Press Start 2P", cursive;
-  color: yellow;
+  color: rgb(207, 255, 48);
   font-size: 4vw;
   margin-bottom: 50px;
   text-decoration: underline;
   text-underline-offset: 15px;
+  align-self: flex-start;
+  margin-left: 30%;
+  /* Position title 60% from left */
 }
 
-/* Conteneur des boutons */
 .buttons-container {
   display: flex;
   flex-direction: column;
   gap: 2vh;
+  align-self: flex-start;
+  margin-left: 35%;
+  /* Position buttons 60% from left */
+  width: 225px;
 }
 
 .buttons-container button {
+  font-family: "Press Start 2P";
   background-color: transparent;
   border: none;
   color: white;
-  font-size: 2vw;
+  font-size: 1.5vw;
   text-align: left;
   padding: 10px 0;
   cursor: pointer;
@@ -169,7 +179,7 @@ html {
   height: 2px;
   bottom: 0;
   left: 0;
-  background-color: yellow;
+  background-color: rgb(207, 255, 48);
   transition: width 0.3s ease;
 }
 
@@ -178,8 +188,44 @@ html {
 }
 
 .buttons-container button:hover {
-  color: yellow;
+  color: rgb(207, 255, 48);
 }
+
+.github-icon {
+  width: 20px;
+  height: 20px;
+  opacity: 0.7;
+  transition: opacity 0.3s;
+  border-radius: 50%;
+  /* Makes it circular */
+  object-fit: cover;
+  /* Ensures the image fits properly */
+  border: 5px solid white;
+  /* Adds the white border */
+}
+
+.github-icon:hover {
+  opacity: 1;
+}
+
+
+.github-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  /* Space between icon and text */
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: bold;
+  color: white;
+  /* Adjust color as needed */
+}
+
+.github-link span {
+  white-space: nowrap;
+  /* Prevents text from breaking */
+}
+
 
 /* ---------------------- Menu pause ---------------------------- */
 #pause-container {
@@ -421,4 +467,16 @@ button:focus {
   image-rendering: pixelated;
   /* For crisp pixel art */
   background-repeat: no-repeat;
+}
+
+#fps-counter {
+  position: fixed;
+  bottom: 10px;
+  left: 10px;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  font-size: 14px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-family: "Press Start 2P", cursive;
 }
