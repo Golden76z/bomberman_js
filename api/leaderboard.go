@@ -8,12 +8,15 @@ import (
 	"os"
 	"sort"
 	"strconv"
+	"strings"
 	"sync"
+	"time"
 )
 
 const (
-	scoresPerPage = 5
-	dbFilePath    = "scores.json"
+	scoresPerPage    = 5
+	dbFilePath       = "scores.json"
+	verificationSalt = "votre_clé_secrète_ici" // Clé secrète pour la vérification
 )
 
 var (
@@ -35,7 +38,6 @@ func loadScoresFromFile() {
 		return
 	}
 
-
 	data, err := os.ReadFile(dbFilePath)
 	if err != nil {
 		log.Printf("Error reading scores file: %v", err)
@@ -43,12 +45,11 @@ func loadScoresFromFile() {
 		return
 	}
 
-
 	if err := json.Unmarshal(data, &allScores); err != nil {
+		log.Printf("No score")
 		allScores = []PlayerScore{}
 	}
 }
-
 
 func saveScoresToFile() {
 	scoresMutex.RLock()
@@ -65,7 +66,6 @@ func saveScoresToFile() {
 	}
 }
 
-
 func getScoreHandler(w http.ResponseWriter, r *http.Request) {
 	// Parse page parameter
 	pageStr := r.URL.Query().Get("page")
@@ -78,12 +78,9 @@ func getScoreHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-
 	playerName := r.URL.Query().Get("player")
 
-
 	response := getPaginatedScores(page, playerName)
-
 
 	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(response); err != nil {
@@ -94,6 +91,12 @@ func getScoreHandler(w http.ResponseWriter, r *http.Request) {
 
 // addScoreHandler handles POST requests to add a new score
 func addScoreHandler(w http.ResponseWriter, r *http.Request) {
+	referer := r.Header.Get("Referer")
+	if referer == "" || !isValidReferer(referer) {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
 	var newScore PlayerScore
 	if err := json.NewDecoder(r.Body).Decode(&newScore); err != nil {
 		log.Printf("Error request : %v", err)
@@ -105,6 +108,22 @@ func addScoreHandler(w http.ResponseWriter, r *http.Request) {
 
 	if newScore.Name == "" || newScore.Score < 0 || newScore.Time == "" {
 		http.Error(w, "Invalid score data", http.StatusBadRequest)
+		return
+	}
+
+	// Limitation supplémentaire: empêcher les scores excessivement élevés
+	if newScore.Score > 100000 { // Ajustez cette valeur selon votre jeu
+		log.Printf("Score suspect rejeté: %d", newScore.Score)
+		http.Error(w, "Score too high, potentially cheating", http.StatusBadRequest)
+		return
+	}
+
+	// Ajouter un timestamp pour limiter les soumissions multiples
+	newScore.SubmittedAt = time.Now().Unix()
+
+	// Vérifier si le joueur a déjà soumis un score récemment
+	if isRecentSubmission(newScore.Name) {
+		http.Error(w, "Too many submissions in a short time", http.StatusTooManyRequests)
 		return
 	}
 
@@ -131,14 +150,31 @@ func addScoreHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func isValidReferer(referer string) bool {
+    return referer != "" && strings.Contains(referer, "localhost:8080")
+}
+
+func isRecentSubmission(playerName string) bool {
+	const cooldownPeriod = 1 * 60
+	currentTime := time.Now().Unix()
+
+	scoresMutex.RLock()
+	defer scoresMutex.RUnlock()
+
+	for _, score := range allScores {
+		if score.Name == playerName && (currentTime - score.SubmittedAt) < cooldownPeriod {
+			return true
+		}
+	}
+	return false
+}
+
 func getPaginatedScores(page int, playerName string) ScoreResponse {
 	scoresMutex.RLock()
 	defer scoresMutex.RUnlock()
 
-
 	sortedScores := make([]PlayerScore, len(allScores))
 	copy(sortedScores, allScores)
-
 
 	sort.Slice(sortedScores, func(i, j int) bool {
 		return sortedScores[i].Score > sortedScores[j].Score
@@ -156,7 +192,6 @@ func getPaginatedScores(page int, playerName string) ScoreResponse {
 		page = totalPages
 	}
 
-
 	startIdx := (page - 1) * scoresPerPage
 	endIdx := startIdx + scoresPerPage
 	if endIdx > totalScores {
@@ -172,7 +207,6 @@ func getPaginatedScores(page int, playerName string) ScoreResponse {
 			Time:  sortedScores[i].Time,
 		})
 	}
-
 
 	response := ScoreResponse{
 		Scores:       rankedScores,
@@ -195,7 +229,6 @@ func getPaginatedScores(page int, playerName string) ScoreResponse {
 	return response
 }
 
-
 func calculateRankAndPercentile(newScore int) (int, float64) {
 	scoresMutex.RLock()
 	defer scoresMutex.RUnlock()
@@ -207,7 +240,6 @@ func calculateRankAndPercentile(newScore int) (int, float64) {
 		}
 	}
 
-
 	rank := higherScores + 1
 
 	// Calculate percentile
@@ -216,7 +248,6 @@ func calculateRankAndPercentile(newScore int) (int, float64) {
 
 	return rank, percentile
 }
-
 
 func calculatePercentile(rank, total int) float64 {
 	if total == 0 {

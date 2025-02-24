@@ -288,6 +288,29 @@ html {
   font-size: 1.5vw;
 }
 
+.leaderboard-panel {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.9);
+  color: white;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+  z-index: 2000; /* Assure-toi que c'est au-dessus du menu */
+  display: none;
+  width: 80%;
+  max-width: 500px;
+}
+
+.leaderboard-panel.visible {
+  display: block;
+}
+
+.hidden {
+  display: none !important;
+}
 /* ---------------------- Pagination ----------------------- */
 .pagination {
   display: flex;

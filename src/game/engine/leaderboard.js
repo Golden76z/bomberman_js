@@ -1,6 +1,7 @@
 const API_URL = "/api/scores";
 let currentPage = 1;
 let playerName = "";
+let hasSubmittedScore = false;
 
 async function loadLeaderboard(page = 1, targetElement = "menu") {
   try {
@@ -119,6 +120,10 @@ function updatePagination(data, targetElement) {
 }
 async function submitScore(name, score, time) {
   try {
+    if (hasSubmittedScore) {
+      console.log("Score déjà soumis. Pas de nouvel envoi.");
+      return null;
+    }
     playerName = name;
 
     const ScoreData = {
@@ -138,6 +143,7 @@ async function submitScore(name, score, time) {
     if (!response.ok) {
       throw new Error("Failed to submit score");
     }
+    hasSubmittedScore = true;
 
     const result = await response.json();
 
@@ -146,6 +152,8 @@ async function submitScore(name, score, time) {
 
     displayLeaderboard(leaderboardResult, "gameOver");
     updatePagination(leaderboardResult, "gameOver");
+
+    document.getElementById("player-name-input").style.display = "none";
 
     return result;
   } catch (error) {
@@ -213,9 +221,17 @@ function initLeaderboard() {
 
       submitScore(name, gameScore, gameTime);
 
-      document.getElementById(("player-name-input".style.display = "none"));
+      submitNameButton.disabled = true;
     });
   }
+
+  window.addEventListener("gameRestart", function () {
+    hasSubmittedScore = false;
+  });
+}
+
+export function resetSubmissionStates() {
+  hasSubmittedScore = false;
 }
 
 export { loadLeaderboard, submitScore, initLeaderboard };
