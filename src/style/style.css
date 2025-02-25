@@ -480,3 +480,35 @@ button:focus {
   border-radius: 5px;
   font-family: "Press Start 2P", cursive;
 }
+
+
+#storyScreen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  /* Start hidden */
+  transition: opacity 2s ease-in-out;
+  z-index: 80;
+}
+
+#storyText {
+  font-size: 20px;
+  white-space: normal;
+  /* Allow text to wrap */
+  overflow: visible;
+  /* Ensure no hidden text */
+  width: 80%;
+  /* Adjust to fit inside the screen */
+  color: white;
+  text-align: center;
+  /* Center text */
+  line-height: 1.5;
+  /* Improve readability */
+}

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bomberman Story Intro</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background-color: black;
+      color: white;
+      font-family: 'Press Start 2P', monospace;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    #storyScreen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: black;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      /* Start hidden */
+      transition: opacity 2s ease-in-out;
+    }
+
+    #storyText {
+      font-size: 20px;
+      white-space: nowrap;
+      overflow: hidden;
+      width: 0;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="storyScreen">
+    <div id="storyText"></div>
+  </div>
+
+  <script>
+    function showStory(storyText, callback) {
+      const screen = document.getElementById("storyScreen");
+      const textContainer = document.getElementById("storyText");
+
+      screen.style.opacity = "1"; // Fade in the screen
+
+      let index = 0;
+      function typeLetter() {
+        if (index < storyText.length) {
+          textContainer.textContent += storyText[index];
+          index++;
+          setTimeout(typeLetter, 50); // Speed of text appearing
+        } else {
+          waitForKeyPress(callback);
+        }
+      }
+
+      setTimeout(typeLetter, 1000); // Start typing after fade-in
+    }
+
+    function waitForKeyPress(callback) {
+      document.addEventListener("keydown", function fadeOutStory(event) {
+        document.removeEventListener("keydown", fadeOutStory); // Prevent multiple triggers
+        const screen = document.getElementById("storyScreen");
+        screen.style.opacity = "0"; // Fade out
+        setTimeout(callback, 2000); // Call next function after fade-out
+      });
+    }
+
+    function startGame() {
+      console.log("Game starts now!");
+      // Add your game start logic here
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+      const story = "In the heart of Blastron, chaos looms. You, the last Bomber, must reclaim the city!";
+      showStory(story, startGame);
+    });
+  </script>
+
+</body>
+
+</html>

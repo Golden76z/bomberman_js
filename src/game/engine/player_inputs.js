@@ -7,7 +7,6 @@ import { gameInfos } from "../constants/game.js";
 import { AIController } from "../entities/ai.js";
 
 const player = document.querySelector(".player");
-const container = document.querySelector(".game-container");
 
 export let position = {
   x: playerInfos.positionX,
@@ -159,13 +158,14 @@ export function updatePlayerAnimation() {
 updateCharacter(playerInfos.characterIndex);
 
 export function handleKeyDown(event) {
-  if (keys.hasOwnProperty(event.key) && !window.isPaused) {
+  if (keys.hasOwnProperty(event.key) && !window.isPaused && !gameInfos.pause) {
     keys[event.key] = true;
     event.preventDefault();
   } else if (
     event.key === " " &&
     playerInfos.bomb != playerInfos.maxBomb &&
-    !window.isPaused
+    !window.isPaused &&
+    !gameInfos.pause
   ) {
     // Setting up player coordinate centered on his hitbox
     let x = position.x - playerInfos.width / 3

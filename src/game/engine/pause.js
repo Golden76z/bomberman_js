@@ -52,7 +52,7 @@ function resumeGame() {
   window.dispatchEvent(new Event("resumeGame"));
 }
 
-function restartGame() {
+export function restartGame() {
   console.log("Redémarrage du jeu");
   window.isPaused = false;
   gameInfos.pause = false;
@@ -68,7 +68,7 @@ function restartGame() {
   checkLevel(maps[gameInfos.level - 1])
 }
 
-function exitToMenu() {
+export function exitToMenu() {
   transitionToNextLevel()
 
   setTimeout(() => {

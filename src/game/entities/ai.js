@@ -18,7 +18,7 @@ export class AIController {
       height: 40,
       frameWidth: 50,
       frameHeight: 50,
-      moveSpeed: 0.3,
+      moveSpeed: 0.15,
       health: hp,
       bomb: 0,
       maxBomb: 1,
@@ -54,7 +54,7 @@ export class AIController {
     this.direction = this.getRandomDirection();
     this.directionChangeInterval = 1000;
     this.lastDirectionChange = Date.now();
-    this.bombInterval = 5000;
+    this.bombInterval = 1000;
     this.lastBombPlaced = Date.now();
     this.updateAIPosition();
 
@@ -370,6 +370,47 @@ export class AIController {
     return false;
   }
 
+  isSafeToPlaceBomb() {
+    if (this.disabled) return false;
+
+    const aiTileX = Math.floor(this.position.x / gameInfos.tileSize);
+    const aiTileY = Math.floor(this.position.y / gameInfos.tileSize);
+
+    // Check more thoroughly for escape routes
+    const directions = [
+      { dx: 1, dy: 0 },
+      { dx: -1, dy: 0 },
+      { dx: 0, dy: 1 },
+      { dx: 0, dy: -1 }
+    ];
+
+    // Count available escape routes
+    let availableEscapeRoutes = 0;
+    for (const dir of directions) {
+      const escapeX = (aiTileX + dir.dx) * gameInfos.tileSize;
+      const escapeY = (aiTileY + dir.dy) * gameInfos.tileSize;
+
+      // Check if the escape route is clear
+      if (this.canMove(escapeX, escapeY)) {
+        // Check if there's a secondary escape route from this position
+        for (const secondDir of directions) {
+          if (secondDir.dx === -dir.dx && secondDir.dy === -dir.dy) continue; // Don't go back
+
+          const secondaryX = escapeX + (secondDir.dx * gameInfos.tileSize);
+          const secondaryY = escapeY + (secondDir.dy * gameInfos.tileSize);
+
+          if (this.canMove(secondaryX, secondaryY)) {
+            availableEscapeRoutes++;
+            break;
+          }
+        }
+      }
+    }
+
+    // Only consider it safe if there are at least 2 escape routes with secondary paths
+    return availableEscapeRoutes >= 2;
+  }
+
   calculateEscapeRoute(bombX, bombY) {
     const aiTileX = Math.floor(this.position.x / gameInfos.tileSize);
     const aiTileY = Math.floor(this.position.y / gameInfos.tileSize);
@@ -391,32 +432,38 @@ export class AIController {
       const newX = newTileX * gameInfos.tileSize;
       const newY = newTileY * gameInfos.tileSize;
 
+      // Skip if we can't move there
       if (!this.canMove(newX, newY)) continue;
+
+      // Skip if this position would still be in explosion range
+      if (this.isInExplosionRange(bombX, bombY)) continue;
 
       let safetyScore = 0;
 
       // Heavily weight positions that are completely out of bomb range
-      if (!this.isInExplosionRange(bombX, bombY)) {
-        safetyScore += 20;
-      }
+      safetyScore += 30;
 
-      // Weight distance from bomb
+      // Weight distance from bomb (prefer further positions)
       const distanceFromBomb = Math.abs(newTileX - bombX) + Math.abs(newTileY - bombY);
-      safetyScore += distanceFromBomb * 3;
+      safetyScore += distanceFromBomb * 5;
 
-      // Check for available escape routes from new position
-      let availableRoutes = 0;
+      // Check for secondary escape routes from this position
+      let secondaryRoutes = 0;
       for (const escapeDir of directions) {
+        // Don't count going back towards the bomb
+        if (escapeDir.dx === -dir.dx && escapeDir.dy === -dir.dy) continue;
+
         const escapeTileX = newTileX + escapeDir.dx;
         const escapeTileY = newTileY + escapeDir.dy;
         const escapeX = escapeTileX * gameInfos.tileSize;
         const escapeY = escapeTileY * gameInfos.tileSize;
 
-        if (this.canMove(escapeX, escapeY)) {
-          availableRoutes++;
+        if (this.canMove(escapeX, escapeY) &&
+          !this.isInExplosionRange(bombX, bombY)) {
+          secondaryRoutes++;
         }
       }
-      safetyScore += availableRoutes * 2;
+      safetyScore += secondaryRoutes * 10;
 
       if (safetyScore > maxSafetyScore) {
         maxSafetyScore = safetyScore;
@@ -424,50 +471,52 @@ export class AIController {
       }
     }
 
+    // If no safe direction is found, prioritize any possible movement away from the bomb
+    if (!bestDirection) {
+      for (const dir of directions) {
+        const newX = (aiTileX + dir.dx) * gameInfos.tileSize;
+        const newY = (aiTileY + dir.dy) * gameInfos.tileSize;
+
+        if (this.canMove(newX, newY)) {
+          return dir.direction;
+        }
+      }
+    }
+
     return bestDirection || this.getRandomDirection();
   }
 
-  isSafeToPlaceBomb() {
+  shouldPlaceBomb() {
     if (this.disabled) return false;
+    const currentTime = Date.now();
 
-    // Get AI's current tile position
+    // Don't place bomb if already in danger
+    if (this.inDanger) return false;
+
+    // Don't place bomb if cooldown hasn't expired
+    if (currentTime - this.lastBombPlaced <= this.bombInterval) return false;
+
+    // Don't place bomb if at max bombs
+    if (this.aiInfos.bomb >= this.aiInfos.maxBomb) return false;
+
+    // Only place bomb if it's safe to do so
+    if (!this.isSafeToPlaceBomb()) return false;
+
+    // Calculate escape route before deciding to place bomb
     const aiTileX = Math.floor(this.position.x / gameInfos.tileSize);
     const aiTileY = Math.floor(this.position.y / gameInfos.tileSize);
 
-    // Check if AI is in a corner (has walls on two adjacent sides)
-    let adjacentWalls = 0;
-    const directions = [
-      { dx: 1, dy: 0 },
-      { dx: -1, dy: 0 },
-      { dx: 0, dy: 1 },
-      { dx: 0, dy: -1 }
-    ];
+    const escapeDir = this.calculateEscapeRoute(aiTileX, aiTileY);
 
-    for (const dir of directions) {
-      const checkX = (aiTileX + dir.dx) * gameInfos.tileSize;
-      const checkY = (aiTileY + dir.dy) * gameInfos.tileSize;
-
-      if (!this.canMove(checkX, checkY)) {
-        adjacentWalls++;
-      }
+    // Only place bomb if we have a valid escape route
+    if (escapeDir) {
+      this.escapeDirection = escapeDir;
+      this.lastBombPlaced = currentTime;
+      this.inDanger = true;
+      return true;
     }
 
-    // If there are 2 or more adjacent walls, it's likely a corner - don't place bomb
-    if (adjacentWalls >= 2) return false;
-
-    // Check if there's at least one escape route
-    let hasEscapeRoute = false;
-    for (const dir of directions) {
-      const escapeX = (aiTileX + dir.dx) * gameInfos.tileSize;
-      const escapeY = (aiTileY + dir.dy) * gameInfos.tileSize;
-
-      if (this.canMove(escapeX, escapeY)) {
-        hasEscapeRoute = true;
-        break;
-      }
-    }
-
-    return hasEscapeRoute;
+    return false;
   }
 
   simulateKeyPress(deltaTime) {
@@ -555,56 +604,6 @@ export class AIController {
     }
 
     return this.keys;
-  }
-
-  shouldPlaceBomb() {
-    if (this.disabled) return false;
-    const currentTime = Date.now();
-
-    // Don't place bomb if already in danger
-    if (this.inDanger) return false;
-
-    // Get current tile position
-    const aiTileX = Math.floor(this.position.x / gameInfos.tileSize);
-    const aiTileY = Math.floor(this.position.y / gameInfos.tileSize);
-
-    // Check if there's at least one clear escape route before placing bomb
-    const directions = [
-      { dx: 1, dy: 0 },
-      { dx: -1, dy: 0 },
-      { dx: 0, dy: 1 },
-      { dx: 0, dy: -1 }
-    ];
-
-    let hasEscapeRoute = false;
-    for (const dir of directions) {
-      const escapeX = (aiTileX + dir.dx) * gameInfos.tileSize;
-      const escapeY = (aiTileY + dir.dy) * gameInfos.tileSize;
-
-      if (this.canMove(escapeX, escapeY)) {
-        hasEscapeRoute = true;
-        break;
-      }
-    }
-
-    if (!hasEscapeRoute) return false;
-
-    if (currentTime - this.lastBombPlaced > this.bombInterval &&
-      this.aiInfos.bomb < this.aiInfos.maxBomb) {
-      // Pre-calculate escape route before placing bomb
-      const potentialBombX = aiTileX;
-      const potentialBombY = aiTileY;
-
-      // Simulate the bomb placement and find best escape route
-      this.escapeDirection = this.calculateEscapeRoute(potentialBombX, potentialBombY);
-
-      if (this.escapeDirection) {
-        this.lastBombPlaced = currentTime;
-        this.inDanger = true; // Immediately mark as in danger
-        return true;
-      }
-    }
-    return false;
   }
 
   update(deltaTime) {

@@ -116,7 +116,14 @@ function collectPowerUp(powerUpElement, collector, checkInterval) {
   }, 300);
 }
 
-function removeWallsInRange(x, y, walls, map, ownerBombLength) {
+function removeWallsInRange(x, y, walls, map, owner) {
+  let ownerBombLength
+  if (owner == "player") {
+    ownerBombLength = playerInfos.bombLength
+  } else {
+    ownerBombLength = 1
+  }
+
   const directions = [
     [-1, 0],
     [1, 0],
@@ -317,7 +324,7 @@ export function handleExplosion(x, y, map, owner) {
   });
 
   // Remove the walls and update the map
-  const count = removeWallsInRange(x, y, walls, map, ownerBombLength);
+  const count = removeWallsInRange(x, y, walls, map, owner);
 
   if (count > 0) {
     updateMultipleMaps(maps);
@@ -417,26 +424,57 @@ function isInExplosionRange(explosionX, explosionY, targetX, targetY, explosionL
   const targetTileX = Math.floor(targetX / gameInfos.tileSize);
   const targetTileY = Math.floor(targetY / gameInfos.tileSize);
 
-  // Check if target is in cross pattern from explosion, accounting for explosion length
-  for (let i = 0; i <= explosionLength; i++) {
-    // Check horizontal line
-    if (targetTileY === explosionY && (
-      targetTileX === explosionX + i ||
-      targetTileX === explosionX - i
-    )) {
-      return true;
-    }
+  // Check if target is at explosion center
+  if (targetTileX === explosionX && targetTileY === explosionY) {
+    return true;
+  }
 
-    // Check vertical line
-    if (targetTileX === explosionX && (
-      targetTileY === explosionY + i ||
-      targetTileY === explosionY - i
-    )) {
-      return true;
+  // Check in each direction if the target is in range AND not blocked by walls
+  const directions = [
+    { dx: -1, dy: 0 }, // left
+    { dx: 1, dy: 0 },  // right
+    { dx: 0, dy: -1 }, // up
+    { dx: 0, dy: 1 }   // down
+  ];
+
+  // Get current map
+  const currentMap = maps[gameInfos.level - 1];
+
+  for (const { dx, dy } of directions) {
+    // Start from position next to explosion
+    for (let i = 1; i <= explosionLength; i++) {
+      const checkX = explosionX + (dx * i);
+      const checkY = explosionY + (dy * i);
+
+      // Check if we're out of bounds
+      if (
+        checkY < 0 ||
+        checkY >= currentMap.length ||
+        checkX < 0 ||
+        checkX >= currentMap[0].length
+      ) {
+        break; // Stop checking this direction if we're out of bounds
+      }
+
+      // Check if there's a wall blocking the explosion
+      const wall = Wall.allWalls.find(w => w.tileX === checkX && w.tileY === checkY);
+      if (wall && (wall.type === 1 || wall.type === 2)) {
+        break; // Stop checking this direction if we hit an indestructible wall
+      }
+
+      // Check if the player is at this position
+      if (targetTileX === checkX && targetTileY === checkY) {
+        return true; // Player is in explosion range and not blocked by walls
+      }
+
+      // If we hit a destructible wall, the explosion stops here even if it destroys the wall
+      if (wall && wall.type === 3) {
+        break;
+      }
     }
   }
 
-  return false;
+  return false; // Player is not in explosion range
 }
 
 function handlePlayerDamage() {
