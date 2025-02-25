@@ -4,7 +4,7 @@ type PlayerScore struct {
 	Name        string `json:"name"`
 	Score       int    `json:"score"`
 	Time        string `json:"time"`
-	SubmittedAt int64  `json: "submittedAt"`
+	SubmittedAt int64  `json:"submittedAt"`
 }
 
 type ScoreResponse struct {

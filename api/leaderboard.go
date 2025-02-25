@@ -16,7 +16,7 @@ import (
 const (
 	scoresPerPage    = 5
 	dbFilePath       = "scores.json"
-	verificationSalt = "votre_clé_secrète_ici" // Clé secrète pour la vérification
+	verificationSalt = "1234"
 )
 
 var (
