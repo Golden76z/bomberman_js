@@ -23,7 +23,7 @@ html {
 }
 
 html {
-  background-image: url('../../images/background_forest.gif');
+  background-image: url("../../images/background_forest.gif");
 }
 
 /* ----------------------- Bomb animations ------------------------ */
@@ -105,7 +105,7 @@ html {
 .menu-background {
   display: inline-block;
   /* This will make it fit the content */
-  background-image: url('../../images/title_menu.png');
+  background-image: url("../../images/title_menu.png");
   background-size: 100% 100%;
   /* Makes the background stretch with the div */
   background-repeat: no-repeat;
@@ -121,7 +121,6 @@ html {
   min-height: 475px;
   /* Ensures padding is included in width/height */
 }
-
 
 .menu-content {
   position: relative;
@@ -208,7 +207,6 @@ html {
   opacity: 1;
 }
 
-
 .github-link {
   display: flex;
   align-items: center;
@@ -225,7 +223,6 @@ html {
   white-space: nowrap;
   /* Prevents text from breaking */
 }
-
 
 /* ---------------------- Menu pause ---------------------------- */
 #pause-container {
@@ -264,6 +261,183 @@ html {
   color: white;
 }
 
+/* ---------------------- Leaderboard ----------------------- */
+.leaderboard-game-over {
+  width: 100%;
+  max-width: 450px;
+  margin: 20px auto;
+  padding: 15px;
+  background-color: rgba(0, 0, 0, 0.7);
+  border-radius: 8px;
+  color: white;
+  font-family: "Press Start 2P", cursive;
+}
+
+/* Top Score en jaune */
+.leaderboard-game-over h3 {
+  font-size: 1.8vw;
+  text-decoration: underline;
+  color: yellow;
+  text-underline-offset: 5px;
+  text-align: center;
+}
+
+/* Tableau des scores */
+.leaderboard-scores {
+  text-align: center;
+  font-size: 1.5vw;
+}
+
+.leaderboard-panel {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.9);
+  color: white;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+  z-index: 2000; /* Assure-toi que c'est au-dessus du menu */
+  display: none;
+  width: 80%;
+  max-width: 500px;
+}
+
+.leaderboard-panel.visible {
+  display: block;
+}
+
+.hidden {
+  display: none !important;
+}
+/* ---------------------- Pagination ----------------------- */
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  font-size: 1.5vw;
+  margin-top: 8px;
+  color: white;
+}
+
+/* Previous / Next boutons plus visibles */
+.pagination button {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.5vw;
+  cursor: pointer;
+  text-transform: uppercase;
+  position: relative;
+  transition: color 0.3s ease;
+}
+
+.pagination button::after {
+  content: "";
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: 0;
+  left: 0;
+  background-color: yellow;
+  transition: width 0.3s ease;
+}
+
+.pagination button:hover::after {
+  width: 100%;
+}
+
+.pagination button:hover {
+  color: yellow;
+}
+
+.pagination button:disabled {
+  color: gray;
+  cursor: not-allowed;
+}
+
+/* Page X of Y plus petite */
+.page-info {
+  font-size: 1.2vw;
+  font-weight: bold;
+  color: white;
+}
+
+/* ---------------------- Bouton Retour Menu Principal ----------------------- */
+#main-menu-button {
+  background: none;
+  border: 3px solid yellow;
+  color: white;
+  padding: 15px 25px;
+  font-size: 1.8vw;
+  font-weight: bold;
+  cursor: pointer;
+  width: auto;
+  border-radius: 5px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+#main-menu-button:hover {
+  background-color: yellow;
+  color: black;
+  transform: scale(1.05);
+}
+
+/* ---------------------- Barre de Nom + Submit ----------------------- */
+.name-input-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+#player-name {
+  padding: 10px;
+  font-size: 1.2vw;
+  border: 2px solid yellow;
+  border-radius: 5px;
+  background-color: rgba(255, 204, 0, 0.1);
+  color: white;
+  text-align: center;
+  font-family: "Press Start 2P", cursive;
+  width: 80%;
+  max-width: 250px;
+}
+
+/* Bouton Submit en gras et plus visible */
+#submit-name-button {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.5vw;
+  font-weight: bold;
+  cursor: pointer;
+  text-transform: uppercase;
+  position: relative;
+  transition: color 0.3s ease;
+}
+
+#submit-name-button::after {
+  content: "";
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: 0;
+  left: 0;
+  background-color: yellow;
+  transition: width 0.3s ease;
+}
+
+#submit-name-button:hover::after {
+  width: 100%;
+}
+
+#submit-name-button:hover {
+  color: yellow;
+}
+
 /* ---------------------- Boutons communs ----------------------- */
 button {
   background-color: #005b99;
@@ -282,24 +456,27 @@ button:focus {
   outline: none;
 }
 
-/* -------------------- Game over screen ------------------------ */
+/* ---------------------- Game Over Screen ------------------------ */
 #game-over-container {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background-color: rgba(0, 0, 0, 0.7);
+  background-color: rgba(0, 0, 0, 0.85);
   color: red;
-  font-size: 50px;
+  font-size: 1vw;
   font-weight: bold;
-  padding: 20px;
-  border: 5px solid black;
+  font-family: "Press Start 2P", cursive;
+  padding: 25px;
+  border: 3px solid black;
   border-radius: 10px;
   z-index: 1000;
   display: none;
   opacity: 0;
   visibility: hidden;
   text-align: center;
+  width: 90%;
+  max-width: 50%;
   transition: opacity 0.3s ease, visibility 0s 0.3s;
 }
 
@@ -308,6 +485,19 @@ button:focus {
   opacity: 1;
   visibility: visible;
   transition: opacity 0.3s ease, visibility 0s 0s;
+}
+
+/* "Your Score" plus petit et blanc */
+#final-score {
+  font-size: 1.5vw;
+  color: white;
+  margin-top: 10px;
+}
+
+#end-game-score {
+  font-size: 2vw;
+  color: yellow;
+  font-weight: bold;
 }
 
 /* ---------------------- Paramètres ---------------------------- */
@@ -443,7 +633,6 @@ button:focus {
 
 /* -----------------------Responsivity --------------------------- */
 @media (max-width: 768px) {
-
   /* Pour les petits écrans */
   .menu-container {
     padding: 20px;

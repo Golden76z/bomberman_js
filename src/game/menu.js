@@ -2,6 +2,8 @@ import { gameInfos } from "./constants/game.js";
 import { transitionToNextLevel } from "./engine/checkLevel.js";
 window.isPaused = true;
 
+import { initLeaderboard } from "./engine/leaderboard.js";
+
 document.addEventListener("DOMContentLoaded", function () {
   const menuScreen = document.getElementById("menu-screen");
   const gameWrapper = document.getElementById("game-wrapper");
@@ -14,10 +16,12 @@ document.addEventListener("DOMContentLoaded", function () {
   const musicValue = document.getElementById("music-value");
   const sfxValue = document.getElementById("sfx-value");
 
+  initLeaderboard();
+
   // Gestionnaire pour démarrer le jeu
   startButton.addEventListener("click", function () {
     console.log("Start button clicked");
-    transitionToNextLevel()
+    transitionToNextLevel();
     window.isPaused = false;
     gameInfos.pause = false;
 
@@ -27,8 +31,8 @@ document.addEventListener("DOMContentLoaded", function () {
       gameWrapper.classList.remove("hidden");
 
       // Charger les scripts nécessaires pour le jeu
-      loadGameScripts()
-    }, 700)
+      loadGameScripts();
+    }, 700);
   });
 
   // Fonction pour charger les scripts du jeu de manière synchrone

@@ -1,6 +1,7 @@
 import { pauseTimer, score, timeLeft } from "./ui_scoring.js";
 import { pauseAllExplosions } from "../entities/bomb.js";
 import { playerInfos } from "../constants/player_infos.js";
+import { loadLeaderboard, resetSubmissionStates } from "./leaderboard.js";
 
 let isPaused = false;
 export function showGameOver() {
@@ -14,6 +15,21 @@ export function showGameOver() {
   gameOverContainer.classList.add("visible");
   gameOverContainer.classList.remove("hidden");
 
+  document.getElementById("end-game-score").textContent = score;
+
+  const playerNameInput = document.getElementById("player-name-input");
+  if (playerNameInput) {
+    playerNameInput.style.display = "block";
+    document.getElementById("player-name").value = "";
+
+    const submitButton = document.getElementById("submit-name-button");
+    if (submitButton) {
+      submitButton.disabled = false;
+    }
+  }
+
+  loadLeaderboard(1, "gameOver");
+
   isPaused = true;
   window.isPaused = true;
   pauseTimer();
@@ -26,11 +42,16 @@ export function restartGame() {
   score = 0;
   playerInfos.hearts = 0;
   timeLeft = 0;
+  resetSubmissionStates();
+
+  window.dispatchEvent(new Event("gameRestart"));
+
   window.location.reload();
 }
 
 export function exitToMenu() {
   document.getElementById("game-wrapper").classList.add("hidden");
   document.getElementById("menu-screen").classList.remove("hidden");
+  resetSubmissionStates();
   window.location.reload();
 }
