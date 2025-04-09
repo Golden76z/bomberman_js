@@ -526,6 +526,7 @@ function handleAIDamage(index) {
     // Remove the specific AI element
     if (aiElement) {
       aiElement.remove();
+      updateScore(2000)
     }
 
     // Disabling the ai if its health reaches 0
@@ -543,13 +544,13 @@ function handleAIDamage(index) {
   }
 
   // Count remaining active AIs
-  const remainingAIs = aiController.filter(ai => !ai.disabled).length;
+  // const remainingAIs = aiController.filter(ai => !ai.disabled).length;
 
-  // If no AIs remain, proceed to next level
-  if (remainingAIs === 0) {
-    const currentMap = maps[gameInfos.level - 1];
-    checkLevel(currentMap);
-  }
+  // // If no AIs remain, proceed to next level
+  // if (remainingAIs === 0) {
+  //   const currentMap = maps[gameInfos.level - 1];
+  //   checkLevel(currentMap);
+  // }
 }
 
 // Add damage animation to existing styles

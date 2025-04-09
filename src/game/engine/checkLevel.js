@@ -1,18 +1,15 @@
 import { gameInfos, updateGameLevel, updateWallStyles, gameContainerStyles } from "../constants/game.js"
-import { createWalls } from "../entities/colisionMap.js"
-import { createMap } from "./mapGeneration.js"
-import { walls } from "./mapGeneration.js"
+import { createWalls, Wall } from "../entities/colisionMap.js"
+import { createMap, walls } from "./mapGeneration.js"
 import { maps, originalMaps } from "../constants/levels.js"
 import { gameLoop } from "./gameLoop.js"
-import { getBoundaryX, getBoundaryY, updatePosition } from "./player_inputs.js"
-import { updatePlayerAnimation, position } from "./player_inputs.js"
+import { getBoundaryX, getBoundaryY, updatePosition, updatePlayerAnimation, position, aiController } from "./player_inputs.js"
 import { activeBombPositions } from "./handleExplosion.js"
-import { Wall } from "../entities/colisionMap.js"
 import { playerInfos } from "../constants/player_infos.js"
-import { aiController } from "./player_inputs.js"
 import { AIController } from "../entities/ai.js"
 import { showStory } from "../animationText.js"
 import { exitToMenu } from "./pause.js"
+import { restartTimer } from "./ui_scoring.js"
 
 export function transitionToNextLevel() {
   return new Promise((resolve) => {
@@ -111,6 +108,7 @@ export function checkLevel(currentMap) {
   // Increment level
   if (!gameInfos.restart) {
     gameInfos.level++;
+    gameInfos.score += 10000
   }
 
   // First, start the transition
@@ -146,6 +144,7 @@ export function checkLevel(currentMap) {
       aiController.push(new AIController(550, 100, 1, walls));
       updateBackground(2);
       gameInfos.pause = false
+      restartTimer()
     });
   } else if (gameInfos.level == 3) {
     const story3 = `Final Level - Showdown with Pyron!
@@ -166,6 +165,7 @@ export function checkLevel(currentMap) {
       aiController.push(new AIController(100, 550, 2, walls));
       updateBackground(3);
       gameInfos.pause = false
+      restartTimer()
     });
   } else {
     const endingStory = `Victory - Blastron is Free!

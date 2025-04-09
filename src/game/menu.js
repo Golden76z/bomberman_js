@@ -54,7 +54,7 @@ function loadGameScripts() {
     "./src/game/engine/player_inputs.js",
     "./src/game/engine/mapGeneration.js",
     "./src/game/engine/pause.js",
-    "./src/game/engine/ui_scoring.js", // Charger le script UI également
+    "./src/game/engine/ui_scoring.js",
   ];
 
   let loadedScripts = 0;
