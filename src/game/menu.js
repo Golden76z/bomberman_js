@@ -4,7 +4,11 @@ import { showStory } from "./animationText.js";
 
 window.isPaused = true;
 
+<<<<<<< HEAD
 const story = "In the heart of Blastron, chaos looms. You, the last Bomber, must reclaim the city!";
+=======
+import { initLeaderboard } from "./engine/leaderboard.js";
+>>>>>>> menu-settings-credits
 
 document.addEventListener("DOMContentLoaded", function () {
   const menuScreen = document.getElementById("menu-screen");
@@ -18,12 +22,29 @@ document.addEventListener("DOMContentLoaded", function () {
   const musicValue = document.getElementById("music-value");
   const sfxValue = document.getElementById("sfx-value");
 
+  initLeaderboard();
+
   // Gestionnaire pour démarrer le jeu
   startButton.addEventListener("click", function () {
     menuScreen.classList.add("hidden");
 
     console.log("Start button clicked");
+<<<<<<< HEAD
     showStory(story, showGame);
+=======
+    transitionToNextLevel();
+    window.isPaused = false;
+    gameInfos.pause = false;
+
+    // Masquer le menu principal et afficher le jeu
+    setTimeout(() => {
+      menuScreen.classList.add("hidden");
+      gameWrapper.classList.remove("hidden");
+
+      // Charger les scripts nécessaires pour le jeu
+      loadGameScripts();
+    }, 700);
+>>>>>>> menu-settings-credits
   });
 
   // Gestionnaire pour ouvrir le panneau de paramètres

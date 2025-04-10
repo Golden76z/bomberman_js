@@ -7,6 +7,9 @@ export let timeLeft = 0;
 let isPaused = false;
 
 export function initializeGameUI() {
+  window.score = score;
+  window.timeLeft = timeLeft;
+
   updateUI();
   startTimer();
 }
@@ -25,6 +28,7 @@ export function startTimer() {
   timerInterval = setInterval(() => {
     if (!isPaused) {
       timeLeft++;
+      window.timeLeft = timeLeft;
       document.getElementById("timer").textContent = `Temps: ${formatTime(
         timeLeft
       )}`;
@@ -60,5 +64,6 @@ function formatTime(time) {
 export function updateScore(points) {
   score += points;
 
+  window.score = score;
   updateUI();
 }
