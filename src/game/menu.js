@@ -1,6 +1,6 @@
 import { gameInfos } from "./constants/game.js";
-import { transitionToNextLevel } from "./engine/checkLevel.js";
 import { showStory } from "./animationText.js";
+import { initLeaderboard } from "./engine/leaderboard.js";
 
 window.isPaused = true;
 
@@ -17,6 +17,8 @@ document.addEventListener("DOMContentLoaded", function () {
   const sfxVolume = document.getElementById("sfx-volume");
   const musicValue = document.getElementById("music-value");
   const sfxValue = document.getElementById("sfx-value");
+
+  initLeaderboard();
 
   // Gestionnaire pour démarrer le jeu
   startButton.addEventListener("click", function () {

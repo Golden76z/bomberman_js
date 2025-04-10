@@ -8,8 +8,8 @@ import { activeBombPositions } from "./handleExplosion.js"
 import { playerInfos } from "../constants/player_infos.js"
 import { AIController } from "../entities/ai.js"
 import { showStory } from "../animationText.js"
-import { exitToMenu } from "./pause.js"
 import { restartTimer } from "./ui_scoring.js"
+import { initLeaderboardEnd } from "./leaderboard.js"
 
 export function transitionToNextLevel() {
   return new Promise((resolve) => {
@@ -108,7 +108,7 @@ export function checkLevel(currentMap) {
   // Increment level
   if (!gameInfos.restart) {
     gameInfos.level++;
-    gameInfos.score += 10000
+    gameInfos.score += 500
   }
 
   // First, start the transition
@@ -148,9 +148,7 @@ export function checkLevel(currentMap) {
     });
   } else if (gameInfos.level == 3) {
     const story3 = `Final Level - Showdown with Pyron!
-        The city's core is within reach, but Pyron won't go down without a fight. His elite guards block your path, and at the end, the warlord himself awaits. You've come too far to stop now. It's time to face your destiny!
-
-        (Press any key to continue)`;
+        The city's core is within reach, but Pyron won't go down without a fight. His elite guards block your path, and at the end, the warlord himself awaits. You've come too far to stop now. It's time to face your destiny!`;
 
     // Call nextMap during black screen
     setTimeout(() => {
@@ -168,19 +166,18 @@ export function checkLevel(currentMap) {
       restartTimer()
     });
   } else {
+
+    gameInfos.pause = true
     const endingStory = `Victory - Blastron is Free!
 
-  The final explosion echoes through the city as Pyron falls. His reign of terror is over, and the heart of Blastron beats once more. The streets, once filled with chaos, now hum with the sounds of rebuilding and hope.
+    The final explosion echoes through the city as Pyron falls. His reign of terror is over, and the heart of Blastron beats once more.
 
-  You, the last Bomber, have done the impossible. The city's people cheer your name, and your legend will be told for generations. But this is not just your victory—it's a victory for all of Blastron. The city is free, and its future is bright.
+    You, the last Bomber, have done the impossible. The city's people cheer your name, and your legend will be told for generations.
 
-  As the dust settles, you take a moment to reflect. The battles were fierce, the challenges great, but you never gave up. You faced the darkness and brought light back to Blastron.
+    Thanks for playing!`;
 
-  Thank you for playing, hero. Your journey may be over, but your legacy will live on forever.
-
-  (Press any key to return to the main menu)`;
     gameInfos.level = 1
-    showStory(endingStory, exitToMenu);
+    showStory(endingStory, initLeaderboardEnd);
   }
 
   // Recalculate boundaries

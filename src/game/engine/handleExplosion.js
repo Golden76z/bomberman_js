@@ -328,7 +328,7 @@ export function handleExplosion(x, y, map, owner) {
 
   if (count > 0) {
     updateMultipleMaps(maps);
-    updateScore(500 * count);
+    updateScore(5000 * count);
   }
 
   // Clean up container after animation

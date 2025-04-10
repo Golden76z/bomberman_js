@@ -111,8 +111,6 @@ export class Explosion {
     if (this.element && this.element.parentNode) {
       this.element.parentNode.removeChild(this.element);
 
-      console.log(this.owner);
-
       // Decrement bomb count for the correct owner
       if (this.owner === 'player') {
         playerInfos.bomb--;

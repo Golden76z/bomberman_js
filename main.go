@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bomberman_js/api"
 	"fmt"
 	"html/template"
 	"net/http"
@@ -21,12 +22,34 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func main() {
-	http.Handle("/src/", http.StripPrefix("/src/", http.FileServer(http.Dir("./src/"))))
-	http.HandleFunc("/", indexHandler)
+func corsMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
-	fmt.Println("Server is running on http://localhost:8080")
-	if err := http.ListenAndServe(":8080", nil); err != nil {
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
+}
+
+func main() {
+	mux := http.NewServeMux()
+
+	mux.Handle("/src/", http.StripPrefix("/src/", http.FileServer(http.Dir("./src/"))))
+	mux.Handle("/images/", http.StripPrefix("/images/", http.FileServer(http.Dir("./images/"))))
+
+	mux.HandleFunc("/", indexHandler)
+
+	api.RegisterLeaderboardHandlers(mux)
+
+	handler := corsMiddleware(mux)
+
+	fmt.Println("Server is running on http://localhost:8081")
+	if err := http.ListenAndServe(":8080", handler); err != nil {
 		fmt.Println("Error starting server:", err)
 	}
 }
