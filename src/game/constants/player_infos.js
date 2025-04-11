@@ -19,7 +19,7 @@ export const playerInfos = {
   moveSpeed: 0.3,
   bombLength: 1,
   // Player life
-  hearts: 1,
+  hearts: 3,
   extraHeart: 0,
   invulnerable: false,
 };
@@ -105,6 +105,6 @@ const styles = `
 }`;
 
 // Adding the style to the css file
-const styleSheet = document.createElement('style');
+const styleSheet = document.createElement("style");
 styleSheet.textContent = styles;
 document.head.appendChild(styleSheet);

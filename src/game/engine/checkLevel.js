@@ -1,27 +1,39 @@
-import { gameInfos, updateGameLevel, updateWallStyles, gameContainerStyles } from "../constants/game.js"
-import { createWalls, Wall } from "../entities/colisionMap.js"
-import { createMap, walls } from "./mapGeneration.js"
-import { maps, originalMaps } from "../constants/levels.js"
-import { gameLoop } from "./gameLoop.js"
-import { getBoundaryX, getBoundaryY, updatePosition, updatePlayerAnimation, position, aiController } from "./player_inputs.js"
-import { activeBombPositions } from "./handleExplosion.js"
-import { playerInfos } from "../constants/player_infos.js"
-import { AIController } from "../entities/ai.js"
-import { showStory } from "../animationText.js"
-import { restartTimer } from "./ui_scoring.js"
-import { initLeaderboardEnd } from "./leaderboard.js"
+import {
+  gameInfos,
+  updateGameLevel,
+  updateWallStyles,
+  gameContainerStyles,
+} from "../constants/game.js";
+import { createWalls, Wall } from "../entities/colisionMap.js";
+import { createMap, walls } from "./mapGeneration.js";
+import { maps, originalMaps } from "../constants/levels.js";
+import { gameLoop } from "./gameLoop.js";
+import {
+  getBoundaryX,
+  getBoundaryY,
+  updatePosition,
+  updatePlayerAnimation,
+  position,
+  aiController,
+} from "./player_inputs.js";
+import { activeBombPositions } from "./handleExplosion.js";
+import { playerInfos } from "../constants/player_infos.js";
+import { AIController } from "../entities/ai.js";
+import { showStory } from "../animationText.js";
+import { restartTimer } from "./ui_scoring.js";
+import { initLeaderboardEnd } from "./leaderboard.js";
 
 export function transitionToNextLevel() {
   return new Promise((resolve) => {
     // Create overlay element if it doesn't exist
-    let overlay = document.querySelector('.level-transition-overlay');
+    let overlay = document.querySelector(".level-transition-overlay");
     if (!overlay) {
-      overlay = document.createElement('div');
-      overlay.className = 'level-transition-overlay';
+      overlay = document.createElement("div");
+      overlay.className = "level-transition-overlay";
       document.body.appendChild(overlay);
 
       // Add the CSS for the overlay
-      const style = document.createElement('style');
+      const style = document.createElement("style");
       style.textContent = `
         .level-transition-overlay {
           position: fixed;
@@ -40,14 +52,14 @@ export function transitionToNextLevel() {
     }
 
     // Fade in
-    overlay.style.opacity = '0';
-    overlay.style.display = 'block';
+    overlay.style.opacity = "0";
+    overlay.style.display = "block";
 
     // Force reflow to ensure transition works
     void overlay.offsetWidth;
 
     // Start fade in
-    overlay.style.opacity = '1';
+    overlay.style.opacity = "1";
 
     // Wait for fade in to complete
     setTimeout(() => {
@@ -56,11 +68,11 @@ export function transitionToNextLevel() {
 
       // Start fade out after a short delay
       setTimeout(() => {
-        overlay.style.opacity = '0';
+        overlay.style.opacity = "0";
 
         // Remove overlay after fade out
         setTimeout(() => {
-          overlay.style.display = 'none';
+          overlay.style.display = "none";
         }, 500);
       }, 600); // Short delay before fade out starts
     }, 500); // Time for fade in
@@ -69,21 +81,20 @@ export function transitionToNextLevel() {
 
 // Function to check if the number of wall is equal to 0 or not
 export function checkWalls() {
-  let count = 0
+  let count = 0;
   for (let i = 0; i < walls.length; i++) {
     if (walls[i].type === 3) {
-      count++
+      count++;
     }
   }
   if (count === 0) {
-    return true
+    return true;
   } else {
-    return false
+    return false;
   }
 }
 
 export function checkLevel(currentMap) {
-
   // Safety check - ensure we have a map
   if (!currentMap) {
     currentMap = maps[gameInfos.level - 1];
@@ -108,17 +119,18 @@ export function checkLevel(currentMap) {
   // Increment level
   if (!gameInfos.restart) {
     gameInfos.level++;
-    gameInfos.score += 500
+    gameInfos.score += 500;
   }
 
   // First, start the transition
   // This code runs when screen is black (between fade-in and fade-out)
   if (gameInfos.level == 1) {
-    const story = "In the heart of Blastron, chaos looms. You, the last Bomber, must reclaim the city!";
+    const story =
+      "In the heart of Blastron, chaos looms. You, the last Bomber, must reclaim the city!";
 
     // Call nextMap during black screen
 
-    gameInfos.pause = true
+    gameInfos.pause = true;
     console.log("test");
 
     showStory(story, () => {
@@ -126,7 +138,7 @@ export function checkLevel(currentMap) {
       aiController.length = 0;
       aiController.push(new AIController(100, 100, 1, walls));
       updateBackground(1);
-      gameInfos.pause = false
+      gameInfos.pause = false;
     });
   } else if (gameInfos.level == 2) {
     const story2 = `Level 2 - The Resistance Grows
@@ -135,16 +147,16 @@ export function checkLevel(currentMap) {
     // Call nextMap during black screen
     setTimeout(() => {
       nextMap();
-    }, 700)
+    }, 700);
 
-    gameInfos.pause = true
+    gameInfos.pause = true;
     showStory(story2, () => {
       aiController.length = 0;
       aiController.push(new AIController(100, 100, 1, walls));
       aiController.push(new AIController(550, 100, 1, walls));
       updateBackground(2);
-      gameInfos.pause = false
-      restartTimer()
+      gameInfos.pause = false;
+      restartTimer();
     });
   } else if (gameInfos.level == 3) {
     const story3 = `Final Level - Showdown with Pyron!
@@ -153,21 +165,20 @@ export function checkLevel(currentMap) {
     // Call nextMap during black screen
     setTimeout(() => {
       nextMap();
-    }, 700)
+    }, 700);
 
-    gameInfos.pause = true
+    gameInfos.pause = true;
     showStory(story3, () => {
       aiController.length = 0;
       aiController.push(new AIController(100, 100, 3, walls));
       aiController.push(new AIController(760, 100, 2, walls));
       aiController.push(new AIController(100, 550, 2, walls));
       updateBackground(3);
-      gameInfos.pause = false
-      restartTimer()
+      gameInfos.pause = false;
+      restartTimer();
     });
   } else {
-
-    gameInfos.pause = true
+    gameInfos.pause = true;
     const endingStory = `Victory - Blastron is Free!
 
     The final explosion echoes through the city as Pyron falls. His reign of terror is over, and the heart of Blastron beats once more.
@@ -176,7 +187,7 @@ export function checkLevel(currentMap) {
 
     Thanks for playing!`;
 
-    gameInfos.level = 1
+    gameInfos.level = 1;
     showStory(endingStory, initLeaderboardEnd);
   }
 
@@ -187,7 +198,6 @@ export function checkLevel(currentMap) {
   // Restart game loop
   gameLoop.start(updatePosition);
 }
-
 
 function updateBackground(level) {
   // Define background images for each level
@@ -205,12 +215,13 @@ function updateBackground(level) {
 
   // Apply the new background with a short delay to ensure it updates
   setTimeout(() => {
-    html.style.backgroundImage = backgrounds[level] || "url('../images/background_forest.gif')"
+    html.style.backgroundImage =
+      backgrounds[level] || "url('../images/background_forest.gif')";
   }, 50);
 }
 
 function nextMap() {
-  gameInfos.restart = false
+  gameInfos.restart = false;
   updateGameLevel();
 
   // Get the new map
@@ -243,9 +254,9 @@ function nextMap() {
   // Reset player position
   position.x = 60;
   position.y = 60;
-  playerInfos.maxBomb = 1
-  playerInfos.bomb = 0
-  playerInfos.bombLength = 1
-  playerInfos.hearts = 1
+  playerInfos.maxBomb = 1;
+  playerInfos.bomb = 0;
+  playerInfos.bombLength = 1;
+  playerInfos.hearts = 3;
   updatePlayerAnimation();
 }
