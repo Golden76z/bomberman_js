@@ -43,7 +43,7 @@ This game is built with performance as a priority, implementing:
 
 1. Use **WASD** or **Arrow Keys** to move your character
 2. Press **Space** to place bombs
-3. Press **P** to pause the game
+3. Press **Esc** to pause the game
 4. Destroy blocks to clear paths and find power-ups
 5. Avoid enemies and your own bomb blasts!
 6. Find the exit to progress to the next level
