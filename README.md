@@ -99,13 +99,20 @@ This game has been optimized to achieve:
    cd bomberman_js
    ```
 
-3. Open `index.html` in your browser or use a local server:
+3. Create a ".env" file and a "scores.json" file at the root of the project
+   Enter that line in the .env file:
+   ```txt
+   API_TOKEN= 1234
+   ```
+   Feel free to change it to secure a little more your application.
+
+4. Open `index.html` in your browser or use a local server:
    ```
    # Requires golang instalation
    go run main.go
    ```
 
-4. Access the game at `http://localhost:8080`
+5. Access the game at `http://localhost:8080`
 
 ## 📊 Performance Testing
 
