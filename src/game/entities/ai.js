@@ -1,4 +1,5 @@
 import { gameInfos } from '../constants/game.js';
+import { playerInfos } from '../constants/player_infos.js';
 import { placeBomb } from "../engine/handleExplosion.js";
 import { handleExplosionEffect } from '../entities/colisionMap.js';
 import { activeBombPositions } from '../engine/handleExplosion.js';
@@ -376,7 +377,7 @@ export class AIController {
     const aiTileX = Math.floor(this.position.x / gameInfos.tileSize);
     const aiTileY = Math.floor(this.position.y / gameInfos.tileSize);
 
-    // Check more thoroughly for escape routes
+    // Simple check: can we move to at least one adjacent tile that's NOT in bomb blast?
     const directions = [
       { dx: 1, dy: 0 },
       { dx: -1, dy: 0 },
@@ -384,34 +385,43 @@ export class AIController {
       { dx: 0, dy: -1 }
     ];
 
-    // Count available escape routes
-    let availableEscapeRoutes = 0;
     for (const dir of directions) {
-      const escapeX = (aiTileX + dir.dx) * gameInfos.tileSize;
-      const escapeY = (aiTileY + dir.dy) * gameInfos.tileSize;
+      const escapeTileX = aiTileX + dir.dx;
+      const escapeTileY = aiTileY + dir.dy;
+      const escapeX = escapeTileX * gameInfos.tileSize;
+      const escapeY = escapeTileY * gameInfos.tileSize;
 
-      // Check if the escape route is clear
-      if (this.canMove(escapeX, escapeY)) {
-        // Check if there's a secondary escape route from this position
-        for (const secondDir of directions) {
-          if (secondDir.dx === -dir.dx && secondDir.dy === -dir.dy) continue; // Don't go back
+      // Can we move to this tile?
+      if (!this.canMove(escapeX, escapeY)) continue;
 
-          const secondaryX = escapeX + (secondDir.dx * gameInfos.tileSize);
-          const secondaryY = escapeY + (secondDir.dy * gameInfos.tileSize);
+      // Would we be safe there from our own bomb blast?
+      // Bomb blast spreads in cross pattern from current position
+      const isHorizontalBlast = (escapeTileY === aiTileY);
+      const isVerticalBlast = (escapeTileX === aiTileX);
 
-          if (this.canMove(secondaryX, secondaryY)) {
-            availableEscapeRoutes++;
-            break;
-          }
+      // If escape is directly adjacent (not in cross pattern), it's safe
+      if (!isHorizontalBlast && !isVerticalBlast) {
+        return true;
+      }
+
+      // If in cross pattern, check if within blast range
+      if (isHorizontalBlast) {
+        const distance = Math.abs(escapeTileX - aiTileX);
+        if (distance > this.aiInfos.bombLength) {
+          return true; // Safe, outside blast radius
+        }
+      } else if (isVerticalBlast) {
+        const distance = Math.abs(escapeTileY - aiTileY);
+        if (distance > this.aiInfos.bombLength) {
+          return true; // Safe, outside blast radius
         }
       }
     }
 
-    // Only consider it safe if there are at least 2 escape routes with secondary paths
-    return availableEscapeRoutes >= 2;
+    return false;
   }
 
-  calculateEscapeRoute(bombX, bombY) {
+  calculateEscapeRoute(bombTileX, bombTileY) {
     const aiTileX = Math.floor(this.position.x / gameInfos.tileSize);
     const aiTileY = Math.floor(this.position.y / gameInfos.tileSize);
 
@@ -423,63 +433,43 @@ export class AIController {
     ];
 
     let bestDirection = null;
-    let maxSafetyScore = -Infinity;
+    let maxDistance = -1;
 
     for (const dir of directions) {
       const newTileX = aiTileX + dir.dx;
       const newTileY = aiTileY + dir.dy;
-
       const newX = newTileX * gameInfos.tileSize;
       const newY = newTileY * gameInfos.tileSize;
 
-      // Skip if we can't move there
+      // Can we move there?
       if (!this.canMove(newX, newY)) continue;
 
-      // Skip if this position would still be in explosion range
-      if (this.isInExplosionRange(bombX, bombY)) continue;
+      // Is it safe from bomb?
+      const isHorizontalBlast = (newTileY === bombTileY);
+      const isVerticalBlast = (newTileX === bombTileX);
 
-      let safetyScore = 0;
+      let isSafe = true;
 
-      // Heavily weight positions that are completely out of bomb range
-      safetyScore += 30;
-
-      // Weight distance from bomb (prefer further positions)
-      const distanceFromBomb = Math.abs(newTileX - bombX) + Math.abs(newTileY - bombY);
-      safetyScore += distanceFromBomb * 5;
-
-      // Check for secondary escape routes from this position
-      let secondaryRoutes = 0;
-      for (const escapeDir of directions) {
-        // Don't count going back towards the bomb
-        if (escapeDir.dx === -dir.dx && escapeDir.dy === -dir.dy) continue;
-
-        const escapeTileX = newTileX + escapeDir.dx;
-        const escapeTileY = newTileY + escapeDir.dy;
-        const escapeX = escapeTileX * gameInfos.tileSize;
-        const escapeY = escapeTileY * gameInfos.tileSize;
-
-        if (this.canMove(escapeX, escapeY) &&
-          !this.isInExplosionRange(bombX, bombY)) {
-          secondaryRoutes++;
+      // Check if in blast pattern and within range
+      if (isHorizontalBlast) {
+        const distance = Math.abs(newTileX - bombTileX);
+        if (distance <= this.aiInfos.bombLength) {
+          isSafe = false;
+        }
+      } else if (isVerticalBlast) {
+        const distance = Math.abs(newTileY - bombTileY);
+        if (distance <= this.aiInfos.bombLength) {
+          isSafe = false;
         }
       }
-      safetyScore += secondaryRoutes * 10;
 
-      if (safetyScore > maxSafetyScore) {
-        maxSafetyScore = safetyScore;
+      if (!isSafe) continue;
+
+      // Prefer directions that go away from bomb
+      const distanceFromBomb = Math.abs(newTileX - bombTileX) + Math.abs(newTileY - bombTileY);
+      if (distanceFromBomb > maxDistance) {
+        maxDistance = distanceFromBomb;
         bestDirection = dir.direction;
-      }
-    }
-
-    // If no safe direction is found, prioritize any possible movement away from the bomb
-    if (!bestDirection) {
-      for (const dir of directions) {
-        const newX = (aiTileX + dir.dx) * gameInfos.tileSize;
-        const newY = (aiTileY + dir.dy) * gameInfos.tileSize;
-
-        if (this.canMove(newX, newY)) {
-          return dir.direction;
-        }
       }
     }
 
@@ -493,30 +483,59 @@ export class AIController {
     // Don't place bomb if already in danger
     if (this.inDanger) return false;
 
-    // Don't place bomb if cooldown hasn't expired
-    if (currentTime - this.lastBombPlaced <= this.bombInterval) return false;
+    // Don't place bomb if cooldown hasn't expired (2 seconds)
+    if (currentTime - this.lastBombPlaced <= 2000) return false;
 
     // Don't place bomb if at max bombs
     if (this.aiInfos.bomb >= this.aiInfos.maxBomb) return false;
 
     // Only place bomb if it's safe to do so
-    if (!this.isSafeToPlaceBomb()) return false;
+    return this.isSafeToPlaceBomb();
+  }
 
-    // Calculate escape route before deciding to place bomb
+  // Get distance to player in tiles
+  getDistanceToPlayer() {
+    const playerTileX = Math.floor(playerInfos.positionX / gameInfos.tileSize);
+    const playerTileY = Math.floor(playerInfos.positionY / gameInfos.tileSize);
+    const aiTileX = Math.floor(this.position.x / gameInfos.tileSize);
+    const aiTileY = Math.floor(this.position.y / gameInfos.tileSize);
+    
+    return Math.abs(playerTileX - aiTileX) + Math.abs(playerTileY - aiTileY);
+  }
+
+  // Choose direction towards player
+  getMoveDirectionTowardPlayer() {
+    const playerTileX = Math.floor(playerInfos.positionX / gameInfos.tileSize);
+    const playerTileY = Math.floor(playerInfos.positionY / gameInfos.tileSize);
     const aiTileX = Math.floor(this.position.x / gameInfos.tileSize);
     const aiTileY = Math.floor(this.position.y / gameInfos.tileSize);
 
-    const escapeDir = this.calculateEscapeRoute(aiTileX, aiTileY);
+    const directions = [
+      { dir: 'ArrowRight', dx: 1, dy: 0 },
+      { dir: 'ArrowLeft', dx: -1, dy: 0 },
+      { dir: 'ArrowUp', dx: 0, dy: -1 },
+      { dir: 'ArrowDown', dx: 0, dy: 1 }
+    ];
 
-    // Only place bomb if we have a valid escape route
-    if (escapeDir) {
-      this.escapeDirection = escapeDir;
-      this.lastBombPlaced = currentTime;
-      this.inDanger = true;
-      return true;
+    let bestDir = this.getRandomDirection();
+    let minDistance = Infinity;
+
+    for (const d of directions) {
+      const newTileX = aiTileX + d.dx;
+      const newTileY = aiTileY + d.dy;
+      const newX = newTileX * gameInfos.tileSize;
+      const newY = newTileY * gameInfos.tileSize;
+
+      if (!this.canMove(newX, newY)) continue;
+
+      const dist = Math.abs(newTileX - playerTileX) + Math.abs(newTileY - playerTileY);
+      if (dist < minDistance) {
+        minDistance = dist;
+        bestDir = d.dir;
+      }
     }
 
-    return false;
+    return bestDir;
   }
 
   simulateKeyPress(deltaTime) {
@@ -540,6 +559,17 @@ export class AIController {
       // Cancel the current direction and use escape direction
       this.direction = this.escapeDirection;
       this.lastDirectionChange = Date.now(); // Reset direction change timer
+    } else {
+      // When not in danger, try to move towards player if close enough
+      const distToPlayer = this.getDistanceToPlayer();
+      if (distToPlayer < 8) {
+        this.direction = this.getMoveDirectionTowardPlayer();
+      } else if (Date.now() - this.lastDirectionChange > this.directionChangeInterval) {
+        // Randomly change direction if we've been going the same way too long
+        this.direction = this.getRandomDirection();
+        this.lastDirectionChange = Date.now();
+        this.blockedDirections.clear();
+      }
     }
 
     // Calculate new position based on current direction
@@ -620,17 +650,26 @@ export class AIController {
     window.aiController = this;
 
     if (this.shouldPlaceBomb()) {
-      const x = this.position.x - this.aiInfos.width / 3;
-      const y = this.position.y - this.aiInfos.height / 3;
+      // Calculate escape route before placing the bomb
+      const aiTileX = Math.floor(this.position.x / gameInfos.tileSize);
+      const aiTileY = Math.floor(this.position.y / gameInfos.tileSize);
+      const escapeDir = this.calculateEscapeRoute(aiTileX, aiTileY);
+      
+      if (escapeDir) {
+        const x = this.position.x - this.aiInfos.width / 3;
+        const y = this.position.y - this.aiInfos.height / 3;
 
-      placeBomb(x, y, "ai");
-      handleExplosionEffect(x, y);
-      this.aiInfos.bomb++;
+        placeBomb(x, y, "ai");
+        handleExplosionEffect(x, y);
+        this.aiInfos.bomb++;
 
-      // Force immediate movement away from the bomb
-      this.inDanger = true;
-      this.direction = this.escapeDirection;
-      this.lastDirectionChange = Date.now();
+        // Set escape direction and mark as in danger
+        this.escapeDirection = escapeDir;
+        this.inDanger = true;
+        this.direction = escapeDir;
+        this.lastBombPlaced = Date.now();
+        this.lastDirectionChange = Date.now();
+      }
     }
 
     return {
